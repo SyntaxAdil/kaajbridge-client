@@ -117,7 +117,7 @@ const Navbar = () => {
           data-scrolled={scrolled}
           className={cn(
             "mx-auto flex h-16 container items-center justify-between px-5 lg:px-8",
-            "transition-all duration-300",
+            "transition-all duration-300 bg-background",
             scrolled
               ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200/60 dark:border-zinc-800 shadow-sm shadow-zinc-100 dark:shadow-black/20"
               : "bg-transparent",
@@ -170,8 +170,8 @@ const Navbar = () => {
             }}
           >
             <AnimatedThemeToggler
-              variant="hexagon"
-              fromCenter
+              
+              
               className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             />
 
@@ -447,7 +447,7 @@ const Navbar = () => {
           </>
         )}
       </AnimatePresence>
-      <div className="h-10"></div>
+      {/* <div className="h-16"></div> */}
     </>
   );
 };

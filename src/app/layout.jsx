@@ -48,12 +48,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${manrope.className}  h-full antialiased `} suppressHydrationWarning >
+    <html data-theme="dark" lang="en" className={`${manrope.className}  h-full antialiased dark`} suppressHydrationWarning >
       <body className=" min-h-full flex flex-col bg-background text-foreground" >
         {/* navbar */}
         <Navbar></Navbar>
         {/* main */}
-        <main className="flex-1 mx-4 md:mx-0 my-8 md:my-12">{children}</main>
+        <main className="flex-1 mx-4 md:mx-0 ">{children}</main>
         {/* footer */}
         <Footer></Footer>
         {/* toaster */}
