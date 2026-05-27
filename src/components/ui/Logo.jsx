@@ -10,7 +10,7 @@ const Logo = ({ isDark = false }) => {
          width={200}
           height={100}
           alt="KaajBridge"
-          className="w-40"
+          className="w-40 pointer-events-none select-none"
         />
       ) : (
         <Image
@@ -18,7 +18,7 @@ const Logo = ({ isDark = false }) => {
           width={200}
           height={100}
           alt="KaajBridge"
-          className="w-40"
+          className="w-40 pointer-events-none select-none"
         />
       )}
     </>

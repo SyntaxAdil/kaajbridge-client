@@ -81,7 +81,7 @@ export default function Login() {
     { label: "Recruiter", value: "recruiter" },
   ];
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto my-26">
         <div className="flex items-center justify-center my-2">
           <Logo></Logo>
         </div>

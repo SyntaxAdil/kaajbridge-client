@@ -66,7 +66,7 @@ export default function Login() {
     console.log(data);
   };
   return (
-    <Card className="w-full max-w-sm mx-auto">
+    <Card className="w-full max-w-sm mx-auto my-26">
       <div className="flex items-center justify-center my-2">
         <Logo></Logo>
       </div>
