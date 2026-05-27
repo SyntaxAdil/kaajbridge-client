@@ -190,6 +190,8 @@ const Navbar = () => {
             }}
           >
             <AnimatedThemeToggler
+            variant="hexagon"
+            fromCenter
               className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             />
 

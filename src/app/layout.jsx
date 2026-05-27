@@ -2,6 +2,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Navbar from "../components/shared/Navbar/Navbar";
+import Footer from "../components/shared/Footer";
 
 // font manrope
 const manrope = Manrope({
@@ -54,7 +55,7 @@ export default function RootLayout({ children }) {
         {/* main */}
         <main className="flex-1 mx-4 md:mx-0 my-8 md:my-12">{children}</main>
         {/* footer */}
-
+        <Footer></Footer>
         {/* toaster */}
         <Toaster></Toaster>
       </body>
