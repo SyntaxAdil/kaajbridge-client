@@ -16,8 +16,8 @@ const NavLink = ({ href, className, children, onClick }) => {
       className={cn(
         "relative inline-flex items-center py-1 text-sm font-medium transition-colors duration-200 outline-none",
         isActive
-          ? "text-orange-600"
-          : "text-zinc-500 hover:text-zinc-900",
+          ? "text-indigo-600"
+          : "text-zinc-500 hover:text-foreground",
         className
       )}
     >
@@ -28,7 +28,7 @@ const NavLink = ({ href, className, children, onClick }) => {
         {isActive && (
           <motion.span
             layoutId="nav-pill"
-            className="absolute -bottom-0.5 left-0 right-0 h-[2px] rounded-full bg-orange-500"
+            className="absolute -bottom-0.5 left-0 right-0 h-[2px] rounded-full bg-indigo-500"
             initial={{ opacity: 0, scaleX: 0.4 }}
             animate={{ opacity: 1, scaleX: 1 }}
             exit={{ opacity: 0, scaleX: 0.4 }}

@@ -2,13 +2,10 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import {
-  FaGithubSquare,
-  FaLinkedin,
-  FaFacebook,
-} from "react-icons/fa";
+import { FaGithubSquare, FaLinkedin, FaFacebook } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
+import Logo from "../ui/logo";
 
 const LINKS = {
   product: [
@@ -32,18 +29,15 @@ const Footer = () => {
   return (
     <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400">
       <div className="container mx-auto px-5 lg:px-8 py-14">
-        
         {/* TOP GRID */}
         <div className="grid md:grid-cols-4 gap-10">
-          
           {/* BRAND */}
           <div>
-            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-              Kaaj<span className="text-orange-500">Bridge</span>
-            </h1>
-
+            <Logo />
             <p className="mt-3 text-sm leading-6">
-              Modern job hunting platform developed by a diploma student for diploma students. Find jobs, internships, and career opportunities easily and efficiently.
+              Modern job hunting platform developed by a diploma student for
+              diploma students. Find jobs, internships, and career opportunities
+              easily and efficiently.
             </p>
 
             {/* SOCIAL ICONS */}
@@ -75,7 +69,7 @@ const Footer = () => {
           </div>
 
           {/* PRODUCT */}
-          <div className="md:ms-20" >
+          <div className="md:ms-20">
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
               Product
             </h3>
@@ -85,7 +79,7 @@ const Footer = () => {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="hover:text-orange-500 transition"
+                    className="hover:text-indigo-500 transition"
                   >
                     {item.label}
                   </Link>
@@ -105,7 +99,7 @@ const Footer = () => {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="hover:text-orange-500 transition"
+                    className="hover:text-indigo-500 transition"
                   >
                     {item.label}
                   </Link>
@@ -125,7 +119,7 @@ const Footer = () => {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="hover:text-orange-500 transition"
+                    className="hover:text-indigo-500 transition"
                   >
                     {item.label}
                   </Link>
@@ -137,15 +131,13 @@ const Footer = () => {
 
         {/* BOTTOM BAR */}
         <div className="mt-12 border-t border-zinc-200 dark:border-zinc-800 pt-6 flex flex-col md:flex-row justify-between gap-3 text-sm">
-          <p>
-            Copyright © {new Date().getFullYear()} — KaajBridge
-          </p>
+          <p>Copyright © {new Date().getFullYear()} — KaajBridge</p>
 
           <div className="flex gap-5">
-            <Link href="/terms" className="hover:text-orange-500">
+            <Link href="/terms" className="hover:text-indigo-500">
               Terms & Policy
             </Link>
-            <Link href="/privacy" className="hover:text-orange-500">
+            <Link href="/privacy" className="hover:text-indigo-500">
               Privacy Guideline
             </Link>
           </div>

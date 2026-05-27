@@ -14,16 +14,9 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "../../ui/button";
 import NavLink from "./NavLink";
-import {
-  handleSignout,
-  useSession,
-} from "../../../lib/auth/auth-client";
+import { handleSignout, useSession } from "../../../lib/auth/auth-client";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 
 import {
   DropdownMenu,
@@ -35,6 +28,7 @@ import {
 } from "../../ui/dropdown-menu";
 
 import { AnimatedThemeToggler } from "../../ui/animated-theme-toggler";
+import Logo from "../../ui/Logo";
 
 const NAV_LINKS = [
   { label: "Browse Jobs", href: "/jobs" },
@@ -88,9 +82,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen
-      ? "hidden"
-      : "";
+    document.body.style.overflow = menuOpen ? "hidden" : "";
 
     return () => {
       document.body.style.overflow = "";
@@ -128,7 +120,7 @@ const Navbar = () => {
             "transition-all duration-300",
             scrolled
               ? "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200/60 dark:border-zinc-800 shadow-sm shadow-zinc-100 dark:shadow-black/20"
-              : "bg-transparent"
+              : "bg-transparent",
           )}
         >
           <motion.div
@@ -143,15 +135,8 @@ const Navbar = () => {
               href="/"
               className="flex items-center gap-1.5 text-[1.35rem] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100"
             >
-              <BriefcaseIcon
-                className="size-5 text-orange-500"
-                strokeWidth={2.5}
-              />
-
-              Kaaj
-              <span className="text-orange-500 -ms-1">
-                Bridge
-              </span>
+              
+              <Logo />
             </Link>
           </motion.div>
 
@@ -162,13 +147,8 @@ const Navbar = () => {
             className="hidden md:flex items-center gap-7"
           >
             {NAV_LINKS.map((l) => (
-              <motion.li
-                key={l.href}
-                variants={itemVariants}
-              >
-                <NavLink href={l.href}>
-                  {l.label}
-                </NavLink>
+              <motion.li key={l.href} variants={itemVariants}>
+                <NavLink href={l.href}>{l.label}</NavLink>
               </motion.li>
             ))}
           </motion.ul>
@@ -190,8 +170,8 @@ const Navbar = () => {
             }}
           >
             <AnimatedThemeToggler
-            variant="hexagon"
-            fromCenter
+              variant="hexagon"
+              fromCenter
               className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             />
 
@@ -201,7 +181,7 @@ const Navbar = () => {
                   <motion.button
                     whileHover={{ scale: 1.06 }}
                     whileTap={{ scale: 0.96 }}
-                    className="rounded-full ring-2 ring-transparent hover:ring-orange-400 transition-all duration-200 outline-none"
+                    className="rounded-full ring-2 ring-transparent hover:ring-indigo-400 transition-all duration-200 outline-none"
                   >
                     <Avatar className="size-9 cursor-pointer">
                       <AvatarImage
@@ -209,7 +189,7 @@ const Navbar = () => {
                         alt={userClient?.name}
                       />
 
-                      <AvatarFallback className="bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 text-xs font-semibold">
+                      <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
                         {userInitial}
                       </AvatarFallback>
                     </Avatar>
@@ -244,9 +224,7 @@ const Navbar = () => {
                   <DropdownMenuItem
                     variant="destructive"
                     className="gap-2 cursor-pointer"
-                    onClick={() =>
-                      handleSignout(refetch)
-                    }
+                    onClick={() => handleSignout(refetch)}
                   >
                     <LogOutIcon className="size-4" />
                     Log out
@@ -259,7 +237,7 @@ const Navbar = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-zinc-600 dark:text-zinc-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-lg font-medium"
+                    className="text-zinc-600 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg font-medium"
                   >
                     Sign In
                   </Button>
@@ -268,7 +246,7 @@ const Navbar = () => {
                 <Link href="/register">
                   <Button
                     size="sm"
-                    className="rounded-lg bg-orange-500 hover:bg-orange-600 text-white px-5 font-semibold transition-all duration-200"
+                    className="rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white px-5 font-semibold transition-all duration-200"
                   >
                     Get Started
                   </Button>
@@ -279,16 +257,11 @@ const Navbar = () => {
 
           <motion.button
             className="md:hidden p-2 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-            onClick={() =>
-              setMenuOpen((v) => !v)
-            }
+            onClick={() => setMenuOpen((v) => !v)}
             whileTap={{ scale: 0.9 }}
             aria-label="Toggle menu"
           >
-            <AnimatePresence
-              mode="wait"
-              initial={false}
-            >
+            <AnimatePresence mode="wait" initial={false}>
               {menuOpen ? (
                 <motion.span
                   key="x"
@@ -389,12 +362,10 @@ const Navbar = () => {
                   >
                     <NavLink
                       href={l.href}
-                      onClick={() =>
-                        setMenuOpen(false)
-                      }
+                      onClick={() => setMenuOpen(false)}
                       className="block py-3 text-base border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:text-foreground"
                     >
-                      {l.label} 
+                      {l.label}
                     </NavLink>
                   </motion.div>
                 ))}
@@ -413,7 +384,7 @@ const Navbar = () => {
                             alt={userClient?.name}
                           />
 
-                          <AvatarFallback className="bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 text-xs font-semibold">
+                          <AvatarFallback className="bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
                             {userInitial}
                           </AvatarFallback>
                         </Avatar>
@@ -429,12 +400,7 @@ const Navbar = () => {
                         </div>
                       </div>
 
-                      <Link
-                        href="/profile"
-                        onClick={() =>
-                          setMenuOpen(false)
-                        }
-                      >
+                      <Link href="/profile" onClick={() => setMenuOpen(false)}>
                         <Button
                           variant="outline"
                           className="w-full justify-start gap-2 rounded-lg dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
@@ -459,12 +425,7 @@ const Navbar = () => {
                     </>
                   ) : (
                     <>
-                      <Link
-                        href="/login"
-                        onClick={() =>
-                          setMenuOpen(false)
-                        }
-                      >
+                      <Link href="/login" onClick={() => setMenuOpen(false)}>
                         <Button
                           variant="outline"
                           className="w-full rounded-lg font-medium dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
@@ -473,13 +434,8 @@ const Navbar = () => {
                         </Button>
                       </Link>
 
-                      <Link
-                        href="/register"
-                        onClick={() =>
-                          setMenuOpen(false)
-                        }
-                      >
-                        <Button className="w-full rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-semibold">
+                      <Link href="/register" onClick={() => setMenuOpen(false)}>
+                        <Button className="w-full rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-semibold">
                           Get Started
                         </Button>
                       </Link>
