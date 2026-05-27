@@ -45,7 +45,7 @@ export default function Login() {
           password: data.password,
           name: `${data.fname} ${data.lname}`,
           role: data.role,
-          photo: data.photo,
+          image: data.photo,
 
           callbackURL: "/",
         },

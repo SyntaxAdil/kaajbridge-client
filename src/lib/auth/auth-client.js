@@ -1,8 +1,9 @@
 import { jwtClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
+import toast from "react-hot-toast";
 export const authClient = createAuthClient({
   baseURL: process.env.BETTER_AUTH_URL,
-  plugins:[jwtClient()]
+  plugins: [jwtClient()],
 });
 
 // google
@@ -13,6 +14,11 @@ export const googleSignIn = async () => {
   return data;
 };
 
+export const handleSignout = async (refetch) => {
+  await authClient.signOut();
+  toast.success("Logout successfull");
+  await refetch()
+};
 // export const {
 //   data: session,
 //   isPending,
