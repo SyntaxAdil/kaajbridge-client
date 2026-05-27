@@ -157,6 +157,7 @@ export default function Login() {
               disabled={isSubmitting}
               variant="outline"
               className="w-full"
+              type="button"
             >
               Login with Google
             </Button>
@@ -166,5 +167,3 @@ export default function Login() {
     </Card>
   );
 }
-
-

@@ -43,7 +43,7 @@ export default function Login() {
         {
           email: data.email,
           password: data.password,
-          name: data.fname + data.lname,
+          name: `${data.fname} ${data.lname}`,
           role: data.role,
           photo: data.photo,
 
@@ -254,6 +254,7 @@ export default function Login() {
               )}
             </Button>
             <Button
+            type="button"
               disabled={isSubmitting}
               variant="outline"
               className="w-full"
