@@ -20,6 +20,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { signUp } from "../../../lib/auth/auth-client";
 import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group";
+import Logo from "../../../components/ui/logo";
 
 export default function Login() {
   const [serverError, setServerError] = useState("");
@@ -81,13 +82,11 @@ export default function Login() {
   ];
   return (
     <Card className="w-full max-w-md mx-auto">
+        <div className="flex items-center justify-center my-2">
+          <Logo></Logo>
+        </div>
       <CardHeader>
-        <CardTitle>
-          Create new account at
-          <span className="font-bold  ms-2">
-            Kaaj<span className="text-orange-600">Bridge</span>
-          </span>
-        </CardTitle>
+        <CardTitle>Create new account at</CardTitle>
         <CardDescription>
           Enter your email below to login to your account
         </CardDescription>
@@ -254,7 +253,7 @@ export default function Login() {
               )}
             </Button>
             <Button
-            type="button"
+              type="button"
               disabled={isSubmitting}
               variant="outline"
               className="w-full"

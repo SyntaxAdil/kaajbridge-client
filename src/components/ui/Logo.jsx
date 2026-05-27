@@ -7,9 +7,10 @@ const Logo = ({ isDark = false }) => {
       {isDark ? (
         <Image
           src={"/logo/kaajbridge_dark.png"}
-          width={100}
-          height={60}
+         width={200}
+          height={100}
           alt="KaajBridge"
+          className="w-40"
         />
       ) : (
         <Image

@@ -447,6 +447,7 @@ const Navbar = () => {
           </>
         )}
       </AnimatePresence>
+      <div className="h-10"></div>
     </>
   );
 };
