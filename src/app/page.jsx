@@ -3,7 +3,7 @@ import Banner from "../section/Banner"
 const Home = () => {
   return (
     <div>
-      <Banner/>
+      {/* <Banner/> */}
     </div>
   )
 }

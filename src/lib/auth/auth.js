@@ -44,6 +44,13 @@ export const auth = betterAuth({
     },
   },
   plugins: [jwt()],
+  user:{
+    additionalFields:{
+      role:{
+        default:"seeker"
+      }
+    }
+  }
 });
 
 // const { data: session, error } = await authClient.getSession()

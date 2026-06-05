@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
 
   if (done) {
     return (
-      <div className="  flex items-center justify-center bg-background px-4">
+      <div className="  flex items-center justify-center bg-background px-4 my-40">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center space-y-2">
             <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">

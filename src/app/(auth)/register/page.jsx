@@ -46,8 +46,6 @@ export default function Login() {
           password: data.password,
           name: `${data.fname} ${data.lname}`,
           role: data.role,
-          image: data.photo,
-
           callbackURL: "/",
         },
         {
@@ -76,7 +74,6 @@ export default function Login() {
   };
 
   const ROLES = [
-    { label: "Admin", value: "admin" },
     { label: "Seeker", value: "seeker" },
     { label: "Recruiter", value: "recruiter" },
   ];
@@ -198,24 +195,7 @@ export default function Login() {
               )}
             </div>
 
-            {/* photo */}
-
-            <div className="grid gap-2">
-              <Label>Upload Profile</Label>
-              <Input
-                id="picture"
-                type="file"
-                {...register("photo", {
-                  required: "Profile Image is required",
-                })}
-              />
-              {errors.photo && (
-                <Alert variant="destructive" className="max-w-md border-0 p-0">
-                  <AlertCircleIcon />
-                  <AlertTitle>{errors.photo.message}</AlertTitle>
-                </Alert>
-              )}
-            </div>
+          
 
             {/* role */}
 

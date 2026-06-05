@@ -67,6 +67,7 @@ const Navbar = () => {
 
   const userClient = session?.user;
 
+  console.log("user client",userClient)
   const [scrolled, setScrolled] = useState(false);
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -89,6 +90,7 @@ const Navbar = () => {
     };
   }, [menuOpen]);
 
+  // initilas
   const userInitial = userClient?.name
     ?.trim()
     ?.split(" ")
