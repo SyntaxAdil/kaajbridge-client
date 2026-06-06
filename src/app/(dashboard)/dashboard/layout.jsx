@@ -1,4 +1,3 @@
-
 import {
   SidebarProvider,
   SidebarTrigger,
@@ -9,12 +8,12 @@ import DashboardSidebar from "../../../pages/dashboard/DashboardSidebar";
 export default function DashboardLayout({ children }) {
   return (
     <section className="flex flex-col min-h-screen">
-      
       <TooltipProvider>
         <SidebarProvider>
           <DashboardSidebar />
-          <SidebarTrigger />
-          <main className=" w-full">{children}</main>
+          
+          <main className=" w-full">
+            {children}</main>
         </SidebarProvider>
       </TooltipProvider>
     </section>

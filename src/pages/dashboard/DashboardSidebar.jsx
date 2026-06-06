@@ -25,11 +25,11 @@ import { useSession } from "../../lib/auth/auth-client";
 import Link from "next/link";
 
 const menuItems = [
-  { title: "Dashboard", icon: LayoutDashboard, isActive: true },
-  { title: "My Company", icon: Building2, isActive: false },
-  { title: "Manage Jobs", icon: Briefcase, isActive: false },
-  { title: "Applications", icon: FileText, isActive: false },
-  { title: "Settings", icon: Settings, isActive: false },
+  { title: "Dashboard", icon: LayoutDashboard, isActive: true ,href:"/dashboard" },
+  { title: "My Company", icon: Building2, isActive: false ,href:"/dashboard/my-companies" },
+  { title: "Manage Jobs", icon: Briefcase, isActive: false,href:"/dashboard/my-jobs" },
+  { title: "Applications", icon: FileText, isActive: false,href:"/dashboard/applications" },
+  { title: "Settings", icon: Settings, isActive: false ,href:"/dashboard/settings" },
 ];
 
 export default function DashboardSidebar() {
@@ -116,7 +116,7 @@ export default function DashboardSidebar() {
                   ${isCollapsed ? "justify-center px-0 h-20 w-12 mx-auto" : "px-4 gap-4"}`}
               >
                 <Link
-                  href={`/dashboard/${item.title.toLowerCase().replace(" ", "-")}`}
+                  href={`${item.href}`}
                   className="w-full h-full flex items-center justify-stretch"
                 >
                   <div

@@ -18,6 +18,7 @@ import DashboardStatsGrid from "../../components/shared/StatsCard";
 import { AnimatedThemeToggler } from "../../components/ui/animated-theme-toggler";
 import RecentApplications from "./RecentApplications";
 import TopCompanies from "./TopCompanies";
+import { SidebarTrigger } from "../../components/ui/sidebar";
 
 const DashboardWrapper = () => {
   const { data: session, refetch } = useSession();
@@ -31,9 +32,12 @@ const DashboardWrapper = () => {
     ?.join("");
 
   return (
-    <section className="w-full ">
+    <section className="w-full">
       {/* searching and avatar for dashboard */}
-      <header className="flex items-center justify-between w-full gap-8 border-b border-border bg-background px-6 py-4">
+      <header className="flex items-center justify-between w-full gap-8 border-b border-border bg-background  py-4 sticky top-0 z-50">
+        <div className="flex-0 w-1 px-4" >
+            <SidebarTrigger />
+        </div>
         <div className=" flex-1">
           <InputGroup className="relative flex items-center bg-muted/40 rounded py-2 border border-border focus-within:border-primary/50 transition-colors">
             <InputGroupAddon className="pl-4 pr-1 text-muted-foreground/60">
@@ -83,7 +87,7 @@ const DashboardWrapper = () => {
 
       {/* stats and title */}
 
-      <main className="py-6 px-4">
+      <main className="p-6">
         {/* welcome title */}
         <header>
           <h1 className="text-2xl font-semibold">
@@ -98,7 +102,7 @@ const DashboardWrapper = () => {
 
         {/* application table and my top companies  */}
 
-        <div className="flex items-start mt-6 gap-4" >
+        <div className="flex items-start mt-6 gap-4 flex-col md:flex-row " >
             <RecentApplications></RecentApplications>
             <TopCompanies></TopCompanies>
         </div>

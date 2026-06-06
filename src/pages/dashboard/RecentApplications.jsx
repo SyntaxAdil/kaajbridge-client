@@ -66,7 +66,7 @@ const statusStyles = {
 
 export default function RecentApplications() {
   return (
-    <div className="flex-1 bg-card rounded-2xl border border-border p-6">
+    <div className="flex-1 bg-card rounded-2xl border border-border p-6 w-full">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold tracking-tight text-foreground">
           Recent Applications
