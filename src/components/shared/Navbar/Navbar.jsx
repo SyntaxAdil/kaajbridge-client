@@ -9,6 +9,7 @@ import {
   BriefcaseIcon,
   MenuIcon,
   XIcon,
+  LayoutDashboard,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ import {
 
 import { AnimatedThemeToggler } from "../../ui/animated-theme-toggler";
 import Logo from "../../ui/Logo";
+import { GrDashboard } from "react-icons/gr";
 
 const NAV_LINKS = [
   { label: "Browse Jobs", href: "/jobs" },
@@ -71,7 +73,6 @@ const Navbar = () => {
 
   const userClient = session?.user;
 
-  
   const [scrolled, setScrolled] = useState(false);
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -101,26 +102,26 @@ const Navbar = () => {
     ?.slice(0, 2)
     ?.map((w) => w[0]?.toUpperCase())
     ?.join("");
-  const getToken = async () => {
-    const {data} = await authClient.token();
-    console.log(data.token,"token");
-  };
-  getToken()
+  // const getToken = async () => {
+  //   const {data} = await authClient.token();
+  //   console.log(data.token,"token");
+  // };
+  // getToken()
   return (
     <>
       <motion.header
-        initial={{
-          y: -72,
-          opacity: 0,
-        }}
-        animate={{
-          y: 0,
-          opacity: 1,
-        }}
-        transition={{
-          duration: 0.55,
-          ease: [0.22, 1, 0.36, 1],
-        }}
+        // initial={{
+        //   y: -72,
+        //   opacity: 0,
+        // }}
+        // animate={{
+        //   y: 0,
+        //   opacity: 1,
+        // }}
+        // transition={{
+        //   duration: 0.55,
+        //   ease: [0.22, 1, 0.36, 1],
+        // }}
         className="fixed top-0 inset-x-0 z-50"
       >
         <nav
@@ -223,7 +224,14 @@ const Navbar = () => {
                       Profile
                     </DropdownMenuItem>
                   </Link>
-
+                  {userClient?.role === "recruiter" && (
+                    <Link href="/dashboard">
+                      <DropdownMenuItem className="gap-2 cursor-pointer dark:focus:bg-zinc-800">
+                        <LayoutDashboard className="size-4" />
+                        Dashboard
+                      </DropdownMenuItem>
+                    </Link>
+                  )}
                   <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
 
                   <DropdownMenuItem

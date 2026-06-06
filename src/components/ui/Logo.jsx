@@ -3,25 +3,13 @@ import React from "react";
 
 const Logo = ({ isDark = false }) => {
   return (
-    <>
-      {isDark ? (
-        <Image
-          src={"/logo/kaajbridge_dark.png"}
-         width={200}
-          height={100}
-          alt="KaajBridge"
-          className="w-40 pointer-events-none select-none"
-        />
-      ) : (
-        <Image
-          src={"/logo/kaajbridge_light.png"}
-          width={200}
-          height={100}
-          alt="KaajBridge"
-          className="w-40 pointer-events-none select-none"
-        />
-      )}
-    </>
+    <Image
+      src={isDark ? "/logo/kaajbridge_dark.png" : "/logo/kaajbridge_light.png"}
+      width={200}
+      height={100}
+      alt="KaajBridge"
+      className="w-40 pointer-events-none select-none"
+    />
   );
 };
 
