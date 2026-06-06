@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import Logo from "../ui/Logo";
+import Logo from "../../components/ui/Logo";
 import {
   LayoutDashboard,
   Building2,
@@ -116,7 +116,7 @@ export default function DashboardSidebar() {
                   ${isCollapsed ? "justify-center px-0 h-20 w-12 mx-auto" : "px-4 gap-4"}`}
               >
                 <Link
-                  href={`/${item.title.toLowerCase().replace(" ", "-")}`}
+                  href={`/dashboard/${item.title.toLowerCase().replace(" ", "-")}`}
                   className="w-full h-full flex items-center justify-stretch"
                 >
                   <div
