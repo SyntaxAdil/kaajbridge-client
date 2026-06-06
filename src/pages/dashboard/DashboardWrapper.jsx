@@ -51,7 +51,9 @@ const DashboardWrapper = () => {
         </div>
 
         <div className="flex items-center gap-6 shrink-0">
-          <AnimatedThemeToggler className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors" />
+          <AnimatedThemeToggler 
+          fromCenter
+           className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors" />
           <button className="relative p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
             <Bell className="h-5 w-5" />
             <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 bg-red-500 text-[10px] font-bold text-white rounded-full flex items-center justify-center px-1 ring-2 ring-background">
