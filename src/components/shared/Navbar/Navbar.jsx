@@ -14,7 +14,11 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "../../ui/button";
 import NavLink from "./NavLink";
-import { handleSignout, useSession } from "../../../lib/auth/auth-client";
+import {
+  authClient,
+  handleSignout,
+  useSession,
+} from "../../../lib/auth/auth-client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 
@@ -67,7 +71,7 @@ const Navbar = () => {
 
   const userClient = session?.user;
 
-  console.log("user client",userClient)
+  
   const [scrolled, setScrolled] = useState(false);
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -97,7 +101,11 @@ const Navbar = () => {
     ?.slice(0, 2)
     ?.map((w) => w[0]?.toUpperCase())
     ?.join("");
-
+  const getToken = async () => {
+    const {data} = await authClient.token();
+    console.log(data.token,"token");
+  };
+  getToken()
   return (
     <>
       <motion.header
@@ -137,7 +145,6 @@ const Navbar = () => {
               href="/"
               className="flex items-center gap-1.5 text-[1.35rem] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100"
             >
-              
               <Logo />
             </Link>
           </motion.div>
@@ -171,11 +178,7 @@ const Navbar = () => {
               ease: [0.22, 1, 0.36, 1],
             }}
           >
-            <AnimatedThemeToggler
-              
-              
-              className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-            />
+            <AnimatedThemeToggler className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors" />
 
             {userClient ? (
               <DropdownMenu>

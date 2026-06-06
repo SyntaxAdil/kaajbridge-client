@@ -1,8 +1,7 @@
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import Navbar from "../components/shared/Navbar/Navbar";
-import Footer from "../components/shared/Footer";
+import { ThemeProvider } from "next-themes";
 
 // font manrope
 const manrope = Manrope({
@@ -48,16 +47,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html data-theme="dark" lang="en" className={`${manrope.className}  h-full antialiased dark`} suppressHydrationWarning >
-      <body className=" min-h-full flex flex-col bg-background text-foreground" >
-        {/* navbar */}
-        <Navbar></Navbar>
-        {/* main */}
-        <main className="flex-1 mx-4 md:mx-0 ">{children}</main>
-        {/* footer */}
-        <Footer></Footer>
-        {/* toaster */}
-        <Toaster></Toaster>
+    <html lang="en" className={`${manrope.className} h-full antialiased`} suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

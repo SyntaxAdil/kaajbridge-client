@@ -70,7 +70,7 @@ export default function Login() {
       reset();
     }
 
-    console.log(data);
+    
   };
 
   const ROLES = [

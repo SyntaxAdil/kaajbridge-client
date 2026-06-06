@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { flushSync } from "react-dom";
-
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 function polygonCollapsed(cx, cy, vertexCount) {
@@ -11,129 +11,84 @@ function polygonCollapsed(cx, cy, vertexCount) {
     { length: vertexCount },
     () => `${cx}px ${cy}px`
   ).join(", ");
-
   return `polygon(${pairs})`;
 }
 
-function getThemeTransitionClipPaths(
-  variant,
-  cx,
-  cy,
-  maxRadius,
-  viewportWidth,
-  viewportHeight
-) {
+function getThemeTransitionClipPaths(variant, cx, cy, maxRadius, viewportWidth, viewportHeight) {
   switch (variant) {
     case "circle":
       return [
         `circle(0px at ${cx}px ${cy}px)`,
         `circle(${maxRadius}px at ${cx}px ${cy}px)`,
       ];
-
     case "square": {
       const halfW = Math.max(cx, viewportWidth - cx);
       const halfH = Math.max(cy, viewportHeight - cy);
       const halfSide = Math.max(halfW, halfH) * 1.05;
-
       const end = [
         `${cx - halfSide}px ${cy - halfSide}px`,
         `${cx + halfSide}px ${cy - halfSide}px`,
         `${cx + halfSide}px ${cy + halfSide}px`,
         `${cx - halfSide}px ${cy + halfSide}px`,
       ].join(", ");
-
       return [polygonCollapsed(cx, cy, 4), `polygon(${end})`];
     }
-
     case "triangle": {
       const scale = maxRadius * 2.2;
       const dx = (Math.sqrt(3) / 2) * scale;
-
       const verts = [
         `${cx}px ${cy - scale}px`,
         `${cx + dx}px ${cy + 0.5 * scale}px`,
         `${cx - dx}px ${cy + 0.5 * scale}px`,
       ].join(", ");
-
       return [polygonCollapsed(cx, cy, 3), `polygon(${verts})`];
     }
-
     case "diamond": {
       const R = maxRadius * Math.SQRT2;
-
       const end = [
         `${cx}px ${cy - R}px`,
         `${cx + R}px ${cy}px`,
         `${cx}px ${cy + R}px`,
         `${cx - R}px ${cy}px`,
       ].join(", ");
-
       return [polygonCollapsed(cx, cy, 4), `polygon(${end})`];
     }
-
     case "hexagon": {
       const R = maxRadius * Math.SQRT2;
-
       const verts = [];
-
       for (let i = 0; i < 6; i++) {
         const a = -Math.PI / 2 + (i * Math.PI) / 3;
-
-        verts.push(
-          `${cx + R * Math.cos(a)}px ${cy + R * Math.sin(a)}px`
-        );
+        verts.push(`${cx + R * Math.cos(a)}px ${cy + R * Math.sin(a)}px`);
       }
-
       return [polygonCollapsed(cx, cy, 6), `polygon(${verts.join(", ")})`];
     }
-
     case "rectangle": {
       const halfW = Math.max(cx, viewportWidth - cx);
       const halfH = Math.max(cy, viewportHeight - cy);
-
       const end = [
         `${cx - halfW}px ${cy - halfH}px`,
         `${cx + halfW}px ${cy - halfH}px`,
         `${cx + halfW}px ${cy + halfH}px`,
         `${cx - halfW}px ${cy + halfH}px`,
       ].join(", ");
-
       return [polygonCollapsed(cx, cy, 4), `polygon(${end})`];
     }
-
     case "star": {
       const R = maxRadius * Math.SQRT2 * 1.03;
       const innerRatio = 0.42;
-
       const starPolygon = (radius) => {
         const verts = [];
-
         for (let i = 0; i < 5; i++) {
           const outerA = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-
-          verts.push(
-            `${cx + radius * Math.cos(outerA)}px ${
-              cy + radius * Math.sin(outerA)
-            }px`
-          );
-
+          verts.push(`${cx + radius * Math.cos(outerA)}px ${cy + radius * Math.sin(outerA)}px`);
           const innerA = outerA + Math.PI / 5;
-
-          verts.push(
-            `${cx + radius * innerRatio * Math.cos(innerA)}px ${
-              cy + radius * innerRatio * Math.sin(innerA)
-            }px`
-          );
+          verts.push(`${cx + radius * innerRatio * Math.cos(innerA)}px ${cy + radius * innerRatio * Math.sin(innerA)}px`);
         }
-
         return `polygon(${verts.join(", ")})`;
       };
-
       const startR = Math.max(2, R * 0.025);
-
       return [starPolygon(startR), starPolygon(R)];
     }
-
     default:
       return [
         `circle(0px at ${cx}px ${cy}px)`,
@@ -150,72 +105,28 @@ export const AnimatedThemeToggler = ({
   ...props
 }) => {
   const shape = variant ?? "circle";
-
-  const [isDark, setIsDark] = useState(false);
-
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const isDark = mounted ? resolvedTheme === "dark" : false;
   const buttonRef = useRef(null);
 
-  // theme init
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-
-    let darkMode = false;
-
-    if (storedTheme) {
-      darkMode = storedTheme === "dark";
-    } else {
-      darkMode = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-    }
-
-    setIsDark(darkMode);
-
-    document.documentElement.classList.toggle("dark", darkMode);
-
-    const mediaQuery = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    );
-
-    const handleChange = (e) => {
-      if (!localStorage.getItem("theme")) {
-        setIsDark(e.matches);
-
-        document.documentElement.classList.toggle(
-          "dark",
-          e.matches
-        );
-      }
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange);
-    };
+    setMounted(true);
   }, []);
 
   const toggleTheme = useCallback(() => {
     const button = buttonRef.current;
-
     if (!button) return;
 
-    const viewportWidth =
-      window.visualViewport?.width ?? window.innerWidth;
+    const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
 
-    const viewportHeight =
-      window.visualViewport?.height ?? window.innerHeight;
-
-    let x;
-    let y;
-
+    let x, y;
     if (fromCenter) {
       x = viewportWidth / 2;
       y = viewportHeight / 2;
     } else {
-      const { top, left, width, height } =
-        button.getBoundingClientRect();
-
+      const { top, left, width, height } = button.getBoundingClientRect();
       x = left + width / 2;
       y = top + height / 2;
     }
@@ -226,19 +137,7 @@ export const AnimatedThemeToggler = ({
     );
 
     const applyTheme = () => {
-      const newTheme = !isDark;
-
-      setIsDark(newTheme);
-
-      document.documentElement.classList.toggle(
-        "dark",
-        newTheme
-      );
-
-      localStorage.setItem(
-        "theme",
-        newTheme ? "dark" : "light"
-      );
+      setTheme(isDark ? "light" : "dark");
     };
 
     if (typeof document.startViewTransition !== "function") {
@@ -246,39 +145,17 @@ export const AnimatedThemeToggler = ({
       return;
     }
 
-    const clipPath = getThemeTransitionClipPaths(
-      shape,
-      x,
-      y,
-      maxRadius,
-      viewportWidth,
-      viewportHeight
-    );
-
+    const clipPath = getThemeTransitionClipPaths(shape, x, y, maxRadius, viewportWidth, viewportHeight);
     const root = document.documentElement;
 
     root.dataset.magicuiThemeVt = "active";
-
-    root.style.setProperty(
-      "--magicui-theme-toggle-vt-duration",
-      `${duration}ms`
-    );
-
-    root.style.setProperty(
-      "--magicui-theme-vt-clip-from",
-      clipPath[0]
-    );
+    root.style.setProperty("--magicui-theme-toggle-vt-duration", `${duration}ms`);
+    root.style.setProperty("--magicui-theme-vt-clip-from", clipPath[0]);
 
     const cleanup = () => {
       delete root.dataset.magicuiThemeVt;
-
-      root.style.removeProperty(
-        "--magicui-theme-toggle-vt-duration"
-      );
-
-      root.style.removeProperty(
-        "--magicui-theme-vt-clip-from"
-      );
+      root.style.removeProperty("--magicui-theme-toggle-vt-duration");
+      root.style.removeProperty("--magicui-theme-vt-clip-from");
     };
 
     const transition = document.startViewTransition(() => {
@@ -292,26 +169,20 @@ export const AnimatedThemeToggler = ({
     }
 
     const ready = transition?.ready;
-
     if (ready && typeof ready.then === "function") {
       ready.then(() => {
         document.documentElement.animate(
-          {
-            clipPath,
-          },
+          { clipPath },
           {
             duration,
-            easing:
-              shape === "star"
-                ? "linear"
-                : "ease-in-out",
+            easing: shape === "star" ? "linear" : "ease-in-out",
             fill: "forwards",
             pseudoElement: "::view-transition-new(root)",
           }
         );
       });
     }
-  }, [shape, fromCenter, duration, isDark]);
+  }, [shape, fromCenter, duration, isDark, setTheme]);
 
   return (
     <button
@@ -322,7 +193,6 @@ export const AnimatedThemeToggler = ({
       {...props}
     >
       {isDark ? <Sun size={18} /> : <Moon size={18} />}
-
       <span className="sr-only">Toggle theme</span>
     </button>
   );
