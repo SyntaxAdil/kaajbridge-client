@@ -218,7 +218,7 @@ const Navbar = () => {
 
                   <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
 
-                  <Link href="/profile">
+                  <Link href="/dashboard/profile">
                     <DropdownMenuItem className="gap-2 cursor-pointer dark:focus:bg-zinc-800">
                       <UserIcon className="size-4" />
                       Profile
@@ -413,13 +413,22 @@ const Navbar = () => {
                         </div>
                       </div>
 
-                      <Link href="/profile" onClick={() => setMenuOpen(false)}>
+                      <Link href="/dashboard/profile" onClick={() => setMenuOpen(false)}>
                         <Button
                           variant="outline"
                           className="w-full justify-start gap-2 rounded-lg dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
                         >
                           <UserIcon className="size-4" />
                           Profile
+                        </Button>
+                      </Link>
+                      <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start gap-2 rounded-lg dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                        >
+                          <LayoutDashboard className="size-4" />
+                          Dashboard
                         </Button>
                       </Link>
 
