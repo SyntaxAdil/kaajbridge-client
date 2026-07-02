@@ -31,24 +31,24 @@ import { useEffect } from "react";
 const roleMenus = {
   seeker: [
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+    { title: "My Profile", icon: User2, href: "/dashboard/profile" },
     { title: "Saved Jobs", icon: Bookmark, href: "/dashboard/saved" },
     { title: "My Applications", icon: FileText, href: "/dashboard/applications" },
     { title: "Billing & Plans", icon: CreditCard, href: "/dashboard/billing" },
-    { title: "My Profile", icon: User2, href: "/dashboard/profile" },
   ],
   recruiter: [
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+    { title: "My Profile", icon: User2, href: "/dashboard/profile" },
     { title: "My Company", icon: Building2, href: "/dashboard/my-companies" },
     { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
     { title: "Applications", icon: FileText, href: "/dashboard/applications" },
-    { title: "My Profile", icon: User2, href: "/dashboard/profile" },
   ],
   admin: [
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+    { title: "Profile Settings", icon: User2, href: "/dashboard/profile" },
     { title: "Manage Companies", icon: Building2, href: "/dashboard/my-companies" },
     { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
     { title: "Applications", icon: FileText, href: "/dashboard/applications" },
-    { title: "Profile Settings", icon: User2, href: "/dashboard/profile" },
   ],
 };
 
