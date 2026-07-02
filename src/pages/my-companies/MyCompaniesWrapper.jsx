@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { companyRegisterSchema } from "../../schema/company-schema";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -38,8 +38,18 @@ import {
   SelectTrigger,
 } from "../../components/ui/select";
 import { SidebarTrigger } from "../../components/ui/sidebar";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "../../components/ui/pagination";
 import CompanyCard from "./CompanyCard";
 import { companyService } from "@/services/company";
+
 function FormLabel({ children, required }) {
   return (
     <label className="block text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
@@ -48,10 +58,12 @@ function FormLabel({ children, required }) {
     </label>
   );
 }
+
 function FieldError({ error }) {
   if (!error) return null;
   return <p className="text-[11px] text-red-500 mt-1">{error.message}</p>;
 }
+
 function SectionDivider({ label }) {
   return (
     <div className="flex items-center gap-3 pt-1">
@@ -62,18 +74,57 @@ function SectionDivider({ label }) {
     </div>
   );
 }
+
+function buildPageList(currentPage, totalPages) {
+  const pages = [];
+  const delta = 1;
+  const range = [];
+  for (
+    let i = Math.max(2, currentPage - delta);
+    i <= Math.min(totalPages - 1, currentPage + delta);
+    i++
+  ) {
+    range.push(i);
+  }
+  pages.push(1);
+  if (range[0] > 2) pages.push("ellipsis-start");
+  pages.push(...range);
+  if (range[range.length - 1] < totalPages - 1) pages.push("ellipsis-end");
+  if (totalPages > 1) pages.push(totalPages);
+  return pages;
+}
+
 export default function MyCompanyWrapper({ initialCompanies }) {
   const router = useRouter();
-  const [companies, setCompanies] = useState(
-    Array.isArray(initialCompanies?.data)
-      ? initialCompanies.data
-      : Array.isArray(initialCompanies)
-        ? initialCompanies
-        : [],
-  );
+  const searchParams = useSearchParams();
+
+  const [companies, setCompanies] = useState([]);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 6,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
+
+  useEffect(() => {
+    setCompanies(
+      Array.isArray(initialCompanies?.data)
+        ? initialCompanies.data
+        : Array.isArray(initialCompanies)
+          ? initialCompanies
+          : [],
+    );
+    if (initialCompanies?.pagination) {
+      setPagination(initialCompanies.pagination);
+    }
+  }, [initialCompanies]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -90,7 +141,9 @@ export default function MyCompanyWrapper({ initialCompanies }) {
       social: { linkedin: "", facebook: "", twitter: "" },
     },
   });
+
   const logoUrl = watch("companyLogo");
+
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -113,11 +166,21 @@ export default function MyCompanyWrapper({ initialCompanies }) {
       setIsUploading(false);
     }
   };
+
+  const goToPage = (page) => {
+    if (page < 1 || page > pagination.totalPages || page === pagination.page)
+      return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(page));
+    router.push(`?${params.toString()}`);
+  };
+
   const onCompanySubmit = async (data) => {
     try {
       const response = await companyService.createCompany(data);
       const newCompany = response?.data ?? response;
       setCompanies((prev) => [newCompany, ...prev]);
+      setPagination((prev) => ({ ...prev, total: prev.total + 1 }));
       router.refresh();
       reset();
       setIsDialogOpen(false);
@@ -125,6 +188,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
       console.error("API Error creating company:", err);
     }
   };
+
   const handleUpdate = async (id, updatedData) => {
     try {
       const response = await companyService.updateCompany(id, updatedData);
@@ -140,19 +204,28 @@ export default function MyCompanyWrapper({ initialCompanies }) {
       throw error;
     }
   };
+
   const handleDelete = async (id) => {
     try {
       await companyService.deleteCompany(id);
       setCompanies((prev) => prev.filter((c) => (c._id || c.id) !== id));
+      setPagination((prev) => ({
+        ...prev,
+        total: Math.max(prev.total - 1, 0),
+      }));
       router.refresh();
     } catch (error) {
       console.error("Error deleting company:", error);
       throw error;
     }
   };
+
   const filteredCompanies = companies.filter((company) =>
     company.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  const pageList = buildPageList(pagination.page, pagination.totalPages);
+
   return (
     <section className="w-full min-h-screen bg-background px-6 lg:px-10 py-8">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-border/60">
@@ -184,7 +257,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
       <div className="flex items-center justify-between mb-7">
         <p className="text-sm text-muted-foreground">
           <span className="text-foreground font-semibold">
-            {filteredCompanies.length}
+            {pagination.total}
           </span>{" "}
           companies registered
         </p>
@@ -508,6 +581,60 @@ export default function MyCompanyWrapper({ initialCompanies }) {
           />
         ))}
       </div>
+      {pagination.totalPages > 1 && (
+        <Pagination className="mt-8">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToPage(pagination.page - 1);
+                }}
+                className={
+                  !pagination.hasPrevPage
+                    ? "pointer-events-none opacity-40"
+                    : ""
+                }
+              />
+            </PaginationItem>
+            {pageList.map((item, idx) =>
+              item === "ellipsis-start" || item === "ellipsis-end" ? (
+                <PaginationItem key={`${item}-${idx}`}>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              ) : (
+                <PaginationItem key={item}>
+                  <PaginationLink
+                    href="#"
+                    isActive={item === pagination.page}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      goToPage(item);
+                    }}
+                  >
+                    {item}
+                  </PaginationLink>
+                </PaginationItem>
+              ),
+            )}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToPage(pagination.page + 1);
+                }}
+                className={
+                  !pagination.hasNextPage
+                    ? "pointer-events-none opacity-40"
+                    : ""
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </section>
   );
 }
