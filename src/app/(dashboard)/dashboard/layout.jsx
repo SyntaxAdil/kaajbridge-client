@@ -1,7 +1,4 @@
-import {
-  SidebarProvider,
-  SidebarTrigger,
-} from "../../../components/ui/sidebar";
+import { SidebarProvider } from "../../../components/ui/sidebar";
 import { TooltipProvider } from "../../../components/ui/tooltip";
 import DashboardSidebar from "../../../pages/dashboard/DashboardSidebar";
 
@@ -11,9 +8,8 @@ export default function DashboardLayout({ children }) {
       <TooltipProvider>
         <SidebarProvider>
           <DashboardSidebar />
-          
-          <main className=" w-full">
-            {children}</main>
+
+          <main className=" w-full">{children}</main>
         </SidebarProvider>
       </TooltipProvider>
     </section>

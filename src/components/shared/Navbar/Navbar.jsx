@@ -224,14 +224,14 @@ const Navbar = () => {
                       Profile
                     </DropdownMenuItem>
                   </Link>
-                  {userClient?.role === "recruiter" && (
-                    <Link href="/dashboard">
-                      <DropdownMenuItem className="gap-2 cursor-pointer dark:focus:bg-zinc-800">
-                        <LayoutDashboard className="size-4" />
-                        Dashboard
-                      </DropdownMenuItem>
-                    </Link>
-                  )}
+
+                  <Link href="/dashboard">
+                    <DropdownMenuItem className="gap-2 cursor-pointer dark:focus:bg-zinc-800">
+                      <LayoutDashboard className="size-4" />
+                      Dashboard
+                    </DropdownMenuItem>
+                  </Link>
+
                   <DropdownMenuSeparator className="bg-zinc-200 dark:bg-zinc-800" />
 
                   <DropdownMenuItem

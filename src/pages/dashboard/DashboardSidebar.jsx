@@ -16,37 +16,76 @@ import {
   Building2,
   Briefcase,
   FileText,
-  Settings,
-  User,
+  User2,
+  Bookmark,
+  CreditCard,
   Loader2,
+  LogOut,
 } from "lucide-react";
 import Image from "next/image";
-import { useSession } from "../../lib/auth/auth-client";
+import { handleSignout, useSession } from "../../lib/auth/auth-client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-const menuItems = [
-  { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-  { title: "My Company", icon: Building2, href: "/dashboard/my-companies" },
-  { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
-  { title: "Applications", icon: FileText, href: "/dashboard/applications" },
-  { title: "Settings", icon: Settings, href: "/dashboard/settings" },
-];
+const roleMenus = {
+  seeker: [
+    { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+    { title: "Saved Jobs", icon: Bookmark, href: "/dashboard/saved" },
+    { title: "My Applications", icon: FileText, href: "/dashboard/applications" },
+    { title: "Billing & Plans", icon: CreditCard, href: "/dashboard/billing" },
+    { title: "My Profile", icon: User2, href: "/dashboard/profile" },
+  ],
+  recruiter: [
+    { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+    { title: "My Company", icon: Building2, href: "/dashboard/my-companies" },
+    { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
+    { title: "Applications", icon: FileText, href: "/dashboard/applications" },
+    { title: "My Profile", icon: User2, href: "/dashboard/profile" },
+  ],
+  admin: [
+    { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+    { title: "Manage Companies", icon: Building2, href: "/dashboard/my-companies" },
+    { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
+    { title: "Applications", icon: FileText, href: "/dashboard/applications" },
+    { title: "Profile Settings", icon: User2, href: "/dashboard/profile" },
+  ],
+};
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
   const { data: session, isPending } = useSession();
-
   const userClient = session?.user;
+  const userRole = userClient?.role?.toLowerCase() || "seeker";
+
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push("/register");
+    }
+  }, [session, isPending, router]);
+
+  const menuItems = roleMenus[userRole] || roleMenus.seeker;
+
   const userInitial = userClient?.name
     ?.trim()
     ?.split(" ")
     ?.slice(0, 2)
     ?.map((w) => w[0]?.toUpperCase())
     ?.join("");
+
+  if (isPending) {
+    return (
+      <Sidebar collapsible="icon" className="border-r border-border bg-sidebar text-sidebar-foreground">
+        <div className="flex h-full w-full items-center justify-center">
+          <Loader2 className="animate-spin h-6 w-6 text-primary" />
+        </div>
+      </Sidebar>
+    );
+  }
 
   return (
     <Sidebar
@@ -60,43 +99,37 @@ export default function DashboardSidebar() {
           <Logo />
         ) : (
           <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary text-lg shadow-sm">
-            {userInitial || "U"}
+            {userInitial || "K"}
           </div>
         )}
       </SidebarHeader>
 
       {!isCollapsed && (
         <div className="px-6 py-4 flex flex-col gap-3.5 transition-all duration-200">
-          {isPending ? (
-            <div className="flex items-center justify-center w-10 h-10">
-              <Loader2 className="animate-spin h-5 w-5 text-muted-foreground" />
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              {userClient?.image ? (
-                <div className="relative w-10 h-10 rounded-full overflow-hidden border border-border bg-muted shrink-0">
-                  <Image
-                    src={userClient.image}
-                    alt={userClient?.name || "User Profile"}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border border-border bg-muted shrink-0">
-                  <User className="h-5 w-5 text-muted-foreground" />
-                </div>
-              )}
-              <div className="overflow-hidden">
-                <h3 className="text-sm font-semibold tracking-tight text-foreground truncate leading-none">
-                  {userClient?.name}
-                </h3>
-                <span className="text-xs text-muted-foreground mt-1 block truncate capitalize">
-                  {userClient?.role}
-                </span>
+          <div className="flex items-center gap-3">
+            {userClient?.image ? (
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-border bg-muted shrink-0">
+                <Image
+                  src={userClient.image}
+                  alt={userClient?.name || "User Profile"}
+                  fill
+                  className="object-cover"
+                />
               </div>
+            ) : (
+              <div className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border border-border bg-muted shrink-0">
+                <User2 className="h-5 w-5 text-muted-foreground" />
+              </div>
+            )}
+            <div className="overflow-hidden">
+              <h3 className="text-sm font-semibold tracking-tight text-foreground truncate leading-none">
+                {userClient?.name}
+              </h3>
+              <span className="text-xs text-muted-foreground mt-1 block truncate capitalize font-medium">
+                {userClient?.role || "Job Seeker"}
+              </span>
             </div>
-          )}
+          </div>
         </div>
       )}
 
@@ -148,7 +181,27 @@ export default function DashboardSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter />
+      <SidebarFooter className={`mb-2 ${isCollapsed ? "px-1.5" : "px-3"}`}>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={handleSignout}
+              tooltip="Logout"
+              className={`w-full flex items-center py-4 rounded-md transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+                ${isCollapsed ? "justify-center px-0 h-12 w-12 mx-auto" : "px-4 gap-4"}`}
+            >
+              <div className={`flex items-center justify-center ${isCollapsed ? "w-full" : ""}`}>
+                <LogOut className="h-[22px] w-[22px] shrink-0 text-muted-foreground group-hover:text-foreground" />
+              </div>
+              {!isCollapsed && (
+                <span className="text-sm tracking-wide text-muted-foreground group-hover:text-foreground">
+                  Logout
+                </span>
+              )}
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -17,7 +17,8 @@ export const googleSignIn = async () => {
 export const handleSignout = async (refetch) => {
   await authClient.signOut();
   toast.success("Logout successfull");
-  await refetch()
+  redirect("/register");
+
 };
 // export const {
 //   data: session,

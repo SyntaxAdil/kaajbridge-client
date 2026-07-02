@@ -5,7 +5,8 @@ import { motion } from "motion/react";
 import { FaGithubSquare, FaLinkedin, FaFacebook } from "react-icons/fa";
 
 import { cn } from "@/lib/utils";
-import Logo from "../ui/logo";
+import Logo from "../ui/Logo";
+
 
 const LINKS = {
   product: [
