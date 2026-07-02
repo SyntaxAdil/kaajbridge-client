@@ -12,7 +12,12 @@ import {
   DialogTitle,
 } from "../../components/ui/dialog";
 
-export default function DeleteCompany({ isOpen, setIsOpen, company, onDelete }) {
+export default function DeleteCompany({
+  isOpen,
+  setIsOpen,
+  company,
+  onDelete,
+}) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -41,8 +46,12 @@ export default function DeleteCompany({ isOpen, setIsOpen, company, onDelete }) 
               Delete Company Profile?
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-              Are you sure you want to remove <span className="font-semibold text-foreground">&apos;{company?.name}&apos;</span>? 
-              This action is permanent and will cascade into associated job boards.
+              Are you sure you want to remove{" "}
+              <span className="font-semibold text-foreground">
+                &apos;{company?.name}&apos;
+              </span>
+              ? This action is permanent and will cascade into associated job
+              boards.
             </DialogDescription>
           </div>
         </DialogHeader>
@@ -62,9 +71,13 @@ export default function DeleteCompany({ isOpen, setIsOpen, company, onDelete }) 
             variant="destructive"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="h-10 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700"
+            className="h-8 rounded-xl px-3 text-xs font-semibold flex items-center gap-1.5 border-rose-500/10 bg-rose-500/5 text-rose-500/80 hover:text-rose-600 hover:bg-rose-500/10 hover:border-rose-500/25 transition-all duration-150"
           >
-            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm Delete"}
+            {isDeleting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Confirm Delete"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,26 +1,15 @@
 "use client";
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { useRouter } from "next/navigation";
 import { companyRegisterSchema } from "../../schema/company-schema";
 import { Button } from "../../components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../components/ui/avatar";
-import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import {
   Plus,
-  MapPin,
-  Users,
-  Globe,
-  Building2,
   AlertTriangle,
   SearchIcon,
   UploadCloud,
@@ -50,40 +39,7 @@ import {
 } from "../../components/ui/select";
 import { SidebarTrigger } from "../../components/ui/sidebar";
 import CompanyCard from "./CompanyCard";
-
-const companyMockData = [
-  {
-    name: "Vercel",
-    category: "Technology",
-    logo: "",
-    status: "Pending",
-    range: "201-500 employees",
-    location: "San Francisco",
-    website: "https://vercel.com",
-    description: "Vercel is the platform for frontend developers, providing speed and reliability. Experience the best workflow for React, Next.js, and more."
-  },
-  {
-    name: "Figma",
-    category: "Technology",
-    logo: "",
-    status: "Approved",
-    range: "501+ employees",
-    location: "San Francisco",
-    website: "https://figma.com",
-    description: "Figma is the collaborative interface design tool — design, prototype, and gather feedback all in one place. Empowering teams to build better products."
-  },
-  {
-    name: "Enosis Solutions",
-    category: "Technology",
-    logo: "",
-    status: "Pending",
-    range: "51-200 employees",
-    location: "Dhaka, Bangladesh",
-    website: "https://www.enosis.com",
-    description: "ENOSIS - Your trusted Software Development Partner. A top tier software development team assisting owners and decision makers to implement."
-  }
-];
-
+import { companyService } from "@/services/company";
 function FormLabel({ children, required }) {
   return (
     <label className="block text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
@@ -92,12 +48,10 @@ function FormLabel({ children, required }) {
     </label>
   );
 }
-
 function FieldError({ error }) {
   if (!error) return null;
   return <p className="text-[11px] text-red-500 mt-1">{error.message}</p>;
 }
-
 function SectionDivider({ label }) {
   return (
     <div className="flex items-center gap-3 pt-1">
@@ -108,11 +62,18 @@ function SectionDivider({ label }) {
     </div>
   );
 }
-
-export default function MyCompanyWrapper() {
+export default function MyCompanyWrapper({ initialCompanies }) {
+  const router = useRouter();
+  const [companies, setCompanies] = useState(
+    Array.isArray(initialCompanies?.data)
+      ? initialCompanies.data
+      : Array.isArray(initialCompanies)
+        ? initialCompanies
+        : [],
+  );
+  const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -122,20 +83,21 @@ export default function MyCompanyWrapper() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(companyRegisterSchema),
-    defaultValues: { companyLogo: "" },
+    defaultValues: {
+      companyLogo: "",
+      website: "",
+      description: "",
+      social: { linkedin: "", facebook: "", twitter: "" },
+    },
   });
-
   const logoUrl = watch("companyLogo");
-
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setIsUploading(true);
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
     const uploaderData = new FormData();
     uploaderData.append("image", file);
-
     try {
       const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
         method: "POST",
@@ -151,37 +113,48 @@ export default function MyCompanyWrapper() {
       setIsUploading(false);
     }
   };
-
   const onCompanySubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("email", data.email);
-    formData.append("phone", data.phone);
-    formData.append("industry", data.industry);
-    formData.append("size", data.size);
-    formData.append("address[street]", data.address.street);
-    formData.append("address[city]", data.address.city);
-    formData.append("address[country]", data.address.country);
-
-    if (data.website) formData.append("website", data.website);
-    if (data.companyLogo) formData.append("companyLogo", data.companyLogo);
-    if (data.description) formData.append("description", data.description);
-    if (data.founded) formData.append("founded", data.founded);
-    if (data.social?.linkedin)
-      formData.append("social[linkedin]", data.social.linkedin);
-    if (data.social?.facebook)
-      formData.append("social[facebook]", data.social.facebook);
-    if (data.social?.twitter)
-      formData.append("social[twitter]", data.social.twitter);
-
-    console.log("Company Form Data Object:", Object.fromEntries(formData));
-    reset();
-    setIsDialogOpen(false);
+    try {
+      const response = await companyService.createCompany(data);
+      const newCompany = response?.data ?? response;
+      setCompanies((prev) => [newCompany, ...prev]);
+      router.refresh();
+      reset();
+      setIsDialogOpen(false);
+    } catch (err) {
+      console.error("API Error creating company:", err);
+    }
   };
-
+  const handleUpdate = async (id, updatedData) => {
+    try {
+      const response = await companyService.updateCompany(id, updatedData);
+      const updatedCompany = response?.data ?? response;
+      setCompanies((prev) =>
+        prev.map((c) =>
+          (c._id || c.id) === id ? { ...c, ...updatedCompany } : c,
+        ),
+      );
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating company:", error);
+      throw error;
+    }
+  };
+  const handleDelete = async (id) => {
+    try {
+      await companyService.deleteCompany(id);
+      setCompanies((prev) => prev.filter((c) => (c._id || c.id) !== id));
+      router.refresh();
+    } catch (error) {
+      console.error("Error deleting company:", error);
+      throw error;
+    }
+  };
+  const filteredCompanies = companies.filter((company) =>
+    company.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
   return (
     <section className="w-full min-h-screen bg-background px-6 lg:px-10 py-8">
-      {/* Page Header */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-border/60">
         <div className="flex items-center gap-2">
           <SidebarTrigger className={"-ms-4 me-2"}></SidebarTrigger>
@@ -194,7 +167,6 @@ export default function MyCompanyWrapper() {
             </p>
           </div>
         </div>
-
         <div className="w-full sm:w-72 lg:w-80 shrink-0">
           <InputGroup className="flex items-center bg-muted/30 rounded-xl border border-border/60 focus-within:border-primary/40 transition-all duration-200">
             <InputGroupAddon className="pl-3.5 pr-1 text-muted-foreground/50">
@@ -202,21 +174,20 @@ export default function MyCompanyWrapper() {
             </InputGroupAddon>
             <InputGroupInput
               placeholder="Search companies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-transparent border-none shadow-none focus-visible:ring-0 text-sm py-2.5 placeholder:text-muted-foreground/40 w-full pr-3"
             />
           </InputGroup>
         </div>
       </header>
-
-      {/* Action Row */}
       <div className="flex items-center justify-between mb-7">
         <p className="text-sm text-muted-foreground">
           <span className="text-foreground font-semibold">
-            {companyMockData.length}
+            {filteredCompanies.length}
           </span>{" "}
           companies registered
         </p>
-
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-5 py-2.5 font-semibold text-sm flex items-center gap-2 shadow-sm transition-all duration-200">
@@ -224,10 +195,7 @@ export default function MyCompanyWrapper() {
               Register Company
             </Button>
           </DialogTrigger>
-
-          {/* Modal */}
           <DialogContent className="sm:max-w-[580px] max-h-[88vh] overflow-y-auto rounded-2xl border border-border bg-card p-0">
-            {/* Sticky Modal Header */}
             <div className="sticky top-0 z-10 bg-card border-b border-border/60 px-7 pt-6 pb-5 rounded-t-2xl">
               <DialogHeader>
                 <DialogTitle className="text-lg font-bold tracking-tight">
@@ -238,7 +206,6 @@ export default function MyCompanyWrapper() {
                 </DialogDescription>
               </DialogHeader>
             </div>
-
             <div className="px-7 pt-5 pb-7">
               <Alert className="bg-amber-500/8 border border-amber-500/25 py-3 px-4 mb-6 rounded-xl">
                 <AlertTriangle className="h-4 w-4 text-amber-500" />
@@ -250,12 +217,10 @@ export default function MyCompanyWrapper() {
                   networks.
                 </AlertDescription>
               </Alert>
-
               <form
                 onSubmit={handleSubmit(onCompanySubmit)}
                 className="space-y-5"
               >
-                {/* Basic Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <FormLabel required>Company Name</FormLabel>
@@ -277,7 +242,6 @@ export default function MyCompanyWrapper() {
                     <FieldError error={errors.email} />
                   </div>
                 </div>
-
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <FormLabel required>Phone</FormLabel>
@@ -290,21 +254,66 @@ export default function MyCompanyWrapper() {
                   </div>
                   <div>
                     <FormLabel required>Industry</FormLabel>
-                    <Select onValueChange={(v) => setValue("industry", v)}>
+                    <Select
+                      onValueChange={(v) =>
+                        setValue("industry", v, { shouldValidate: true })
+                      }
+                    >
                       <SelectTrigger className="h-10 rounded-xl text-sm w-full">
-                        <SelectValue placeholder="Select" />
+                        <SelectValue placeholder="Select Industry" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="tech">Technology</SelectItem>
-                        <SelectItem value="finance">Fintech</SelectItem>
-                        <SelectItem value="health">Healthcare</SelectItem>
+                        <SelectItem value="technology">
+                          Technology & IT
+                        </SelectItem>
+                        <SelectItem value="finance">
+                          Fintech & Finance
+                        </SelectItem>
+                        <SelectItem value="healthcare">
+                          Healthcare & Pharma
+                        </SelectItem>
+                        <SelectItem value="education">
+                          Education & EdTech
+                        </SelectItem>
+                        <SelectItem value="ecommerce">
+                          E-commerce & Retail
+                        </SelectItem>
+                        <SelectItem value="media">
+                          Media & Entertainment
+                        </SelectItem>
+                        <SelectItem value="manufacturing">
+                          Manufacturing & Heavy Industry
+                        </SelectItem>
+                        <SelectItem value="construction">
+                          Construction & Civil Engineering
+                        </SelectItem>
+                        <SelectItem value="telecommunication">
+                          Telecommunication
+                        </SelectItem>
+                        <SelectItem value="power_energy">
+                          Power & Energy Sector
+                        </SelectItem>
+                        <SelectItem value="automobile">
+                          Automobile & Mechanical
+                        </SelectItem>
+                        <SelectItem value="garments_textile">
+                          Garments & Textile
+                        </SelectItem>
+                        <SelectItem value="agro_food">
+                          Agro & Food Processing
+                        </SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                     <FieldError error={errors.industry} />
                   </div>
                   <div>
                     <FormLabel required>Company Size</FormLabel>
-                    <Select onValueChange={(v) => setValue("size", v)}>
+                    <Select
+                      onValueChange={(v) =>
+                        setValue("size", v, { shouldValidate: true })
+                      }
+                    >
                       <SelectTrigger className="h-10 rounded-xl text-sm w-full">
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
@@ -321,8 +330,6 @@ export default function MyCompanyWrapper() {
                     <FieldError error={errors.size} />
                   </div>
                 </div>
-
-                {/* Address Section */}
                 <div className="space-y-3">
                   <SectionDivider label="HQ Address" />
                   <div>
@@ -355,11 +362,8 @@ export default function MyCompanyWrapper() {
                     </div>
                   </div>
                 </div>
-
-                {/* Company Details Section */}
                 <div className="space-y-4">
                   <SectionDivider label="Company Details" />
-
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <FormLabel>Website</FormLabel>
@@ -381,8 +385,6 @@ export default function MyCompanyWrapper() {
                       <FieldError error={errors.founded} />
                     </div>
                   </div>
-
-                  {/* Logo Upload — prominent full-width dropzone */}
                   <div>
                     <FormLabel>Company Logo</FormLabel>
                     <label
@@ -433,7 +435,6 @@ export default function MyCompanyWrapper() {
                     </label>
                     <FieldError error={errors.companyLogo} />
                   </div>
-
                   <div>
                     <FormLabel>Description</FormLabel>
                     <Textarea
@@ -444,8 +445,6 @@ export default function MyCompanyWrapper() {
                     />
                   </div>
                 </div>
-
-                {/* Social Section */}
                 <div className="space-y-3">
                   <SectionDivider label="Social Channels (Optional)" />
                   <div className="grid grid-cols-3 gap-4">
@@ -456,6 +455,7 @@ export default function MyCompanyWrapper() {
                         placeholder="https://..."
                         className="h-10 rounded-xl text-sm"
                       />
+                      <FieldError error={errors.social?.linkedin} />
                     </div>
                     <div>
                       <FormLabel>Facebook</FormLabel>
@@ -464,6 +464,7 @@ export default function MyCompanyWrapper() {
                         placeholder="https://..."
                         className="h-10 rounded-xl text-sm"
                       />
+                      <FieldError error={errors.social?.facebook} />
                     </div>
                     <div>
                       <FormLabel>X (Twitter)</FormLabel>
@@ -472,10 +473,10 @@ export default function MyCompanyWrapper() {
                         placeholder="https://x.com/..."
                         className="h-10 rounded-xl text-sm"
                       />
+                      <FieldError error={errors.social?.twitter} />
                     </div>
                   </div>
                 </div>
-
                 <DialogFooter className="pt-2">
                   <Button
                     type="submit"
@@ -497,14 +498,14 @@ export default function MyCompanyWrapper() {
           </DialogContent>
         </Dialog>
       </div>
-
-      {/* Company Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {companyMockData.map((company, index) => (
+        {filteredCompanies.map((company) => (
           <CompanyCard
-            key={company._id || index}
+            key={company._id || company.id}
             company={company}
-          ></CompanyCard>
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+          />
         ))}
       </div>
     </section>

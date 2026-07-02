@@ -21,6 +21,7 @@ import {
   SelectValue,
   SelectTrigger,
 } from "../../components/ui/select";
+import { useRouter } from "next/navigation";
 
 function FormLabel({ children, required }) {
   return (
@@ -36,14 +37,9 @@ function FieldError({ error }) {
   return <p className="text-[11px] text-red-500 mt-1">{error.message}</p>;
 }
 
-export default function EditCompany({
-  isOpen,
-  setIsOpen,
-  company,
-  onUpdate,
-}) {
+export default function EditCompany({ isOpen, setIsOpen, company, onUpdate }) {
   const [isUploading, setIsUploading] = useState(false);
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -53,44 +49,40 @@ export default function EditCompany({
   } = useForm({
     values: {
       name: company?.name || "",
-      category: company?.category || "",
+      industry: company?.industry || "technology",
       description: company?.description || "",
-      location: company?.location || "",
-      range: company?.range || "1-10 employees",
+      address: {
+        street: company?.address?.street || "",
+        city: company?.address?.city || "",
+        country: company?.address?.country || "",
+      },
+      size: company?.size || "1-10",
       website: company?.website || "",
-      logo: company?.logo || "",
-      status: company?.status || "Pending",
+      companyLogo: company?.companyLogo || "",
     },
   });
 
-  const logoUrl = watch("logo");
+  const companySize = watch("size");
+  const companyIndustry = watch("industry");
+  const logoUrl = watch("companyLogo");
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setIsUploading(true);
-
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
-
     const formData = new FormData();
     formData.append("image", file);
 
     try {
-      const res = await fetch(
-        `https://api.imgbb.com/1/upload?key=${apiKey}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: "POST",
+        body: formData,
+      });
       const result = await res.json();
-
       if (result.success) {
-        setValue("logo", result.data.url, {
-          shouldValidate: true,
-        });
+        setValue("companyLogo", result.data.url, { shouldValidate: true });
       }
     } catch (error) {
       console.error(error);
@@ -103,8 +95,8 @@ export default function EditCompany({
     try {
       if (onUpdate) {
         await onUpdate(company?._id || company?.id, data);
+        router.push("/dashboard/my-companies");
       }
-
       setIsOpen(false);
     } catch (error) {
       console.error(error);
@@ -120,16 +112,13 @@ export default function EditCompany({
               Modify Company Profile
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground mt-0.5">
-              Update the organizational metadata, size metrics, and
-              verification status.
+              Update your organizational metadata, location details, and
+              structural size metrics.
             </DialogDescription>
           </DialogHeader>
         </div>
 
-        <form
-          onSubmit={handleSubmit(onEditSubmit)}
-          className="p-7 space-y-5"
-        >
+        <form onSubmit={handleSubmit(onEditSubmit)} className="p-7 space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <FormLabel required>Company Name</FormLabel>
@@ -142,85 +131,125 @@ export default function EditCompany({
 
             <div>
               <FormLabel required>Industry Category</FormLabel>
+              <Select
+                value={companyIndustry}
+                onValueChange={(v) =>
+                  setValue("industry", v, { shouldValidate: true })
+                }
+              >
+                <SelectTrigger className="h-10 rounded-xl text-sm w-full">
+                  <SelectValue placeholder="Select Industry" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="technology">Technology & IT</SelectItem>
+                  <SelectItem value="finance">Fintech & Finance</SelectItem>
+                  <SelectItem value="healthcare">
+                    Healthcare & Pharma
+                  </SelectItem>
+                  <SelectItem value="education">Education & EdTech</SelectItem>
+                  <SelectItem value="ecommerce">E-commerce & Retail</SelectItem>
+                  <SelectItem value="media">Media & Entertainment</SelectItem>
+                  <SelectItem value="manufacturing">
+                    Manufacturing & Heavy Industry
+                  </SelectItem>
+                  <SelectItem value="construction">
+                    Construction & Civil Engineering
+                  </SelectItem>
+                  <SelectItem value="telecommunication">
+                    Telecommunication
+                  </SelectItem>
+                  <SelectItem value="power_energy">
+                    Power & Energy Sector
+                  </SelectItem>
+                  <SelectItem value="automobile">
+                    Automobile & Mechanical
+                  </SelectItem>
+                  <SelectItem value="garments_textile">
+                    Garments & Textile
+                  </SelectItem>
+                  <SelectItem value="agro_food">
+                    Agro & Food Processing
+                  </SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+              <FieldError error={errors.industry} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <FormLabel required>Street</FormLabel>
               <Input
-                {...register("category")}
-                placeholder="e.g. Technology, Construction"
+                {...register("address.street")}
                 className="h-10 rounded-xl text-sm"
               />
-              <FieldError error={errors.category} />
+            </div>
+            <div>
+              <FormLabel required>City</FormLabel>
+              <Input
+                {...register("address.city")}
+                className="h-10 rounded-xl text-sm"
+              />
+            </div>
+            <div>
+              <FormLabel required>Country</FormLabel>
+              <Input
+                {...register("address.country")}
+                className="h-10 rounded-xl text-sm"
+              />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <FormLabel required>Location Headquarter</FormLabel>
-              <Input
-                {...register("location")}
-                className="h-10 rounded-xl text-sm"
-              />
-              <FieldError error={errors.location} />
-            </div>
-
-            <div>
               <FormLabel required>Company Size (Range)</FormLabel>
-
               <Select
-                value={watch("range")}
+                value={companySize}
                 onValueChange={(v) =>
-                  setValue("range", v, {
-                    shouldValidate: true,
-                  })
+                  setValue("size", v, { shouldValidate: true })
                 }
               >
                 <SelectTrigger className="h-10 rounded-xl text-sm w-full">
                   <SelectValue placeholder="Select Range" />
                 </SelectTrigger>
-
                 <SelectContent>
-                  <SelectItem value="1-10 employees">
-                    1-10 employees
-                  </SelectItem>
-                  <SelectItem value="11-50 employees">
-                    11-50 employees
-                  </SelectItem>
-                  <SelectItem value="51-200 employees">
-                    51-200 employees
-                  </SelectItem>
-                  <SelectItem value="201-500 employees">
-                    201-500 employees
-                  </SelectItem>
-                  <SelectItem value="501+ employees">
-                    501+ employees
-                  </SelectItem>
+                  <SelectItem value="1-10">1-10 employees</SelectItem>
+                  <SelectItem value="11-50">11-50 employees</SelectItem>
+                  <SelectItem value="51-200">51-200 employees</SelectItem>
+                  <SelectItem value="201-500">201-500 employees</SelectItem>
+                  <SelectItem value="501+">501+ employees</SelectItem>
                 </SelectContent>
               </Select>
+              <FieldError error={errors.size} />
+            </div>
 
-              <FieldError error={errors.range} />
+            <div>
+              <FormLabel required>Website URL</FormLabel>
+              <Input
+                {...register("website")}
+                className="h-10 rounded-xl text-sm"
+              />
+              <FieldError error={errors.website} />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <FormLabel required>Website URL</FormLabel>
-
-              <Input
-                {...register("website")}
-                placeholder="https://example.com"
-                className="h-10 rounded-xl text-sm"
-              />
-
-              <FieldError error={errors.website} />
-            </div>
-
-            <div>
-              <FormLabel>Company Logo</FormLabel>
+          <div>
+            <FormLabel>Company Logo</FormLabel>
+            <div className="flex items-center gap-4">
+              {logoUrl && (
+                <div className="relative h-[74px] w-[74px] rounded-xl border border-border overflow-hidden bg-muted/20 flex-shrink-0 flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={logoUrl}
+                    alt="Company Logo Preview"
+                    className="h-full w-full object-contain p-1"
+                  />
+                </div>
+              )}
 
               <label
-                className={`relative flex flex-col items-center justify-center w-full h-[100px] rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 group ${
-                  logoUrl
-                    ? "border-emerald-500/40 bg-emerald-500/5"
-                    : "border-border hover:border-primary/40 hover:bg-muted/30 bg-muted/10"
-                }`}
+                className={`relative flex flex-col items-center justify-center flex-1 h-[74px] rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 group ${logoUrl ? "border-emerald-500/30 bg-emerald-500/5" : "border-border hover:border-primary/40 hover:bg-muted/30 bg-muted/10"}`}
               >
                 <input
                   type="file"
@@ -229,78 +258,43 @@ export default function EditCompany({
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   disabled={isUploading}
                 />
-
-                <div className="flex flex-col items-center gap-1.5 pointer-events-none select-none">
+                <div className="flex flex-col items-center gap-1 pointer-events-none select-none px-4 text-center">
                   {isUploading ? (
                     <>
-                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                      <span className="text-xs font-medium text-muted-foreground">
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                      <span className="text-[11px] font-medium text-muted-foreground">
                         Uploading image...
                       </span>
                     </>
                   ) : logoUrl ? (
                     <>
-                      <CheckCircle2 className="h-6 w-6 text-emerald-500" />
-                      <span className="text-xs font-semibold text-emerald-600">
-                        Logo uploaded successfully
-                      </span>
-                      <span className="text-[11px] text-muted-foreground/60">
-                        Click to replace
+                      <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                      <span className="text-[11px] font-semibold text-emerald-600">
+                        Click to change logo
                       </span>
                     </>
                   ) : (
                     <>
-                      <UploadCloud className="h-6 w-6 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
-                      <span className="text-xs font-medium text-muted-foreground">
-                        Click to upload company logo
-                      </span>
-                      <span className="text-[11px] text-muted-foreground/50">
-                        PNG, JPG or SVG · max 5MB
+                      <UploadCloud className="h-5 w-5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+                      <span className="text-[11px] font-medium text-muted-foreground">
+                        Click to upload logo
                       </span>
                     </>
                   )}
                 </div>
               </label>
-
-              <FieldError error={errors.logo} />
             </div>
+            <FieldError error={errors.companyLogo} />
           </div>
 
           <div>
             <FormLabel required>Company Description</FormLabel>
-
             <Textarea
               {...register("description")}
               rows={3}
               className="resize-none rounded-xl p-3 text-sm leading-relaxed"
             />
-
             <FieldError error={errors.description} />
-          </div>
-
-          <div>
-            <FormLabel required>Verification Status</FormLabel>
-
-            <Select
-              value={watch("status")}
-              onValueChange={(v) =>
-                setValue("status", v, {
-                  shouldValidate: true,
-                })
-              }
-            >
-              <SelectTrigger className="h-10 rounded-xl text-sm w-full">
-                <SelectValue placeholder="Select Status" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="Approved">Approved</SelectItem>
-                <SelectItem value="Pending">Pending</SelectItem>
-                <SelectItem value="Rejected">Rejected</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <FieldError error={errors.status} />
           </div>
 
           <DialogFooter className="pt-2">
@@ -312,7 +306,6 @@ export default function EditCompany({
             >
               Cancel
             </Button>
-
             <Button
               type="submit"
               disabled={isSubmitting}
