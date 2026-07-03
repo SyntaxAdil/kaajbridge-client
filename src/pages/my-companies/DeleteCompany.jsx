@@ -62,16 +62,15 @@ export default function DeleteCompany({
             variant="outline"
             onClick={() => setIsOpen(false)}
             disabled={isDeleting}
-            className="h-10 rounded-xl text-xs font-semibold"
+            className="h-10 rounded-xl text-xs font-semibold w-full"
           >
             Cancel
           </Button>
           <Button
             type="button"
-            variant="destructive"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="h-8 rounded-xl px-3 text-xs font-semibold flex items-center gap-1.5 border-rose-500/10 bg-rose-500/5 text-rose-500/80 hover:text-rose-600 hover:bg-rose-500/10 hover:border-rose-500/25 transition-all duration-150"
+            className="h-10 rounded-xl text-xs font-semibold w-full flex items-center justify-center gap-1.5 border border-rose-500/10 bg-rose-500/5 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 hover:border-rose-500/25 transition-all duration-150"
           >
             {isDeleting ? (
               <Loader2 className="h-4 w-4 animate-spin" />

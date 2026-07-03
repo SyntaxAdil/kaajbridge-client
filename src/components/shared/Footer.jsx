@@ -28,7 +28,7 @@ const LINKS = {
 
 const Footer = () => {
   return (
-    <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400">
+    <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 mt-16">
       <div className="container mx-auto px-5 lg:px-8 py-14">
         {/* TOP GRID */}
         <div className="grid md:grid-cols-4 gap-10">
