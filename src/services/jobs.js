@@ -1,7 +1,19 @@
 import { apiRequest } from "./api-client";
 
 export const jobService = {
-  getAllJobs: () => apiRequest("/jobs"),
+  getAllJobs: ({ search = "", type = "", experience = "", location = "", sort = "newest", page = "1", limit = "10" } = {}) => {
+    const queryParams = new URLSearchParams();
+    if (search) queryParams.append("search", search);
+    if (type) queryParams.append("type", type);
+    if (experience) queryParams.append("experience", experience);
+    if (location) queryParams.append("location", location);
+    if (sort) queryParams.append("sort", sort);
+    if (page) queryParams.append("page", page);
+    if (limit) queryParams.append("limit", limit);
+
+    return apiRequest(`/jobs?${queryParams.toString()}`);
+  },
+  
   getLatestJobs: () => apiRequest("/jobs/latest-jobs"),
   getJobById: (id) => apiRequest(`/jobs/${id}`),
   createJob: (jobData) => apiRequest("/jobs", { method: "POST", body: JSON.stringify(jobData) }),

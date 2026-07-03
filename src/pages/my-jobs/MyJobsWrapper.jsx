@@ -6,10 +6,10 @@ import JobCard from "./JobsCard";
 
 export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams,myCompaniesName }) {
   return (
-    <section className="w-full min-h-screen bg-background px-6 lg:px-10 py-8">
+    <section className="w-full min-h-screen bg-background py-8">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-border/60">
         <div className="flex items-center gap-2">
-          <SidebarTrigger className="-ms-4 me-2" />
+          <SidebarTrigger className="mx-2" />
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Manage Jobs
@@ -20,12 +20,12 @@ export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams,
           </div>
         </div>
 
-        <div className="w-full sm:w-72 lg:w-80 shrink-0">
+        <div className="w-full sm:w-72 lg:w-80 shrink-0 px-2">
           <SearchInputStream initialValue={searchParams.search} />
         </div>
       </header>
 
-      <div className="flex items-center justify-between mb-7">
+      <div className="flex items-center justify-between mb-7 px-4">
         <p className="text-sm text-muted-foreground">
           <span className="text-foreground font-semibold">
             {initialTotal}
@@ -46,7 +46,7 @@ export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams,
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-4">
           {initialJobs.map((job) => (
             <JobCard 
               key={job._id} 

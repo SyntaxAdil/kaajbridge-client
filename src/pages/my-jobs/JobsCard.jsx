@@ -171,7 +171,7 @@ export default function JobCard({ job, isRecruiter = false }) {
             <Button
               type="button"
               size="sm"
-              className="h-8 rounded-md px-4 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="h-8 rounded-full px-4 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               Apply Now
             </Button>
