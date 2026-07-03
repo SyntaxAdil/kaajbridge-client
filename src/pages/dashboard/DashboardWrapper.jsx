@@ -19,6 +19,7 @@ import { AnimatedThemeToggler } from "../../components/ui/animated-theme-toggler
 import RecentApplications from "./RecentApplications";
 import TopCompanies from "./TopCompanies";
 import { SidebarTrigger } from "../../components/ui/sidebar";
+import NotificationDropdown from "./NotificationDropdown";
 
 const DashboardWrapper = () => {
   const { data: session, refetch } = useSession();
@@ -51,12 +52,7 @@ const DashboardWrapper = () => {
         </div>
 
         <div className="flex items-center gap-6 shrink-0">
-          <button className="relative p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 bg-red-500 text-[10px] font-bold text-white rounded-full flex items-center justify-center px-1 ring-2 ring-background">
-              0
-            </span>
-          </button>
+          <NotificationDropdown></NotificationDropdown>
 
           <div className="h-6 w-[1px] bg-border " />
 
