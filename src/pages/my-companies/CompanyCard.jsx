@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import {
   Building2,
@@ -19,167 +18,170 @@ import {
 } from "../../components/ui/avatar";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "../../components/ui/card";
 import EditCompany from "./EditCompany";
 import DeleteCompany from "./DeleteCompany";
 
-export default function CompanyCard({ company, onUpdate, onDelete }) {
+export default function CompanyCard({
+  company,
+  onUpdate,
+  onDelete,
+  isPrivete = true,
+}) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const isVerified =
     company?.isVerified === true || company?.isVerified === "verified";
+  const isRejected = company?.isVerified === "rejected";
 
   const locationString = company?.address
     ? [company.address.street, company.address.city, company.address.country]
         .filter(Boolean)
         .join(", ")
     : "Location not specified";
+  const statusConfig = isVerified
+    ? {
+        label: "Verified",
+        icon: CheckCircle2,
+        className:
+          "text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10",
+      }
+    : {
+        label: "Pending",
+        icon: Clock,
+        className:
+          "text-amber-600 dark:text-amber-400 border-amber-500/20 bg-amber-50 dark:bg-amber-500/10",
+      };
 
-  const renderVerificationBadge = () => {
-    const status = company?.isVerified;
-    if (status === true || status === "verified") {
-      return (
-        <Badge className="text-[10px] font-bold uppercase tracking-wide px-2.5 py-0.5 rounded-full border shrink-0 text-emerald-600 border-emerald-500/25 bg-emerald-500/8 flex items-center gap-1">
-          <CheckCircle2 className="h-3 w-3" />
-          <span>Verified</span>
-        </Badge>
-      );
-    }
-    if (status === "rejected") {
-      return (
-        <Badge className="text-[10px] font-bold uppercase tracking-wide px-2.5 py-0.5 rounded-full border shrink-0 text-rose-600 border-rose-500/25 bg-rose-500/8 flex items-center gap-1">
-          <XCircle className="h-3 w-3" />
-          <span>Rejected</span>
-        </Badge>
-      );
-    }
-    return (
-      <Badge className="text-[10px] font-bold uppercase tracking-wide px-2.5 py-0.5 rounded-full border shrink-0 text-amber-600 border-amber-500/25 bg-amber-500/8 flex items-center gap-1">
-        <Clock className="h-3 w-3" />
-        <span>Pending</span>
-      </Badge>
-    );
-  };
+  const StatusIcon = statusConfig.icon;
 
   return (
-    <div className="group bg-card rounded-2xl border border-border/70 p-5 flex flex-col justify-between hover:border-border hover:shadow-sm transition-all duration-200">
-      <div>
-        <div className="flex items-start justify-between mb-4 gap-2">
+    <Card className="group rounded-lg border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm transition-all duration-200 py-5 gap-4">
+      <CardHeader className="px-5">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="relative shrink-0">
-              <Avatar className="h-11 w-11 rounded-xl border border-border/60 bg-muted p-0.5">
+              <Avatar className="h-11 w-11 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-0.5">
                 <AvatarImage
                   src={company?.companyLogo}
                   alt={company?.name}
-                  className="object-contain rounded-xl"
+                  className="object-contain rounded-md"
                 />
-                <AvatarFallback className="bg-muted text-muted-foreground rounded-xl">
-                  <Building2 className="h-4.5 w-4.5 stroke-[1.8]" />
+                <AvatarFallback className="bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 rounded-md">
+                  <Building2 className="h-5 w-5 stroke-[1.6]" />
                 </AvatarFallback>
               </Avatar>
-
               {isVerified && (
-                <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3 rounded-full bg-background p-0.5 shadow-sm">
-                  <span className="h-full w-full rounded-full bg-emerald-500" />
+                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-zinc-950 ring-2 ring-white dark:ring-zinc-950">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 fill-emerald-500/10" />
                 </span>
               )}
             </div>
-
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <h3 className="text-sm font-bold text-foreground leading-tight line-clamp-1 group-hover:text-primary transition-colors duration-150">
-                  {company?.name || "Unnamed Company"}
-                </h3>
-
-                {isVerified && (
-                  <span className="flex items-center justify-center relative h-3.5 w-3.5 shrink-0 text-emerald-500">
-                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75" />
-                    <CheckCircle2 className="h-3.5 w-3.5 fill-emerald-500/10 relative z-10" />
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground capitalize mt-0.5 truncate">
+              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-tight truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-150">
+                {company?.name || "Unnamed Company"}
+              </h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 capitalize mt-0.5 truncate">
                 {company?.industry || "Other"}
               </p>
             </div>
           </div>
-          {renderVerificationBadge()}
+          <Badge
+            className={`text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full border shrink-0 flex items-center gap-1 ${statusConfig.className}`}
+          >
+            <StatusIcon className="h-3 w-3" />
+            {statusConfig.label}
+          </Badge>
         </div>
-        <p className="text-xs leading-[1.65] text-muted-foreground line-clamp-3 mb-5">
+      </CardHeader>
+
+      <CardContent className="px-5">
+        <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 line-clamp-3">
           {company?.description || "No description provided."}
         </p>
-      </div>
+      </CardContent>
 
-      <div className="pt-4 border-t border-border/40 space-y-3">
-        <div className="flex items-center justify-between text-xs text-muted-foreground gap-4">
+      <CardFooter className="px-5 flex-col items-stretch gap-3 border-t border-zinc-100 dark:border-zinc-900 pt-4">
+        <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 gap-4">
           <div className="flex items-center gap-1.5 min-w-0">
-            <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" />
+            <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-400 dark:text-zinc-600" />
             <span className="truncate" title={locationString}>
               {locationString}
             </span>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
-            <Users className="h-3.5 w-3.5 text-muted-foreground/70" />
+            <Users className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-600" />
             <span>{company?.size || "N/A"} Employees</span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2 pt-3 border-t border-border/30">
+        <div className="flex items-center justify-between gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-900">
           {company?.website ? (
             <a
               href={company.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors duration-150"
+              className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-150"
             >
               <Globe className="h-3.5 w-3.5" />
               <span>Visit Website</span>
             </a>
           ) : (
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground/40 italic select-none">
-              <Globe className="h-3.5 w-3.5 opacity-40" />
+            <div className="flex items-center gap-1.5 text-xs text-zinc-300 dark:text-zinc-700 italic select-none">
+              <Globe className="h-3.5 w-3.5" />
               <span>No Website</span>
             </div>
           )}
 
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsEditOpen(true)}
-              className="h-8 rounded-xl px-3 text-xs font-semibold flex items-center gap-1.5 border-border/60 bg-muted/20 text-muted-foreground hover:text-foreground hover:bg-muted hover:border-border transition-all duration-150"
-            >
-              <Pencil className="h-3.5 w-3.5 stroke-[2]" />
-              Edit
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsDeleteOpen(true)}
-              className="h-8 rounded-xl px-3 text-xs font-semibold flex items-center gap-1.5 border-rose-500/10 bg-rose-500/5 text-rose-500/80 hover:text-rose-600 hover:bg-rose-500/10 hover:border-rose-500/25 transition-all duration-150"
-            >
-              <Trash2 className="h-3.5 w-3.5 stroke-[2]" />
-              Delete
-            </Button>
-          </div>
+          {isPrivete && (
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditOpen(true)}
+                className="h-8 rounded-md px-3 text-xs font-medium flex items-center gap-1.5 border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-600 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-900 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all duration-150"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Edit
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsDeleteOpen(true)}
+                className="h-8 rounded-md px-3 text-xs font-medium flex items-center gap-1.5 border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-900 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all duration-150"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Delete
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
+      </CardFooter>
 
-      <EditCompany
-        isOpen={isEditOpen}
-        setIsOpen={setIsEditOpen}
-        company={company}
-        onUpdate={onUpdate}
-      />
-
-      <DeleteCompany
-        isOpen={isDeleteOpen}
-        setIsOpen={setIsDeleteOpen}
-        company={company}
-        onDelete={onDelete}
-      />
-    </div>
+      {isPrivete && (
+        <>
+          <EditCompany
+            isOpen={isEditOpen}
+            setIsOpen={setIsEditOpen}
+            company={company}
+            onUpdate={onUpdate}
+          />
+          <DeleteCompany
+            isOpen={isDeleteOpen}
+            setIsOpen={setIsDeleteOpen}
+            company={company}
+            onDelete={onDelete}
+          />
+        </>
+      )}
+    </Card>
   );
 }

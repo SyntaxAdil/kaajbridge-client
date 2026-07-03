@@ -38,7 +38,7 @@ import { GrDashboard } from "react-icons/gr";
 
 const NAV_LINKS = [
   { label: "Browse Jobs", href: "/jobs" },
-  { label: "Companies", href: "/company" },
+  { label: "Companies", href: "/companies" },
   { label: "Pricing", href: "/pricing" },
 ];
 
@@ -469,7 +469,7 @@ const Navbar = () => {
           </>
         )}
       </AnimatePresence>
-      {/* <div className="h-16"></div> */}
+      <div className="h-18"></div>
     </>
   );
 };

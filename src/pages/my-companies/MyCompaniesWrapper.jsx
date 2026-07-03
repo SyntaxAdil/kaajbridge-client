@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,6 +15,8 @@ import {
   UploadCloud,
   Loader2,
   CheckCircle2,
+  ListFilter,
+  Building2,
 } from "lucide-react";
 import {
   Dialog,
@@ -49,6 +51,37 @@ import {
 } from "../../components/ui/pagination";
 import CompanyCard from "./CompanyCard";
 import { companyService } from "@/services/company";
+
+const INDUSTRY_OPTIONS = [
+  { value: "technology", label: "Technology & IT" },
+  { value: "finance", label: "Fintech & Finance" },
+  { value: "healthcare", label: "Healthcare & Pharma" },
+  { value: "education", label: "Education & EdTech" },
+  { value: "ecommerce", label: "E-commerce & Retail" },
+  { value: "media", label: "Media & Entertainment" },
+  { value: "manufacturing", label: "Manufacturing & Heavy Industry" },
+  { value: "construction", label: "Construction & Civil Engineering" },
+  { value: "telecommunication", label: "Telecommunication" },
+  { value: "power_energy", label: "Power & Energy Sector" },
+  { value: "automobile", label: "Automobile & Mechanical" },
+  { value: "garments_textile", label: "Garments & Textile" },
+  { value: "agro_food", label: "Agro & Food Processing" },
+  { value: "other", label: "Other" },
+];
+
+const SIZE_OPTIONS = [
+  { value: "1-10", label: "1–10 employees" },
+  { value: "11-50", label: "11–50 employees" },
+  { value: "51-200", label: "51–200 employees" },
+  { value: "201-500", label: "201–500 employees" },
+  { value: "500+", label: "500+ employees" },
+];
+
+const STATUS_FILTERS = [
+  { value: "all", label: "All Statuses" },
+  { value: "true", label: "Verified" },
+  { value: "pending", label: "Not Verified" },
+];
 
 function FormLabel({ children, required }) {
   return (
@@ -121,7 +154,10 @@ export default function MyCompanyWrapper({ initialCompanies }) {
     }
   }, [initialCompanies]);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState(
+    searchParams.get("search") || "",
+  );
+  const statusFilter = searchParams.get("isVerified") || "all";
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -167,12 +203,43 @@ export default function MyCompanyWrapper({ initialCompanies }) {
     }
   };
 
+  const updateParams = useCallback(
+    (updates) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(updates).forEach(([key, value]) => {
+        if (
+          value === undefined ||
+          value === null ||
+          value === "" ||
+          value === "all"
+        ) {
+          params.delete(key);
+        } else {
+          params.set(key, String(value));
+        }
+      });
+      router.push(`?${params.toString()}`);
+    },
+    [router, searchParams],
+  );
+
   const goToPage = (page) => {
     if (page < 1 || page > pagination.totalPages || page === pagination.page)
       return;
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(page));
-    router.push(`?${params.toString()}`);
+    updateParams({ page });
+  };
+
+  useEffect(() => {
+    const currentSearch = searchParams.get("search") || "";
+    if (searchInput === currentSearch) return;
+    const timeout = setTimeout(() => {
+      updateParams({ search: searchInput, page: 1 });
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
+
+  const handleStatusChange = (value) => {
+    updateParams({ isVerified: value, page: 1 });
   };
 
   const onCompanySubmit = async (data) => {
@@ -220,10 +287,6 @@ export default function MyCompanyWrapper({ initialCompanies }) {
     }
   };
 
-  const filteredCompanies = companies.filter((company) =>
-    company.name?.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
-
   const pageList = buildPageList(pagination.page, pagination.totalPages);
 
   return (
@@ -240,21 +303,36 @@ export default function MyCompanyWrapper({ initialCompanies }) {
             </p>
           </div>
         </div>
-        <div className="w-full sm:w-72 lg:w-80 shrink-0">
-          <InputGroup className="flex items-center bg-muted/30 rounded-xl border border-border/60 focus-within:border-primary/40 transition-all duration-200">
-            <InputGroupAddon className="pl-3.5 pr-1 text-muted-foreground/50">
-              <SearchIcon className="h-4 w-4" />
-            </InputGroupAddon>
-            <InputGroupInput
-              placeholder="Search companies..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none shadow-none focus-visible:ring-0 text-sm py-2.5 placeholder:text-muted-foreground/40 w-full pr-3"
-            />
-          </InputGroup>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex-1 sm:w-64 lg:w-72">
+            <InputGroup className="flex items-center bg-muted/30 rounded-xl border border-border/60 focus-within:border-primary/40 transition-all duration-200">
+              <InputGroupAddon className="pl-3.5 pr-1 text-muted-foreground/50">
+                <SearchIcon className="h-4 w-4" />
+              </InputGroupAddon>
+              <InputGroupInput
+                placeholder="Search companies..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="bg-transparent border-none shadow-none focus-visible:ring-0 text-sm py-2.5 placeholder:text-muted-foreground/40 w-full pr-3"
+              />
+            </InputGroup>
+          </div>
+          <Select value={statusFilter} onValueChange={handleStatusChange}>
+            <SelectTrigger className="h-10 rounded-xl text-sm w-[150px] shrink-0 bg-muted/30 border-border/60">
+              <ListFilter className="h-3.5 w-3.5 text-muted-foreground/60 mr-1" />
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_FILTERS.map((status) => (
+                <SelectItem key={status.value} value={status.value}>
+                  {status.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </header>
-      <div className="flex items-center justify-between mb-7">
+      <div className="flex items-center justify-between mb-7 px-4">
         <p className="text-sm text-muted-foreground">
           <span className="text-foreground font-semibold">
             {pagination.total}
@@ -336,46 +414,14 @@ export default function MyCompanyWrapper({ initialCompanies }) {
                         <SelectValue placeholder="Select Industry" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="technology">
-                          Technology & IT
-                        </SelectItem>
-                        <SelectItem value="finance">
-                          Fintech & Finance
-                        </SelectItem>
-                        <SelectItem value="healthcare">
-                          Healthcare & Pharma
-                        </SelectItem>
-                        <SelectItem value="education">
-                          Education & EdTech
-                        </SelectItem>
-                        <SelectItem value="ecommerce">
-                          E-commerce & Retail
-                        </SelectItem>
-                        <SelectItem value="media">
-                          Media & Entertainment
-                        </SelectItem>
-                        <SelectItem value="manufacturing">
-                          Manufacturing & Heavy Industry
-                        </SelectItem>
-                        <SelectItem value="construction">
-                          Construction & Civil Engineering
-                        </SelectItem>
-                        <SelectItem value="telecommunication">
-                          Telecommunication
-                        </SelectItem>
-                        <SelectItem value="power_energy">
-                          Power & Energy Sector
-                        </SelectItem>
-                        <SelectItem value="automobile">
-                          Automobile & Mechanical
-                        </SelectItem>
-                        <SelectItem value="garments_textile">
-                          Garments & Textile
-                        </SelectItem>
-                        <SelectItem value="agro_food">
-                          Agro & Food Processing
-                        </SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        {INDUSTRY_OPTIONS.map((industry) => (
+                          <SelectItem
+                            key={industry.value}
+                            value={industry.value}
+                          >
+                            {industry.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FieldError error={errors.industry} />
@@ -391,13 +437,11 @@ export default function MyCompanyWrapper({ initialCompanies }) {
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1-10">1–10 employees</SelectItem>
-                        <SelectItem value="11-50">11–50 employees</SelectItem>
-                        <SelectItem value="51-200">51–200 employees</SelectItem>
-                        <SelectItem value="201-500">
-                          201–500 employees
-                        </SelectItem>
-                        <SelectItem value="500+">500+ employees</SelectItem>
+                        {SIZE_OPTIONS.map((size) => (
+                          <SelectItem key={size.value} value={size.value}>
+                            {size.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FieldError error={errors.size} />
@@ -571,8 +615,8 @@ export default function MyCompanyWrapper({ initialCompanies }) {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredCompanies.map((company) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-4">
+        {companies.map((company) => (
           <CompanyCard
             key={company._id || company.id}
             company={company}
@@ -581,6 +625,26 @@ export default function MyCompanyWrapper({ initialCompanies }) {
           />
         ))}
       </div>
+      {/* No companies match your filters. */}
+      {companies.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-20 px-4 text-center  border-border/50 rounded-2xl bg-muted/5 max-w-md mx-auto my-4 transition-all duration-300">
+          <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-muted/60 text-muted-foreground/60 mb-5 group-hover:scale-105 transition-transform duration-200">
+            <Building2 className="h-6 w-6 stroke-[1.5]" />
+            <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background p-0.5 shadow-sm">
+              <div className="h-full w-full rounded-full bg-muted-foreground/20 flex items-center justify-center text-[10px] font-bold">
+                ?
+              </div>
+            </div>
+          </div>
+          <h3 className="text-sm font-bold text-foreground tracking-tight">
+            No Companies Found
+          </h3>
+          <p className="text-xs text-muted-foreground/70 mt-1.5 max-w-[280px] leading-relaxed">
+            We couldn&apos;t find any companies matching your selected criteria
+            or search term.
+          </p>
+        </div>
+      )}
       {pagination.totalPages > 1 && (
         <Pagination className="mt-8">
           <PaginationContent>
