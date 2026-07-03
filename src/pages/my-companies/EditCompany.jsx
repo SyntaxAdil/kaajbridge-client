@@ -102,7 +102,7 @@ export default function EditCompany({ isOpen, setIsOpen, company, onUpdate }) {
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      toast.error( error.message || "Something went wrong");
     }
   };
 

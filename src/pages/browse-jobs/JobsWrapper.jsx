@@ -140,7 +140,7 @@ export default function JobsWrapper({ initialJobs }) {
       </div>
 
       <div className="flex flex-col lg:flex-row items-start gap-8 ">
-        <div className="w-full lg:w-[280px] shrink-0 border border-zinc-200/60 dark:border-zinc-800/80 rounded-2xl p-5  dark:bg-zinc-950 space-y-5 min-h-full bg-white ">
+        <div className="w-full lg:w-[280px] shrink-0 border border-zinc-200/60 dark:border-zinc-800/80 rounded-2xl p-5   space-y-5  ">
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 pb-3">
             <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100">Refine</h2>
             <button

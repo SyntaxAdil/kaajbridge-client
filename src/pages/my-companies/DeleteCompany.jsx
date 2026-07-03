@@ -31,7 +31,7 @@ export default function DeleteCompany({
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      toast.error( error.message || "Something went wrong");
     } finally {
       setIsDeleting(false);
     }

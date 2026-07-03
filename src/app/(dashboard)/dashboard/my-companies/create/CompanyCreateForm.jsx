@@ -120,7 +120,7 @@ export default function CompanyCreateForm() {
       router.refresh();
     } catch (err) {
       console.error("API Error creating company:", err);
-      toast.error("Something went wrong");
+      toast.error("Something went wrong" || err.message);
     }
   };
 

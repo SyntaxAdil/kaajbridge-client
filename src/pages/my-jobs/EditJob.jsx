@@ -124,7 +124,7 @@ export default function EditJobPostModal({ isOpen, setIsOpen, job, onUpdate }) {
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      toast.error( error.message || "Something went wrong");
     }
   };
 

@@ -26,7 +26,7 @@ export default function DeleteJobs({ isOpen, setIsOpen, job, onDelete }) {
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      toast.error( error.message || "Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
