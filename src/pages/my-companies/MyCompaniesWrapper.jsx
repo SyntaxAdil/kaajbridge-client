@@ -1,32 +1,9 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import React, { useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { companyRegisterSchema } from "../../schema/company-schema";
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Textarea } from "../../components/ui/textarea";
-import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
-import {
-  Plus,
-  AlertTriangle,
-  SearchIcon,
-  UploadCloud,
-  Loader2,
-  CheckCircle2,
-  ListFilter,
-  Building2,
-} from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "../../components/ui/dialog";
+import { Plus, SearchIcon, ListFilter, Building2 } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -52,61 +29,11 @@ import {
 import CompanyCard from "./CompanyCard";
 import { companyService } from "@/services/company";
 
-const INDUSTRY_OPTIONS = [
-  { value: "technology", label: "Technology & IT" },
-  { value: "finance", label: "Fintech & Finance" },
-  { value: "healthcare", label: "Healthcare & Pharma" },
-  { value: "education", label: "Education & EdTech" },
-  { value: "ecommerce", label: "E-commerce & Retail" },
-  { value: "media", label: "Media & Entertainment" },
-  { value: "manufacturing", label: "Manufacturing & Heavy Industry" },
-  { value: "construction", label: "Construction & Civil Engineering" },
-  { value: "telecommunication", label: "Telecommunication" },
-  { value: "power_energy", label: "Power & Energy Sector" },
-  { value: "automobile", label: "Automobile & Mechanical" },
-  { value: "garments_textile", label: "Garments & Textile" },
-  { value: "agro_food", label: "Agro & Food Processing" },
-  { value: "other", label: "Other" },
-];
-
-const SIZE_OPTIONS = [
-  { value: "1-10", label: "1–10 employees" },
-  { value: "11-50", label: "11–50 employees" },
-  { value: "51-200", label: "51–200 employees" },
-  { value: "201-500", label: "201–500 employees" },
-  { value: "500+", label: "500+ employees" },
-];
-
 const STATUS_FILTERS = [
   { value: "all", label: "All Statuses" },
   { value: "true", label: "Verified" },
   { value: "pending", label: "Not Verified" },
 ];
-
-function FormLabel({ children, required }) {
-  return (
-    <label className="block text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">
-      {children}
-      {required && <span className="text-red-500 ml-0.5">*</span>}
-    </label>
-  );
-}
-
-function FieldError({ error }) {
-  if (!error) return null;
-  return <p className="text-[11px] text-red-500 mt-1">{error.message}</p>;
-}
-
-function SectionDivider({ label }) {
-  return (
-    <div className="flex items-center gap-3 pt-1">
-      <span className="text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground whitespace-nowrap">
-        {label}
-      </span>
-      <div className="flex-1 h-px bg-border/50" />
-    </div>
-  );
-}
 
 function buildPageList(currentPage, totalPages) {
   const pages = [];
@@ -131,88 +58,40 @@ export default function MyCompanyWrapper({ initialCompanies }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [companies, setCompanies] = useState([]);
-  const [pagination, setPagination] = useState({
+  const parsedCompanies = Array.isArray(initialCompanies?.data)
+    ? initialCompanies.data
+    : Array.isArray(initialCompanies)
+      ? initialCompanies
+      : [];
+
+  const parsedPagination = initialCompanies?.pagination || {
     total: 0,
     page: 1,
     limit: 6,
     totalPages: 1,
     hasNextPage: false,
     hasPrevPage: false,
-  });
-
-  useEffect(() => {
-    setCompanies(
-      Array.isArray(initialCompanies?.data)
-        ? initialCompanies.data
-        : Array.isArray(initialCompanies)
-          ? initialCompanies
-          : [],
-    );
-    if (initialCompanies?.pagination) {
-      setPagination(initialCompanies.pagination);
-    }
-  }, [initialCompanies]);
-
-  const [searchInput, setSearchInput] = useState(
-    searchParams.get("search") || "",
-  );
-  const statusFilter = searchParams.get("isVerified") || "all";
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(companyRegisterSchema),
-    defaultValues: {
-      companyLogo: "",
-      website: "",
-      description: "",
-      social: { linkedin: "", facebook: "", twitter: "" },
-    },
-  });
-
-  const logoUrl = watch("companyLogo");
-
-  const handleLogoUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploading(true);
-    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
-    const uploaderData = new FormData();
-    uploaderData.append("image", file);
-    try {
-      const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-        method: "POST",
-        body: uploaderData,
-      });
-      const json = await res.json();
-      if (json.success) {
-        setValue("companyLogo", json.data.url, { shouldValidate: true });
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsUploading(false);
-    }
   };
+
+  const [companies, setCompanies] = useState(parsedCompanies);
+  const [pagination, setPagination] = useState(parsedPagination);
+  
+  const [prevInitialCompanies, setPrevInitialCompanies] = useState(initialCompanies);
+
+  if (initialCompanies !== prevInitialCompanies) {
+    setCompanies(parsedCompanies);
+    setPagination(parsedPagination);
+    setPrevInitialCompanies(initialCompanies);
+  }
+
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
+  const statusFilter = searchParams.get("isVerified") || "all";
 
   const updateParams = useCallback(
     (updates) => {
       const params = new URLSearchParams(searchParams.toString());
       Object.entries(updates).forEach(([key, value]) => {
-        if (
-          value === undefined ||
-          value === null ||
-          value === "" ||
-          value === "all"
-        ) {
+        if (value === undefined || value === null || value === "" || value === "all") {
           params.delete(key);
         } else {
           params.set(key, String(value));
@@ -224,36 +103,21 @@ export default function MyCompanyWrapper({ initialCompanies }) {
   );
 
   const goToPage = (page) => {
-    if (page < 1 || page > pagination.totalPages || page === pagination.page)
-      return;
+    if (page < 1 || page > pagination.totalPages || page === pagination.page) return;
     updateParams({ page });
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const currentSearch = searchParams.get("search") || "";
     if (searchInput === currentSearch) return;
     const timeout = setTimeout(() => {
       updateParams({ search: searchInput, page: 1 });
     }, 400);
     return () => clearTimeout(timeout);
-  }, [searchInput]);
+  }, [searchInput, searchParams, updateParams]);
 
   const handleStatusChange = (value) => {
     updateParams({ isVerified: value, page: 1 });
-  };
-
-  const onCompanySubmit = async (data) => {
-    try {
-      const response = await companyService.createCompany(data);
-      const newCompany = response?.data ?? response;
-      setCompanies((prev) => [newCompany, ...prev]);
-      setPagination((prev) => ({ ...prev, total: prev.total + 1 }));
-      router.refresh();
-      reset();
-      setIsDialogOpen(false);
-    } catch (err) {
-      console.error("API Error creating company:", err);
-    }
   };
 
   const handleUpdate = async (id, updatedData) => {
@@ -261,9 +125,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
       const response = await companyService.updateCompany(id, updatedData);
       const updatedCompany = response?.data ?? response;
       setCompanies((prev) =>
-        prev.map((c) =>
-          (c._id || c.id) === id ? { ...c, ...updatedCompany } : c,
-        ),
+        prev.map((c) => ((c._id || c.id) === id ? { ...c, ...updatedCompany } : c)),
       );
       router.refresh();
     } catch (error) {
@@ -295,9 +157,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
         <div className="flex items-center gap-2">
           <SidebarTrigger className={"px-6"}></SidebarTrigger>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              My Companies
-            </h1>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">My Companies</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
               Manage your registered companies and their verification states.
             </p>
@@ -332,289 +192,20 @@ export default function MyCompanyWrapper({ initialCompanies }) {
           </Select>
         </div>
       </header>
+
       <div className="flex items-center justify-between mb-7 px-4">
         <p className="text-sm text-muted-foreground">
-          <span className="text-foreground font-semibold">
-            {pagination.total}
-          </span>{" "}
-          companies registered
+          <span className="text-foreground font-semibold">{pagination.total}</span> companies registered
         </p>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-5 py-2.5 font-semibold text-sm flex items-center gap-2 shadow-sm transition-all duration-200">
-              <Plus className="h-4 w-4 stroke-[2.5]" />
-              Register Company
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[580px] max-h-[88vh] overflow-y-auto rounded-2xl border border-border bg-card p-0">
-            <div className="sticky top-0 z-10 bg-card border-b border-border/60 px-7 pt-6 pb-5 rounded-t-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-lg font-bold tracking-tight">
-                  Register Company Profile
-                </DialogTitle>
-                <DialogDescription className="text-sm text-muted-foreground mt-0.5">
-                  Set up your company workspace to publish verified job boards.
-                </DialogDescription>
-              </DialogHeader>
-            </div>
-            <div className="px-7 pt-5 pb-7">
-              <Alert className="bg-amber-500/8 border border-amber-500/25 py-3 px-4 mb-6 rounded-xl">
-                <AlertTriangle className="h-4 w-4 text-amber-500" />
-                <AlertTitle className="font-semibold text-xs text-amber-600 ml-1">
-                  Verification Required
-                </AlertTitle>
-                <AlertDescription className="text-[11.5px] text-amber-600/80 mt-0.5 ml-1">
-                  Company roles must be designated for Diploma Engineering
-                  networks.
-                </AlertDescription>
-              </Alert>
-              <form
-                onSubmit={handleSubmit(onCompanySubmit)}
-                className="space-y-5"
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <FormLabel required>Company Name</FormLabel>
-                    <Input
-                      {...register("name")}
-                      placeholder="Stripe"
-                      className="h-10 rounded-xl text-sm"
-                    />
-                    <FieldError error={errors.name} />
-                  </div>
-                  <div>
-                    <FormLabel required>Official Email</FormLabel>
-                    <Input
-                      type="email"
-                      {...register("email")}
-                      placeholder="hr@stripe.com"
-                      className="h-10 rounded-xl text-sm"
-                    />
-                    <FieldError error={errors.email} />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <FormLabel required>Phone</FormLabel>
-                    <Input
-                      {...register("phone")}
-                      placeholder="+88017..."
-                      className="h-10 rounded-xl text-sm"
-                    />
-                    <FieldError error={errors.phone} />
-                  </div>
-                  <div>
-                    <FormLabel required>Industry</FormLabel>
-                    <Select
-                      onValueChange={(v) =>
-                        setValue("industry", v, { shouldValidate: true })
-                      }
-                    >
-                      <SelectTrigger className="h-10 rounded-xl text-sm w-full">
-                        <SelectValue placeholder="Select Industry" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {INDUSTRY_OPTIONS.map((industry) => (
-                          <SelectItem
-                            key={industry.value}
-                            value={industry.value}
-                          >
-                            {industry.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FieldError error={errors.industry} />
-                  </div>
-                  <div>
-                    <FormLabel required>Company Size</FormLabel>
-                    <Select
-                      onValueChange={(v) =>
-                        setValue("size", v, { shouldValidate: true })
-                      }
-                    >
-                      <SelectTrigger className="h-10 rounded-xl text-sm w-full">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {SIZE_OPTIONS.map((size) => (
-                          <SelectItem key={size.value} value={size.value}>
-                            {size.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FieldError error={errors.size} />
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <SectionDivider label="HQ Address" />
-                  <div>
-                    <FormLabel required>Street</FormLabel>
-                    <Input
-                      {...register("address.street")}
-                      placeholder="123 Main Street"
-                      className="h-10 rounded-xl text-sm"
-                    />
-                    <FieldError error={errors.address?.street} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <FormLabel required>City</FormLabel>
-                      <Input
-                        {...register("address.city")}
-                        placeholder="Dhaka"
-                        className="h-10 rounded-xl text-sm"
-                      />
-                      <FieldError error={errors.address?.city} />
-                    </div>
-                    <div>
-                      <FormLabel required>Country</FormLabel>
-                      <Input
-                        {...register("address.country")}
-                        placeholder="Bangladesh"
-                        className="h-10 rounded-xl text-sm"
-                      />
-                      <FieldError error={errors.address?.country} />
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <SectionDivider label="Company Details" />
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <FormLabel>Website</FormLabel>
-                      <Input
-                        {...register("website")}
-                        placeholder="https://stripe.com"
-                        className="h-10 rounded-xl text-sm"
-                      />
-                      <FieldError error={errors.website} />
-                    </div>
-                    <div>
-                      <FormLabel>Founded Year</FormLabel>
-                      <Input
-                        type="number"
-                        {...register("founded")}
-                        placeholder="e.g. 2015"
-                        className="h-10 rounded-xl text-sm"
-                      />
-                      <FieldError error={errors.founded} />
-                    </div>
-                  </div>
-                  <div>
-                    <FormLabel>Company Logo</FormLabel>
-                    <label
-                      className={`relative flex flex-col items-center justify-center w-full h-[100px] rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 group
-                        ${
-                          logoUrl
-                            ? "border-emerald-500/40 bg-emerald-500/5"
-                            : "border-border hover:border-primary/40 hover:bg-muted/30 bg-muted/10"
-                        }`}
-                    >
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        disabled={isUploading}
-                      />
-                      <div className="flex flex-col items-center gap-1.5 pointer-events-none select-none">
-                        {isUploading ? (
-                          <>
-                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                            <span className="text-xs font-medium text-muted-foreground">
-                              Uploading image...
-                            </span>
-                          </>
-                        ) : logoUrl ? (
-                          <>
-                            <CheckCircle2 className="h-6 w-6 text-emerald-500" />
-                            <span className="text-xs font-semibold text-emerald-600">
-                              Logo uploaded successfully
-                            </span>
-                            <span className="text-[11px] text-muted-foreground/60">
-                              Click to replace
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <UploadCloud className="h-6 w-6 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
-                            <span className="text-xs font-medium text-muted-foreground">
-                              Click to upload company logo
-                            </span>
-                            <span className="text-[11px] text-muted-foreground/50">
-                              PNG, JPG or SVG · max 5MB
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </label>
-                    <FieldError error={errors.companyLogo} />
-                  </div>
-                  <div>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea
-                      {...register("description")}
-                      rows={3}
-                      className="resize-none rounded-xl p-3 text-sm leading-relaxed"
-                      placeholder="Describe your company's mission, culture and work environment..."
-                    />
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <SectionDivider label="Social Channels (Optional)" />
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <FormLabel>LinkedIn</FormLabel>
-                      <Input
-                        {...register("social.linkedin")}
-                        placeholder="https://..."
-                        className="h-10 rounded-xl text-sm"
-                      />
-                      <FieldError error={errors.social?.linkedin} />
-                    </div>
-                    <div>
-                      <FormLabel>Facebook</FormLabel>
-                      <Input
-                        {...register("social.facebook")}
-                        placeholder="https://..."
-                        className="h-10 rounded-xl text-sm"
-                      />
-                      <FieldError error={errors.social?.facebook} />
-                    </div>
-                    <div>
-                      <FormLabel>X (Twitter)</FormLabel>
-                      <Input
-                        {...register("social.twitter")}
-                        placeholder="https://x.com/..."
-                        className="h-10 rounded-xl text-sm"
-                      />
-                      <FieldError error={errors.social?.twitter} />
-                    </div>
-                  </div>
-                </div>
-                <DialogFooter className="pt-2">
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full h-11 rounded-xl font-semibold text-sm transition-all duration-200"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        Processing...
-                      </>
-                    ) : (
-                      "Initialize Company Space"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button
+          onClick={() => router.push("/dashboard/my-companies/create")}
+          className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-5 py-2.5 font-semibold text-sm flex items-center gap-2 shadow-sm transition-all duration-200"
+        >
+          <Plus className="h-4 w-4 stroke-[2.5]" />
+          Register Company
+        </Button>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-4">
         {companies.map((company) => (
           <CompanyCard
@@ -625,10 +216,10 @@ export default function MyCompanyWrapper({ initialCompanies }) {
           />
         ))}
       </div>
-      {/* No companies match your filters. */}
+
       {companies.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 px-4 text-center  border-border/50 rounded-2xl bg-muted/5 max-w-md mx-auto my-4 transition-all duration-300">
-          <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-muted/60 text-muted-foreground/60 mb-5 group-hover:scale-105 transition-transform duration-200">
+        <div className="flex flex-col items-center justify-center py-20 px-4 text-center border-border/50 rounded-2xl bg-muted/5 max-w-md mx-auto my-4 transition-all duration-300">
+          <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-muted/60 text-muted-foreground/60 mb-5">
             <Building2 className="h-6 w-6 stroke-[1.5]" />
             <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background p-0.5 shadow-sm">
               <div className="h-full w-full rounded-full bg-muted-foreground/20 flex items-center justify-center text-[10px] font-bold">
@@ -636,15 +227,13 @@ export default function MyCompanyWrapper({ initialCompanies }) {
               </div>
             </div>
           </div>
-          <h3 className="text-sm font-bold text-foreground tracking-tight">
-            No Companies Found
-          </h3>
+          <h3 className="text-sm font-bold text-foreground tracking-tight">No Companies Found</h3>
           <p className="text-xs text-muted-foreground/70 mt-1.5 max-w-[280px] leading-relaxed">
-            We couldn&apos;t find any companies matching your selected criteria
-            or search term.
+            We couldn&apos;t find any companies matching your selected criteria or search term.
           </p>
         </div>
       )}
+
       {pagination.totalPages > 1 && (
         <Pagination className="mt-8">
           <PaginationContent>
@@ -655,11 +244,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
                   e.preventDefault();
                   goToPage(pagination.page - 1);
                 }}
-                className={
-                  !pagination.hasPrevPage
-                    ? "pointer-events-none opacity-40"
-                    : ""
-                }
+                className={!pagination.hasPrevPage ? "pointer-events-none opacity-40" : ""}
               />
             </PaginationItem>
             {pageList.map((item, idx) =>
@@ -689,11 +274,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
                   e.preventDefault();
                   goToPage(pagination.page + 1);
                 }}
-                className={
-                  !pagination.hasNextPage
-                    ? "pointer-events-none opacity-40"
-                    : ""
-                }
+                className={!pagination.hasNextPage ? "pointer-events-none opacity-40" : ""}
               />
             </PaginationItem>
           </PaginationContent>
