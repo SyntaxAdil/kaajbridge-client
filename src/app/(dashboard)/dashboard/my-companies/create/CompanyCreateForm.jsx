@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { companyRegisterSchema } from "../../../../../schema/company-schema";
 import { Button } from "../../../../../components/ui/button";
 import { Input } from "../../../../../components/ui/input";
@@ -15,6 +16,7 @@ import {
   Loader2,
   CheckCircle2,
   ArrowLeft,
+  X,
 } from "lucide-react";
 import {
   Select,
@@ -282,42 +284,63 @@ export default function CompanyCreateForm() {
             <div className="md:col-span-1 flex flex-col justify-between bg-muted/10 border border-border/40 rounded-xl p-4">
               <div className="w-full h-full flex flex-col">
                 <FormLabel>Company Logo</FormLabel>
-                <label
-                  className={`relative flex flex-col items-center justify-center w-full flex-1 min-h-[140px] rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 group bg-background
-                    ${
-                      logoUrl
-                        ? "border-emerald-500/30 bg-emerald-500/5"
-                        : "border-border hover:border-primary/30 hover:bg-muted/20"
-                    }`}
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                    disabled={isUploading}
-                  />
-                  <div className="flex flex-col items-center text-center p-3 gap-1 pointer-events-none select-none">
-                    {isUploading ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                        <span className="text-xs font-medium text-muted-foreground">Uploading...</span>
-                      </>
-                    ) : logoUrl ? (
-                      <>
-                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                        <span className="text-xs font-semibold text-emerald-600">Uploaded</span>
-                        <span className="text-[10px] text-muted-foreground/60">Click to replace</span>
-                      </>
-                    ) : (
-                      <>
-                        <UploadCloud className="h-5 w-5 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
-                        <span className="text-xs font-medium text-muted-foreground">Upload Logo</span>
-                        <span className="text-[10px] text-muted-foreground/40">Max 5MB</span>
-                      </>
-                    )}
-                  </div>
-                </label>
+                <div className="w-full flex-1 min-h-[140px] relative flex flex-col">
+                  {logoUrl ? (
+                    <div className="relative w-full flex-1 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex flex-col items-center justify-center p-4">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 h-6 w-6 rounded-lg z-20"
+                        onClick={() => setValue("companyLogo", "", { shouldValidate: true })}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
+                      <div className="relative h-16 w-16 rounded-xl overflow-hidden border border-border/60 bg-background mb-2 flex items-center justify-center shadow-sm">
+                        <Image
+                          src={logoUrl}
+                          alt="Company Logo"
+                          width={100}
+                          height={100}
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col items-center text-center gap-0.5">
+                        <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Ready
+                        </span>
+                        <span className="text-[10px] text-muted-foreground/60">Logo processed perfectly</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <label
+                      className={`relative flex flex-col items-center justify-center w-full flex-1 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 group bg-background
+                        ${isUploading ? "border-muted" : "border-border hover:border-primary/30 hover:bg-muted/20"}`}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        disabled={isUploading}
+                      />
+                      <div className="flex flex-col items-center text-center p-3 gap-1 pointer-events-none select-none">
+                        {isUploading ? (
+                          <>
+                            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                            <span className="text-xs font-medium text-muted-foreground">Uploading logo...</span>
+                          </>
+                        ) : (
+                          <>
+                            <UploadCloud className="h-5 w-5 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
+                            <span className="text-xs font-medium text-muted-foreground">Upload Logo</span>
+                            <span className="text-[10px] text-muted-foreground/40">Max 5MB</span>
+                          </>
+                        )}
+                      </div>
+                    </label>
+                  )}
+                </div>
                 <FieldError error={errors.companyLogo} />
               </div>
             </div>

@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +21,8 @@ import {
   CreditCard,
   Loader2,
   LogOut,
+  PlusCircle,
+  FolderOpen,
 } from "lucide-react";
 import Image from "next/image";
 import { handleSignout, useSession } from "../../lib/auth/auth-client";
@@ -30,33 +33,40 @@ import { AnimatedThemeToggler } from "../../components/ui/animated-theme-toggler
 
 const roleMenus = {
   seeker: [
+    { type: "label", title: "Overview" },
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "My Profile", icon: User2, href: "/dashboard/profile" },
+    { type: "label", title: "Applications & Saves" },
     { title: "Saved Jobs", icon: Bookmark, href: "/dashboard/saved" },
-    {
-      title: "My Applications",
-      icon: FileText,
-      href: "/dashboard/applications",
-    },
+    { title: "My Applications", icon: FileText, href: "/dashboard/applications" },
+    { type: "label", title: "Billing" },
     { title: "Billing & Plans", icon: CreditCard, href: "/dashboard/billing" },
   ],
   recruiter: [
+    { type: "label", title: "Overview" },
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "My Profile", icon: User2, href: "/dashboard/profile" },
-    { title: "My Company", icon: Building2, href: "/dashboard/my-companies" },
+    { type: "label", title: "Company Management" },
+    { title: "Register Company", icon: PlusCircle, href: "/dashboard/my-companies/create" },
+    { title: "My Companies", icon: Building2, href: "/dashboard/my-companies" },
+    { type: "label", title: "Job Placements" },
+    { title: "Post New Job", icon: PlusCircle, href: "/dashboard/my-jobs/create" },
     { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
-    { title: "Applications", icon: FileText, href: "/dashboard/applications" },
+    { type: "label", title: "Applicants" },
+    { title: "Applications Received", icon: FileText, href: "/dashboard/applications" },
   ],
   admin: [
+    { type: "label", title: "Overview" },
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "Profile Settings", icon: User2, href: "/dashboard/profile" },
-    {
-      title: "Manage Companies",
-      icon: Building2,
-      href: "/dashboard/my-companies",
-    },
+    { type: "label", title: "Global Companies" },
+    { title: "Create Company", icon: PlusCircle, href: "/dashboard/my-companies/create" },
+    { title: "Manage Companies", icon: Building2, href: "/dashboard/my-companies" },
+    { type: "label", title: "Global Jobs" },
+    { title: "Create Job Scope", icon: PlusCircle, href: "/dashboard/my-jobs/create" },
     { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
-    { title: "Applications", icon: FileText, href: "/dashboard/applications" },
+    { type: "label", title: "Global Applications" },
+    { title: "All Applications", icon: FolderOpen, href: "/dashboard/applications" },
   ],
 };
 
@@ -103,7 +113,7 @@ export default function DashboardSidebar() {
     >
       <Link href="/">
         <SidebarHeader
-          className={`h-17.5  flex items-center border-b border-zinc-200 dark:border-zinc-800 ${isCollapsed ? "justify-center px-0" : "px-6"}`}
+          className={`h-17.5 flex items-center border-b border-zinc-200 dark:border-zinc-800 ${isCollapsed ? "justify-center px-0" : "px-6"}`}
         >
           {isCollapsed ? (
             <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center font-semibold text-white text-sm">
@@ -145,14 +155,21 @@ export default function DashboardSidebar() {
         </div>
       )}
 
-      <SidebarContent className={`py-2 ${isCollapsed ? "px-2" : "px-4"}`}>
-        {!isCollapsed && (
-          <span className="px-2 pb-2 text-[10px] font-semibold tracking-widest text-zinc-400 dark:text-zinc-600 uppercase">
-            Menu
-          </span>
-        )}
-        <SidebarMenu className="gap-1">
-          {menuItems.map((item) => {
+      <SidebarContent className={`py-2 overflow-y-auto ${isCollapsed ? "px-2" : "px-4"}`}>
+        <SidebarMenu className="gap-1.5">
+          {menuItems.map((item, index) => {
+            if (item.type === "label") {
+              if (isCollapsed) return null;
+              return (
+                <span
+                  key={`label-${index}`}
+                  className="px-3 pt-4 pb-1 text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 uppercase block select-none"
+                >
+                  {item.title}
+                </span>
+              );
+            }
+
             const isActive = pathname === item.href;
             return (
               <SidebarMenuItem key={item.title}>
@@ -194,7 +211,7 @@ export default function DashboardSidebar() {
               Appearance
             </span>
           )}
-          <AnimatedThemeToggler fromCenter  />
+          <AnimatedThemeToggler fromCenter />
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
