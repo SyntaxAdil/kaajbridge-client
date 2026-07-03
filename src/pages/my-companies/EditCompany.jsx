@@ -22,6 +22,7 @@ import {
   SelectTrigger,
 } from "../../components/ui/select";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 function FormLabel({ children, required }) {
   return (
@@ -95,11 +96,13 @@ export default function EditCompany({ isOpen, setIsOpen, company, onUpdate }) {
     try {
       if (onUpdate) {
         await onUpdate(company?._id || company?.id, data);
+        toast.success("Company updated successfully");
         router.push("/dashboard/my-companies");
       }
       setIsOpen(false);
     } catch (error) {
       console.error(error);
+      toast.error("Something went wrong");
     }
   };
 

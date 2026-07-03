@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../components/ui/dialog";
+import toast from "react-hot-toast";
 
 export default function DeleteCompany({
   isOpen,
@@ -25,10 +26,12 @@ export default function DeleteCompany({
       setIsDeleting(true);
       if (onDelete) {
         await onDelete(company?._id || company?.id);
+        toast.success("Company deleted successfully");
       }
       setIsOpen(false);
     } catch (error) {
       console.error(error);
+      toast.error("Something went wrong");
     } finally {
       setIsDeleting(false);
     }

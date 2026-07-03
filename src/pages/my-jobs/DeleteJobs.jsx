@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../components/ui/dialog";
+import toast from "react-hot-toast";
 
 export default function DeleteJobs({ isOpen, setIsOpen, job, onDelete }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,11 +20,13 @@ export default function DeleteJobs({ isOpen, setIsOpen, job, onDelete }) {
     setIsSubmitting(true);
     try {
       if (onDelete) {
-        await onDelete(job.id);
+        await onDelete(job._id);
+        toast.success("Job deleted successfully");
       }
       setIsOpen(false);
     } catch (error) {
       console.error(error);
+      toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
@@ -41,7 +44,7 @@ export default function DeleteJobs({ isOpen, setIsOpen, job, onDelete }) {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4 gap-2 sm:gap-0">
-          <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="h-9 rounded-xl text-xs font-semibold">
+          <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="h-9 rounded-xl text-xs font-semibold mr-2">
             Cancel
           </Button>
           <Button type="button" onClick={handleDeleteSubmit} disabled={isSubmitting} className="h-9 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white min-w-[80px]">

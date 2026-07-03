@@ -29,6 +29,7 @@ import {
 
 import { jobService } from "../../services/jobs";
 import { jobCreateSchema } from "../../schema/job-schema";
+import Image from "next/image";
 
 function FormLabel({ children, required }) {
   return (
@@ -192,7 +193,9 @@ export default function CreateJobModalWrapper({ myCompaniesName = [] }) {
                   </div>
                   <div className="h-10 w-10 shrink-0 border border-border/80 rounded-xl flex items-center justify-center bg-muted/40 overflow-hidden">
                     {selectedLogo ? (
-                      <img
+                      <Image
+                        width={100}
+                        height={100}
                         src={selectedLogo}
                         alt="Logo"
                         className="h-full w-full object-cover"

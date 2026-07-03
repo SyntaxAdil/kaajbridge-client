@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -21,6 +21,7 @@ import {
   SelectValue,
   SelectTrigger,
 } from "../../components/ui/select";
+import toast from "react-hot-toast";
 
 function FormLabel({ children, required }) {
   return (
@@ -37,35 +38,76 @@ function FieldError({ error }) {
 }
 
 export default function EditJobPostModal({ isOpen, setIsOpen, job, onUpdate }) {
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "";
+      return date.toISOString().split("T")[0];
+    } catch {
+      return "";
+    }
+  };
+
   const {
     register,
     handleSubmit,
     setValue,
+    control,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    values: {
-      title: job?.title || "",
-      company: job?.company || "",
-      description: job?.description || "",
-      location: job?.location || "",
-      experience: job?.experience || "entry",
-      type: job?.type || "full-time",
+    defaultValues: {
+      title: "",
+      company: "",
+      description: "",
+      location: "",
+      experience: "entry",
+      type: "full-time",
       salary: {
-        min: job?.salary?.min || "",
-        max: job?.salary?.max || "",
-        currency: job?.salary?.currency || "BDT",
+        min: "",
+        max: "",
+        currency: "BDT",
       },
-      requirements: Array.isArray(job?.requirements)
-        ? job.requirements.join(", ")
-        : job?.requirements || "",
-      skills: Array.isArray(job?.skills)
-        ? job.skills.join(", ")
-        : job?.skills || "",
-      applicationDeadline: job?.applicationDeadline || job?.deadline || "",
-      companyLogo: job?.companyLogo || job?.logo || "",
-      status: job?.status || "open",
+      requirements: "",
+      skills: "",
+      applicationDeadline: "",
+      companyLogo: "",
+      status: "open",
     },
   });
+
+  useEffect(() => {
+    if (job) {
+      reset({
+        title: job.title || "",
+        company: job.company || "",
+        description: job.description || "",
+        location: job.location || "",
+        experience: job.experience || "entry",
+        type: job.type || "full-time",
+        salary: {
+          min: job.salary?.min || "",
+          max: job.salary?.max || "",
+          currency: job.salary?.currency || "BDT",
+        },
+        requirements: Array.isArray(job.requirements)
+          ? job.requirements.join(", ")
+          : job.requirements || "",
+        skills: Array.isArray(job.skills)
+          ? job.skills.join(", ")
+          : job.skills || "",
+        applicationDeadline: formatDateForInput(job.applicationDeadline || job.deadline),
+        companyLogo: job.companyLogo || job.logo || "",
+        status: job.status || "open",
+      });
+    }
+  }, [job, reset]);
+
+  const currentExperience = useWatch({ control, name: "experience" });
+  const currentType = useWatch({ control, name: "type" });
+  const currentCurrency = useWatch({ control, name: "salary.currency" });
+  const currentStatus = useWatch({ control, name: "status" });
 
   const onEditSubmit = async (data) => {
     try {
@@ -77,10 +119,12 @@ export default function EditJobPostModal({ isOpen, setIsOpen, job, onUpdate }) {
 
       if (onUpdate) {
         await onUpdate(job?._id || job?.id, formattedData);
+        toast.success("Job updated successfully");
       }
       setIsOpen(false);
     } catch (error) {
       console.error(error);
+      toast.error("Something went wrong");
     }
   };
 
@@ -121,7 +165,7 @@ export default function EditJobPostModal({ isOpen, setIsOpen, job, onUpdate }) {
             <div>
               <FormLabel required>Experience Level</FormLabel>
               <Select
-                value={job?.experience || "entry"}
+                value={currentExperience}
                 onValueChange={(v) => setValue("experience", v, { shouldValidate: true })}
               >
                 <SelectTrigger className="h-10 rounded-xl text-sm w-full">
@@ -139,7 +183,7 @@ export default function EditJobPostModal({ isOpen, setIsOpen, job, onUpdate }) {
             <div>
               <FormLabel required>Job Type</FormLabel>
               <Select
-                value={job?.type || "full-time"}
+                value={currentType}
                 onValueChange={(v) => setValue("type", v, { shouldValidate: true })}
               >
                 <SelectTrigger className="h-10 rounded-xl text-sm w-full">
@@ -179,7 +223,7 @@ export default function EditJobPostModal({ isOpen, setIsOpen, job, onUpdate }) {
             <div>
               <FormLabel required>Currency</FormLabel>
               <Select
-                value={job?.salary?.currency || "BDT"}
+                value={currentCurrency}
                 onValueChange={(v) => setValue("salary.currency", v, { shouldValidate: true })}
               >
                 <SelectTrigger className="h-10 rounded-xl text-sm w-full">
@@ -237,7 +281,7 @@ export default function EditJobPostModal({ isOpen, setIsOpen, job, onUpdate }) {
           <div>
             <FormLabel required>System Status</FormLabel>
             <Select
-              value={job?.status || "open"}
+              value={currentStatus}
               onValueChange={(v) => setValue("status", v, { shouldValidate: true })}
             >
               <SelectTrigger className="h-10 rounded-xl text-sm w-full">

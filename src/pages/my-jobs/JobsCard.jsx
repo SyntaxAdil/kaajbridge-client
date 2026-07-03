@@ -31,7 +31,7 @@ const STATUS_CONFIG = {
 function formatSalary(salary) {
   if (!salary) return "Negotiable";
   if (typeof salary === "object") {
-    const symbol = salary?.currency === "USD" ? "$" : "৳";
+    const symbol = salary?.currency === "USD" ? "$" : salary?.currency==="EUR" ? "€" : "৳";
     const min = Number(salary?.min || 0).toLocaleString();
     const max = Number(salary?.max || 0).toLocaleString();
     return `${symbol}${min} - ${symbol}${max}`;
@@ -50,6 +50,7 @@ export default function JobCard({ job, isRecruiter = false }) {
   const skills = Array.isArray(job?.skills) ? job.skills : [];
 
   const handleUpdate = async (id, updatedData) => {
+    
     await jobService.updateJob(id, updatedData);
     startTransition(() => {
       router.refresh();
@@ -57,6 +58,7 @@ export default function JobCard({ job, isRecruiter = false }) {
   };
 
   const handleDelete = async (id) => {
+    
     await jobService.deleteJob(id);
     startTransition(() => {
       router.refresh();
