@@ -35,8 +35,8 @@ const DashboardWrapper = () => {
     <section className="w-full">
       {/* searching and avatar for dashboard */}
       <header className="flex items-center justify-between w-full gap-8 border-b border-border bg-background  py-4 sticky top-0 z-50">
-        <div className="flex-0 w-1 px-4" >
-            <SidebarTrigger />
+        <div className="flex-0 w-1 px-4">
+          <SidebarTrigger />
         </div>
         <div className=" flex-1">
           <InputGroup className="relative flex items-center bg-muted/40 rounded py-2 border border-border focus-within:border-primary/50 transition-colors">
@@ -51,9 +51,6 @@ const DashboardWrapper = () => {
         </div>
 
         <div className="flex items-center gap-6 shrink-0">
-          <AnimatedThemeToggler 
-          fromCenter
-           className="h-9 w-9 flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors" />
           <button className="relative p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
             <Bell className="h-5 w-5" />
             <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 bg-red-500 text-[10px] font-bold text-white rounded-full flex items-center justify-center px-1 ring-2 ring-background">
@@ -101,15 +98,12 @@ const DashboardWrapper = () => {
           <DashboardStatsGrid type="recruiter" />
         </div>
 
-
         {/* application table and my top companies  */}
 
-        <div className="flex items-start mt-6 gap-4 flex-col md:flex-row " >
-            <RecentApplications></RecentApplications>
-            <TopCompanies></TopCompanies>
+        <div className="flex items-start mt-6 gap-4 flex-col md:flex-row ">
+          <RecentApplications></RecentApplications>
+          <TopCompanies></TopCompanies>
         </div>
-
-
       </main>
     </section>
   );

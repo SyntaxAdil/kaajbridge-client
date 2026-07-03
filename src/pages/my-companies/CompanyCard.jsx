@@ -1,8 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
-import { Building2, MapPin, Users, Globe, Pencil, Trash2, CheckCircle2, Clock, XCircle } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"; 
+import {
+  Building2,
+  MapPin,
+  Users,
+  Globe,
+  Pencil,
+  Trash2,
+  CheckCircle2,
+  Clock,
+  XCircle,
+} from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../components/ui/avatar";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import EditCompany from "./EditCompany";
@@ -12,8 +26,13 @@ export default function CompanyCard({ company, onUpdate, onDelete }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const locationString = company?.address 
-    ? [company.address.street, company.address.city, company.address.country].filter(Boolean).join(", ")
+  const isVerified =
+    company?.isVerified === true || company?.isVerified === "verified";
+
+  const locationString = company?.address
+    ? [company.address.street, company.address.city, company.address.country]
+        .filter(Boolean)
+        .join(", ")
     : "Location not specified";
 
   const renderVerificationBadge = () => {
@@ -47,16 +66,38 @@ export default function CompanyCard({ company, onUpdate, onDelete }) {
       <div>
         <div className="flex items-start justify-between mb-4 gap-2">
           <div className="flex items-center gap-3 min-w-0">
-            <Avatar className="h-11 w-11 rounded-xl border border-border/60 bg-muted shrink-0 p-0.5">
-              <AvatarImage src={company?.companyLogo} alt={company?.name} className="object-contain rounded-xl" />
-              <AvatarFallback className="bg-muted text-muted-foreground rounded-xl">
-                <Building2 className="h-4.5 w-4.5 stroke-[1.8]" />
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative shrink-0">
+              <Avatar className="h-11 w-11 rounded-xl border border-border/60 bg-muted p-0.5">
+                <AvatarImage
+                  src={company?.companyLogo}
+                  alt={company?.name}
+                  className="object-contain rounded-xl"
+                />
+                <AvatarFallback className="bg-muted text-muted-foreground rounded-xl">
+                  <Building2 className="h-4.5 w-4.5 stroke-[1.8]" />
+                </AvatarFallback>
+              </Avatar>
+
+              {isVerified && (
+                <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3 rounded-full bg-background p-0.5 shadow-sm">
+                  <span className="h-full w-full rounded-full bg-emerald-500" />
+                </span>
+              )}
+            </div>
+
             <div className="min-w-0">
-              <h3 className="text-sm font-bold text-foreground leading-tight line-clamp-1 group-hover:text-primary transition-colors duration-150">
-                {company?.name || "Unnamed Company"}
-              </h3>
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-foreground leading-tight line-clamp-1 group-hover:text-primary transition-colors duration-150">
+                  {company?.name || "Unnamed Company"}
+                </h3>
+
+                {isVerified && (
+                  <span className="flex items-center justify-center relative h-3.5 w-3.5 shrink-0 text-emerald-500">
+                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75" />
+                    <CheckCircle2 className="h-3.5 w-3.5 fill-emerald-500/10 relative z-10" />
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground capitalize mt-0.5 truncate">
                 {company?.industry || "Other"}
               </p>
@@ -73,7 +114,9 @@ export default function CompanyCard({ company, onUpdate, onDelete }) {
         <div className="flex items-center justify-between text-xs text-muted-foreground gap-4">
           <div className="flex items-center gap-1.5 min-w-0">
             <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" />
-            <span className="truncate" title={locationString}>{locationString}</span>
+            <span className="truncate" title={locationString}>
+              {locationString}
+            </span>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
             <Users className="h-3.5 w-3.5 text-muted-foreground/70" />
@@ -124,18 +167,18 @@ export default function CompanyCard({ company, onUpdate, onDelete }) {
         </div>
       </div>
 
-      <EditCompany 
-        isOpen={isEditOpen} 
-        setIsOpen={setIsEditOpen} 
-        company={company} 
-        onUpdate={onUpdate} 
+      <EditCompany
+        isOpen={isEditOpen}
+        setIsOpen={setIsEditOpen}
+        company={company}
+        onUpdate={onUpdate}
       />
 
-      <DeleteCompany 
-        isOpen={isDeleteOpen} 
-        setIsOpen={setIsDeleteOpen} 
-        company={company} 
-        onDelete={onDelete} 
+      <DeleteCompany
+        isOpen={isDeleteOpen}
+        setIsOpen={setIsDeleteOpen}
+        company={company}
+        onDelete={onDelete}
       />
     </div>
   );

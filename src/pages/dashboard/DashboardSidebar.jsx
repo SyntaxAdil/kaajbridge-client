@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +26,7 @@ import { handleSignout, useSession } from "../../lib/auth/auth-client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { AnimatedThemeToggler } from "../../components/ui/animated-theme-toggler";
 
 const roleMenus = {
   seeker: [
@@ -57,7 +57,6 @@ export default function DashboardSidebar() {
   const router = useRouter();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-
   const { data: session, isPending } = useSession();
   const userClient = session?.user;
   const userRole = userClient?.role?.toLowerCase() || "seeker";
@@ -69,7 +68,6 @@ export default function DashboardSidebar() {
   }, [session, isPending, router]);
 
   const menuItems = roleMenus[userRole] || roleMenus.seeker;
-
   const userInitial = userClient?.name
     ?.trim()
     ?.split(" ")
@@ -79,9 +77,9 @@ export default function DashboardSidebar() {
 
   if (isPending) {
     return (
-      <Sidebar collapsible="icon" className="border-r border-border bg-sidebar text-sidebar-foreground">
+      <Sidebar collapsible="icon" className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
         <div className="flex h-full w-full items-center justify-center">
-          <Loader2 className="animate-spin h-6 w-6 text-primary" />
+          <Loader2 className="animate-spin h-5 w-5 text-indigo-600" />
         </div>
       </Sidebar>
     );
@@ -90,25 +88,25 @@ export default function DashboardSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="border-r border-border bg-sidebar text-sidebar-foreground transition-all duration-300 ease-in-out"
+      className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100"
     >
       <SidebarHeader
-        className={`py-5 flex items-center transition-all ${isCollapsed ? "justify-center px-0" : "px-6"}`}
+        className={`h-16 flex items-center border-b border-zinc-200 dark:border-zinc-800 ${isCollapsed ? "justify-center px-0" : "px-6"}`}
       >
-        {!isCollapsed ? (
-          <Logo />
-        ) : (
-          <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary text-lg shadow-sm">
+        {isCollapsed ? (
+          <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center font-semibold text-white text-sm">
             {userInitial || "K"}
           </div>
+        ) : (
+          <Logo />
         )}
       </SidebarHeader>
 
       {!isCollapsed && (
-        <div className="px-6 py-4 flex flex-col gap-3.5 transition-all duration-200">
-          <div className="flex items-center gap-3">
+        <div className="px-4 pt-5 pb-4">
+          <div className="flex items-center gap-3 px-2">
             {userClient?.image ? (
-              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-border bg-muted shrink-0">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 shrink-0">
                 <Image
                   src={userClient.image}
                   alt={userClient?.name || "User Profile"}
@@ -117,15 +115,15 @@ export default function DashboardSidebar() {
                 />
               </div>
             ) : (
-              <div className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border border-border bg-muted shrink-0">
-                <User2 className="h-5 w-5 text-muted-foreground" />
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-700 shrink-0">
+                <span className="text-white text-sm font-semibold">{userInitial || "U"}</span>
               </div>
             )}
-            <div className="overflow-hidden">
-              <h3 className="text-sm font-semibold tracking-tight text-foreground truncate leading-none">
+            <div className="overflow-hidden min-w-0">
+              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate leading-tight">
                 {userClient?.name}
               </h3>
-              <span className="text-xs text-muted-foreground mt-1 block truncate capitalize font-medium">
+              <span className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate capitalize block leading-tight mt-0.5 tracking-wide">
                 {userClient?.role || "Job Seeker"}
               </span>
             </div>
@@ -133,46 +131,32 @@ export default function DashboardSidebar() {
         </div>
       )}
 
-      <SidebarContent className={`mt-4 ${isCollapsed ? "px-1.5" : "px-3"}`}>
+      <SidebarContent className={`py-2 ${isCollapsed ? "px-2" : "px-4"}`}>
+        {!isCollapsed && (
+          <span className="px-2 pb-2 text-[10px] font-semibold tracking-widest text-zinc-400 dark:text-zinc-600 uppercase">
+            Menu
+          </span>
+        )}
         <SidebarMenu className="gap-1">
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
-
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   asChild
                   tooltip={item.title}
-                  className={`w-full flex items-center py-4 rounded-md transition-all duration-200 relative group
+                  className={`w-full flex items-center rounded-lg transition-colors duration-150 relative
                     ${
                       isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
-                        : "hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
-                    } 
-                    ${isCollapsed ? "justify-center px-0 h-12 w-12 mx-auto" : "px-4 gap-4"}`}
+                        ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-medium"
+                        : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100"
+                    }
+                    ${isCollapsed ? "justify-center px-0 h-10 w-10 mx-auto" : "px-3 h-10 gap-3"}`}
                 >
-                  <Link
-                    href={item.href}
-                    className="w-full h-full flex items-center justify-stretch"
-                  >
-                    <div
-                      className={`flex items-center justify-center transition-transform duration-200 group-hover:scale-105 ${isCollapsed ? "w-full" : ""}`}
-                    >
-                      <item.icon
-                        className={`h-[22px] w-[22px] shrink-0 transition-colors
-                          ${isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}
-                      />
-                    </div>
-
-                    {!isCollapsed && (
-                      <span className="text-sm tracking-wide transition-opacity duration-200">
-                        {item.title}
-                      </span>
-                    )}
-
-                    {isActive && !isCollapsed && (
-                      <div className="absolute right-0 top-1/4 bottom-1/4 w-1 bg-primary rounded-l-md" />
-                    )}
+                  <Link href={item.href} className="w-full h-full flex items-center">
+                   
+                    <item.icon className="h-[17px] w-[17px] shrink-0" />
+                    {!isCollapsed && <span className="text-[13px]">{item.title}</span>}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -181,23 +165,25 @@ export default function DashboardSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className={`mb-2 ${isCollapsed ? "px-1.5" : "px-3"}`}>
+      <SidebarFooter className={`border-t border-zinc-200 dark:border-zinc-800 py-3 ${isCollapsed ? "px-2" : "px-4"}`}>
+        <div
+          className={`flex items-center mb-2 ${isCollapsed ? "flex-col gap-2" : "justify-between px-2"}`}
+        >
+          {!isCollapsed && (
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Appearance</span>
+          )}
+          <AnimatedThemeToggler fromCenter showLabel={false} />
+        </div>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={handleSignout}
               tooltip="Logout"
-              className={`w-full flex items-center py-4 rounded-md transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
-                ${isCollapsed ? "justify-center px-0 h-12 w-12 mx-auto" : "px-4 gap-4"}`}
+              className={`w-full flex items-center rounded-lg text-red-600 bg-red-50 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors duration-150
+                ${isCollapsed ? "justify-center px-0 h-10 w-10 mx-auto" : "px-3 h-10 gap-3"}`}
             >
-              <div className={`flex items-center justify-center ${isCollapsed ? "w-full" : ""}`}>
-                <LogOut className="h-[22px] w-[22px] shrink-0 text-muted-foreground group-hover:text-foreground" />
-              </div>
-              {!isCollapsed && (
-                <span className="text-sm tracking-wide text-muted-foreground group-hover:text-foreground">
-                  Logout
-                </span>
-              )}
+              <LogOut className="h-[17px] w-[17px] shrink-0" />
+              {!isCollapsed && <span className="text-[13px] font-medium">Logout</span>}
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
