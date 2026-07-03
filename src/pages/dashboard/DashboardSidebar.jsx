@@ -33,7 +33,11 @@ const roleMenus = {
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "My Profile", icon: User2, href: "/dashboard/profile" },
     { title: "Saved Jobs", icon: Bookmark, href: "/dashboard/saved" },
-    { title: "My Applications", icon: FileText, href: "/dashboard/applications" },
+    {
+      title: "My Applications",
+      icon: FileText,
+      href: "/dashboard/applications",
+    },
     { title: "Billing & Plans", icon: CreditCard, href: "/dashboard/billing" },
   ],
   recruiter: [
@@ -46,7 +50,11 @@ const roleMenus = {
   admin: [
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "Profile Settings", icon: User2, href: "/dashboard/profile" },
-    { title: "Manage Companies", icon: Building2, href: "/dashboard/my-companies" },
+    {
+      title: "Manage Companies",
+      icon: Building2,
+      href: "/dashboard/my-companies",
+    },
     { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
     { title: "Applications", icon: FileText, href: "/dashboard/applications" },
   ],
@@ -77,7 +85,10 @@ export default function DashboardSidebar() {
 
   if (isPending) {
     return (
-      <Sidebar collapsible="icon" className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+      <Sidebar
+        collapsible="icon"
+        className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950"
+      >
         <div className="flex h-full w-full items-center justify-center">
           <Loader2 className="animate-spin h-5 w-5 text-indigo-600" />
         </div>
@@ -90,18 +101,19 @@ export default function DashboardSidebar() {
       collapsible="icon"
       className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100"
     >
-      <SidebarHeader
-        className={`h-16 flex items-center border-b border-zinc-200 dark:border-zinc-800 ${isCollapsed ? "justify-center px-0" : "px-6"}`}
-      >
-        {isCollapsed ? (
-          <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center font-semibold text-white text-sm">
-            {userInitial || "K"}
-          </div>
-        ) : (
-          <Logo />
-        )}
-      </SidebarHeader>
-
+      <Link href="/">
+        <SidebarHeader
+          className={`h-17.5  flex items-center border-b border-zinc-200 dark:border-zinc-800 ${isCollapsed ? "justify-center px-0" : "px-6"}`}
+        >
+          {isCollapsed ? (
+            <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center font-semibold text-white text-sm">
+              {userInitial || "K"}
+            </div>
+          ) : (
+            <Logo className="mt-2" />
+          )}
+        </SidebarHeader>
+      </Link>
       {!isCollapsed && (
         <div className="px-4 pt-5 pb-4">
           <div className="flex items-center gap-3 px-2">
@@ -116,7 +128,9 @@ export default function DashboardSidebar() {
               </div>
             ) : (
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-700 shrink-0">
-                <span className="text-white text-sm font-semibold">{userInitial || "U"}</span>
+                <span className="text-white text-sm font-semibold">
+                  {userInitial || "U"}
+                </span>
               </div>
             )}
             <div className="overflow-hidden min-w-0">
@@ -153,10 +167,14 @@ export default function DashboardSidebar() {
                     }
                     ${isCollapsed ? "justify-center px-0 h-10 w-10 mx-auto" : "px-3 h-10 gap-3"}`}
                 >
-                  <Link href={item.href} className="w-full h-full flex items-center">
-                   
+                  <Link
+                    href={item.href}
+                    className="w-full h-full flex items-center"
+                  >
                     <item.icon className="h-[17px] w-[17px] shrink-0" />
-                    {!isCollapsed && <span className="text-[13px]">{item.title}</span>}
+                    {!isCollapsed && (
+                      <span className="text-[13px]">{item.title}</span>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -165,14 +183,18 @@ export default function DashboardSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className={`border-t border-zinc-200 dark:border-zinc-800 py-3 ${isCollapsed ? "px-2" : "px-4"}`}>
+      <SidebarFooter
+        className={`border-t border-zinc-200 dark:border-zinc-800 py-3 ${isCollapsed ? "px-2" : "px-4"}`}
+      >
         <div
           className={`flex items-center mb-2 ${isCollapsed ? "flex-col gap-2" : "justify-between px-2"}`}
         >
           {!isCollapsed && (
-            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Appearance</span>
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+              Appearance
+            </span>
           )}
-          <AnimatedThemeToggler fromCenter showLabel={false} />
+          <AnimatedThemeToggler fromCenter  />
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -183,7 +205,9 @@ export default function DashboardSidebar() {
                 ${isCollapsed ? "justify-center px-0 h-10 w-10 mx-auto" : "px-3 h-10 gap-3"}`}
             >
               <LogOut className="h-[17px] w-[17px] shrink-0" />
-              {!isCollapsed && <span className="text-[13px] font-medium">Logout</span>}
+              {!isCollapsed && (
+                <span className="text-[13px] font-medium">Logout</span>
+              )}
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
