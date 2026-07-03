@@ -23,6 +23,7 @@ import {
 import { jobService } from "@/services/jobs";
 import { jobCreateSchema } from "@/schema/job-schema";
 import { FormLabel, FieldError, SectionDivider } from "./FormComponents";
+import toast from "react-hot-toast";
 
 export default function CreateJobForm({ myCompaniesName = [] }) {
   const [selectedLogo, setSelectedLogo] = useState("");
@@ -92,10 +93,12 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
       
       startTransition(() => {
         router.push("/dashboard/my-jobs");
+        toast.success("Job created successfully");
         router.refresh();
       });
     } catch (error) {
       console.error(error);
+      toast.error("Something went wrong");
     }
   };
 

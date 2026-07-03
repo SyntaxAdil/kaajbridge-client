@@ -26,6 +26,7 @@ import {
   SelectTrigger,
 } from "../../../../../components/ui/select";
 import { companyService } from "@/services/company";
+import toast from "react-hot-toast";
 
 const INDUSTRY_OPTIONS = [
   { value: "technology", label: "Technology & IT" },
@@ -115,9 +116,11 @@ export default function CompanyCreateForm() {
     try {
       await companyService.createCompany(data);
       router.push("/dashboard/my-companies");
+      toast.success("Company created successfully");
       router.refresh();
     } catch (err) {
       console.error("API Error creating company:", err);
+      toast.error("Something went wrong");
     }
   };
 
