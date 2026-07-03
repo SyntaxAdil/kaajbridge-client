@@ -4,7 +4,7 @@ import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, AlertTriangle, Loader2 } from "lucide-react";
+import { Plus, AlertTriangle, Loader2, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,7 +29,6 @@ import {
 
 import { jobService } from "../../services/jobs";
 import { jobCreateSchema } from "../../schema/job-schema";
-
 
 function FormLabel({ children, required }) {
   return (
@@ -56,8 +55,9 @@ function SectionDivider({ label }) {
   );
 }
 
-export default function CreateJobModalWrapper() {
+export default function CreateJobModalWrapper({ myCompaniesName = [] }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedLogo, setSelectedLogo] = useState("");
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -76,6 +76,18 @@ export default function CreateJobModalWrapper() {
       termsAccepted: false,
     },
   });
+
+  const handleCompanyChange = (companyName) => {
+    setValue("company", companyName);
+    const targetCompany = myCompaniesName.find((c) => c.name === companyName);
+    if (targetCompany && targetCompany.companyLogo) {
+      setSelectedLogo(targetCompany.companyLogo);
+      setValue("companyLogo", targetCompany.companyLogo);
+    } else {
+      setSelectedLogo("");
+      setValue("companyLogo", "");
+    }
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -102,12 +114,13 @@ export default function CreateJobModalWrapper() {
         skills: skillsArray,
         applicationDeadline: data.applicationDeadline,
         status: data.status,
-        companyLogo: data.companyLogo || "",
+        companyLogo: data.companyLogo || selectedLogo || "",
         termsAccepted: data.termsAccepted,
       };
 
       await jobService.createJob(payload);
       reset();
+      setSelectedLogo("");
       setIsOpen(false);
       startTransition(() => {
         router.refresh();
@@ -122,7 +135,7 @@ export default function CreateJobModalWrapper() {
       <DialogTrigger asChild>
         <Button className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-5 py-2.5 font-semibold text-sm flex items-center gap-2 shadow-sm transition-all duration-200">
           <Plus className="h-4 w-4 stroke-[2.5]" />
-          Create Job Post
+          {"Create Job Post"}
         </Button>
       </DialogTrigger>
 
@@ -130,10 +143,10 @@ export default function CreateJobModalWrapper() {
         <div className="sticky top-0 z-10 bg-card border-b border-border/60 px-7 pt-6 pb-5 rounded-t-2xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold tracking-tight">
-              Create New Job Post
+              {"Create New Job Post"}
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground mt-0.5">
-              Publish targeted opportunities designated for engineering professionals.
+              {"Publish targeted opportunities designated for engineering professionals."}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -142,17 +155,17 @@ export default function CreateJobModalWrapper() {
           <Alert className="bg-amber-500/8 border border-amber-500/25 py-3 px-4 mb-6 rounded-xl">
             <AlertTriangle className="h-4 w-4 text-amber-500" />
             <AlertTitle className="font-semibold text-xs text-amber-600 ml-1">
-              Important Notice / Caution
+              {"Important Notice / Caution"}
             </AlertTitle>
             <AlertDescription className="text-[11.5px] text-amber-600/80 mt-0.5 ml-1 leading-relaxed">
-              This platform is strictly dedicated to engineering ecosystems. Any job posted here must be applicable and restricted only for Diploma Engineering students or Diploma holders.
+              {"This platform is strictly dedicated to engineering ecosystems. Any job posted here must be applicable and restricted only for Diploma Engineering students or Diploma holders."}
             </AlertDescription>
           </Alert>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <FormLabel required>Job Title</FormLabel>
+                <FormLabel required>{"Job Title"}</FormLabel>
                 <Input
                   {...register("title")}
                   placeholder="e.g. Frontend Developer"
@@ -161,19 +174,42 @@ export default function CreateJobModalWrapper() {
                 <FieldError error={errors.title} />
               </div>
               <div>
-                <FormLabel required>Company Name</FormLabel>
-                <Input
-                  {...register("company")}
-                  placeholder="e.g. Vercel"
-                  className="h-10 rounded-xl text-sm"
-                />
+                <FormLabel required>{"Company"}</FormLabel>
+                <div className="flex gap-2 items-center">
+                  <div className="flex-1">
+                    <Select onValueChange={handleCompanyChange}>
+                      <SelectTrigger className="h-10 rounded-xl text-sm w-full">
+                        <SelectValue placeholder="Select Company" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {myCompaniesName.map((company) => (
+                          <SelectItem key={company._id} value={company.name}>
+                            {company.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="h-10 w-10 shrink-0 border border-border/80 rounded-xl flex items-center justify-center bg-muted/40 overflow-hidden">
+                    {selectedLogo ? (
+                      <img
+                        src={selectedLogo}
+                        alt="Logo"
+                        className="h-full w-full object-cover"
+                        onError={() => setSelectedLogo("")}
+                      />
+                    ) : (
+                      <Building2 className="h-5 w-5 text-muted-foreground/70" />
+                    )}
+                  </div>
+                </div>
                 <FieldError error={errors.company} />
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <FormLabel required>Location</FormLabel>
+                <FormLabel required>{"Location"}</FormLabel>
                 <Input
                   {...register("location")}
                   placeholder="e.g. Dhaka, BD"
@@ -182,22 +218,22 @@ export default function CreateJobModalWrapper() {
                 <FieldError error={errors.location} />
               </div>
               <div>
-                <FormLabel required>Experience Level</FormLabel>
+                <FormLabel required>{"Experience Level"}</FormLabel>
                 <Select onValueChange={(v) => setValue("experience", v)}>
                   <SelectTrigger className="h-10 rounded-xl text-sm w-full">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="entry">Entry Level</SelectItem>
-                    <SelectItem value="mid">Mid Level</SelectItem>
-                    <SelectItem value="senior">Senior Level</SelectItem>
-                    <SelectItem value="lead">Lead Level</SelectItem>
+                    <SelectItem value="entry">{"Entry Level"}</SelectItem>
+                    <SelectItem value="mid">{"Mid Level"}</SelectItem>
+                    <SelectItem value="senior">{"Senior Level"}</SelectItem>
+                    <SelectItem value="lead">{"Lead Level"}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FieldError error={errors.experience} />
               </div>
               <div>
-                <FormLabel required>Job Type</FormLabel>
+                <FormLabel required>{"Job Type"}</FormLabel>
                 <Select
                   defaultValue="full-time"
                   onValueChange={(v) => setValue("type", v)}
@@ -206,11 +242,11 @@ export default function CreateJobModalWrapper() {
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="full-time">Full-time</SelectItem>
-                    <SelectItem value="part-time">Part-time</SelectItem>
-                    <SelectItem value="remote">Remote</SelectItem>
-                    <SelectItem value="contract">Contract</SelectItem>
-                    <SelectItem value="internship">Internship</SelectItem>
+                    <SelectItem value="full-time">{"Full-time"}</SelectItem>
+                    <SelectItem value="part-time">{"Part-time"}</SelectItem>
+                    <SelectItem value="remote">{"Remote"}</SelectItem>
+                    <SelectItem value="contract">{"Contract"}</SelectItem>
+                    <SelectItem value="internship">{"Internship"}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FieldError error={errors.type} />
@@ -221,7 +257,7 @@ export default function CreateJobModalWrapper() {
               <SectionDivider label="Salary Metrics" />
               <div className="grid grid-cols-3 gap-4 items-end">
                 <div>
-                  <FormLabel required>Min Salary</FormLabel>
+                  <FormLabel required>{"Min Salary"}</FormLabel>
                   <Input
                     type="number"
                     {...register("salary.min")}
@@ -231,7 +267,7 @@ export default function CreateJobModalWrapper() {
                   <FieldError error={errors.salary?.min} />
                 </div>
                 <div>
-                  <FormLabel required>Max Salary</FormLabel>
+                  <FormLabel required>{"Max Salary"}</FormLabel>
                   <Input
                     type="number"
                     {...register("salary.max")}
@@ -241,7 +277,7 @@ export default function CreateJobModalWrapper() {
                   <FieldError error={errors.salary?.max} />
                 </div>
                 <div>
-                  <FormLabel required>Currency</FormLabel>
+                  <FormLabel required>{"Currency"}</FormLabel>
                   <Select
                     defaultValue="BDT"
                     onValueChange={(v) => setValue("salary.currency", v)}
@@ -250,9 +286,9 @@ export default function CreateJobModalWrapper() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="BDT">BDT (৳)</SelectItem>
-                      <SelectItem value="USD">USD ($)</SelectItem>
-                      <SelectItem value="EUR">EUR (€)</SelectItem>
+                      <SelectItem value="BDT">{"BDT (৳)"}</SelectItem>
+                      <SelectItem value="USD">{"USD ($)"}</SelectItem>
+                      <SelectItem value="EUR">{"EUR (€)"}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -263,7 +299,7 @@ export default function CreateJobModalWrapper() {
               <SectionDivider label="Core Framework Details" />
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <FormLabel required>Requirements (Comma Separated)</FormLabel>
+                  <FormLabel required>{"Requirements (Comma Separated)"}</FormLabel>
                   <Input
                     {...register("requirements")}
                     placeholder="Git, Basic Linux, OOP"
@@ -272,7 +308,7 @@ export default function CreateJobModalWrapper() {
                   <FieldError error={errors.requirements} />
                 </div>
                 <div>
-                  <FormLabel required>Skills (Comma Separated)</FormLabel>
+                  <FormLabel required>{"Skills (Comma Separated)"}</FormLabel>
                   <Input
                     {...register("skills")}
                     placeholder="JavaScript, React, Tailwind"
@@ -284,7 +320,7 @@ export default function CreateJobModalWrapper() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <FormLabel required>Application Deadline</FormLabel>
+                  <FormLabel required>{"Application Deadline"}</FormLabel>
                   <Input
                     type="date"
                     {...register("applicationDeadline")}
@@ -293,7 +329,7 @@ export default function CreateJobModalWrapper() {
                   <FieldError error={errors.applicationDeadline} />
                 </div>
                 <div>
-                  <FormLabel>Company Logo URL</FormLabel>
+                  <FormLabel>{"Company Logo URL"}</FormLabel>
                   <Input
                     {...register("companyLogo")}
                     placeholder="https://example.com/logo.png"
@@ -304,7 +340,7 @@ export default function CreateJobModalWrapper() {
               </div>
 
               <div>
-                <FormLabel required>Job Description</FormLabel>
+                <FormLabel required>{"Job Description"}</FormLabel>
                 <Textarea
                   {...register("description")}
                   rows={3}
@@ -328,7 +364,7 @@ export default function CreateJobModalWrapper() {
                     htmlFor="terms"
                     className="text-xs font-medium text-foreground cursor-pointer select-none"
                   >
-                    I hereby confirm that this position is designated exclusively for Diploma Engineering credentials.
+                    {"I hereby confirm that this position is designated exclusively for Diploma Engineering credentials."}
                   </label>
                 </div>
               </div>
@@ -344,7 +380,7 @@ export default function CreateJobModalWrapper() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Publishing Job...
+                    {"Publishing Job..."}
                   </>
                 ) : (
                   "Publish Job Scope"

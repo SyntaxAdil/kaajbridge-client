@@ -107,7 +107,7 @@ export default function EditJobPostModal({ isOpen, setIsOpen, job, onUpdate }) {
             </div>
             <div>
               <FormLabel required>Company Name</FormLabel>
-              <Input {...register("company")} className="h-10 rounded-xl text-sm" />
+              <Input {...register("company")} disabled={true} className="h-10 rounded-xl text-sm" />
               <FieldError error={errors.company} />
             </div>
           </div>

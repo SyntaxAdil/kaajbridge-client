@@ -24,6 +24,7 @@ const MyCompaniess = async ({ searchParams }) => {
     console.error("Failed to pre-fetch companies on server:", error);
   }
 
+  
   return (
     <div>
       <MyCompanyWrapper initialCompanies={companies} />

@@ -1,10 +1,12 @@
 import React from "react";
 import MyJobsWrapper from "@/pages/my-jobs/MyJobsWrapper";
 import { jobService } from "../../../../services/jobs";
+import { companyService } from "../../../../services/company";
 
 export const metadata = {
   title: "My Jobs - KaajBridge",
-  description: "Control your published configurations and engineering job boards.",
+  description:
+    "Control your published configurations and engineering job boards.",
 };
 
 export default async function MyJobsPage({ searchParams }) {
@@ -15,14 +17,24 @@ export default async function MyJobsPage({ searchParams }) {
 
   let initialData = { data: [], pagination: { total: 0 } };
   try {
-    initialData = await jobService.getMyJobsServerSide({ search, status, page });
+    initialData = await jobService.getMyJobsServerSide({
+      search,
+      status,
+      page,
+    });
   } catch (error) {
     console.error("Failed fetching jobs on server context:", error);
   }
 
+  const myCompaniesName = await companyService.getMyCompany().then((res) => res.allCompanyName);
+  
+  
+
+  
   return (
-    <MyJobsWrapper 
-      initialJobs={initialData?.data || []} 
+    <MyJobsWrapper
+    myCompaniesName={myCompaniesName}
+      initialJobs={initialData?.data || []}
       initialTotal={initialData?.pagination?.total || 0}
       searchParams={{ search, status, page }}
     />

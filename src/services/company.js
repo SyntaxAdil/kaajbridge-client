@@ -21,6 +21,7 @@ export const companyService = {
     return apiRequest(`/company?${query.toString()}`);
   },
   getTopCompanies: () => apiRequest("/company/top-companies"),
+
   getCompanyById: (id) => apiRequest(`/company/${id}`),
   createCompany: (companyData) =>
     apiRequest("/company", { method: "POST", body: JSON.stringify(companyData) }),

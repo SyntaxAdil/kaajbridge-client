@@ -4,7 +4,7 @@ import SearchInputStream from "./SearchInputStream";
 import CreateJobModalWrapper from "./CreateJobModalWrapper";
 import JobCard from "./JobsCard";
 
-export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams }) {
+export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams,myCompaniesName }) {
   return (
     <section className="w-full min-h-screen bg-background px-6 lg:px-10 py-8">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-border/60">
@@ -33,7 +33,7 @@ export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams 
           jobs scopes posted
         </p>
 
-        <CreateJobModalWrapper />
+        <CreateJobModalWrapper myCompaniesName={myCompaniesName} />
       </div>
 
       {initialJobs.length === 0 ? (

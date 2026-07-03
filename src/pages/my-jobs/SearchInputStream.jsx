@@ -29,7 +29,7 @@ export default function SearchInputStream({ initialValue = "" }) {
     }, 400);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [search, pathname, router, searchParams]);
+  }, [search]);
 
   return (
     <InputGroup className="flex items-center bg-muted/30 rounded-xl border border-border/60 focus-within:border-primary/40 transition-all duration-200">
