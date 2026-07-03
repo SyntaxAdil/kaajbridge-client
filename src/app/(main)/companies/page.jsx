@@ -1,25 +1,43 @@
 import React from "react";
 import { companyService } from "../../../services/company";
-import CompanyCard from "../../../pages/my-companies/CompanyCard";
-import Wrapper from "../../../components/shared/Wrapper";
+import CompaniesWrapper from "../../../pages/companies/CompaniesWrapper";
 
-const Companies = async () => {
-  const companies = await companyService
-    .getAllCompanies()
-    .then((res) => res.data);
+export const metadata = {
+  title: "Companies - KaajBridge",
+  description: "Browse verified companies hiring diploma engineers on KaajBridge.",
+};
 
-  return (
-    <div>
-      <Wrapper>
-        <h1>Companies</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {companies.map((company) => (
-            <CompanyCard isPrivete={false} key={company._id} company={company} />
-          ))}
-        </div>
-      </Wrapper>
-    </div>
-  );
+const Companies = async ({ searchParams }) => {
+  const params = await searchParams;
+  const page = Number(params?.page) || 1;
+  const search = params?.search || "";
+  const industry = params?.industry || "";
+  const location = params?.location || "";
+  const size = params?.size || "";
+  const sort = params?.sort || "newest";
+
+  let companies = {
+    success: false,
+    data: [],
+    totalCompany: 0,
+    currentPage: 1,
+    totalPages: 1,
+  };
+
+  try {
+    companies = await companyService.getAllCompanies({
+      page,
+      search,
+      industry,
+      location,
+      size,
+      sort,
+    });
+  } catch (error) {
+    console.error("Failed to pre-fetch companies:", error);
+  }
+
+  return <CompaniesWrapper initialCompanies={companies} />;
 };
 
 export default Companies;

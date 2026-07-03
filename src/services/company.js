@@ -1,7 +1,25 @@
 import { apiRequest } from "./api-client";
 
 export const companyService = {
-  getAllCompanies: () => apiRequest("/company"),
+  getAllCompanies: ({
+    page = 1,
+    limit = 12,
+    search = "",
+    industry = "",
+    location = "",
+    size = "",
+    sort = "newest",
+  } = {}) => {
+    const query = new URLSearchParams();
+    query.set("page", page);
+    query.set("limit", limit);
+    query.set("sort", sort);
+    if (search) query.set("search", search);
+    if (industry) query.set("industry", industry);
+    if (location) query.set("location", location);
+    if (size) query.set("size", size);
+    return apiRequest(`/company?${query.toString()}`);
+  },
   getTopCompanies: () => apiRequest("/company/top-companies"),
   getCompanyById: (id) => apiRequest(`/company/${id}`),
   createCompany: (companyData) =>
