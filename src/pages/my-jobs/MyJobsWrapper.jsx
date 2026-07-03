@@ -1,10 +1,12 @@
 import React from "react";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import SearchInputStream from "./SearchInputStream";
-import CreateJobModalWrapper from "./CreateJobModalWrapper";
 import JobCard from "./JobsCard";
 
-export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams,myCompaniesName }) {
+export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams }) {
   return (
     <section className="w-full min-h-screen bg-background py-8">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-border/60">
@@ -33,11 +35,16 @@ export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams,
           jobs scopes posted
         </p>
 
-        <CreateJobModalWrapper myCompaniesName={myCompaniesName} />
+        <Button asChild className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-5 py-2.5 font-semibold text-sm flex items-center gap-2 shadow-sm transition-all duration-200">
+          <Link href="/dashboard/my-jobs/create">
+            <Plus className="h-4 w-4 stroke-[2.5]" />
+            Create Job Post
+          </Link>
+        </Button>
       </div>
 
       {initialJobs.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 px-4 text-center  rounded-2xl bg-muted/5 max-w-md mx-auto my-4">
+        <div className="flex flex-col items-center justify-center py-20 px-4 text-center rounded-2xl bg-muted/5 max-w-md mx-auto my-4">
           <h3 className="text-sm font-bold text-foreground tracking-tight">
             No Job Posts Found
           </h3>
