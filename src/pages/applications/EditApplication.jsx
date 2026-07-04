@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
+import toast from "react-hot-toast";
 
 export default function EditApplication({ id, currentStatus }) {
   const router = useRouter();
@@ -16,12 +17,15 @@ export default function EditApplication({ id, currentStatus }) {
 
   const handleStatusUpdate = async (newStatus) => {
     try {
-      const { applicationService } = await import("@/services/applicationService");
+      const { applicationService } = await import("../../services/applications");
       await applicationService.updateApplicationStatus(id, newStatus);
+      toast.success("Application status updated successfully");
       startTransition(() => {
         router.refresh();
+
       });
     } catch (error) {
+      toast.error( error.message || "Something went wrong");
       console.error(error);
     }
   };
@@ -37,7 +41,8 @@ export default function EditApplication({ id, currentStatus }) {
           <SelectItem value="reviewed">Reviewed</SelectItem>
           <SelectItem value="shortlisted">Shortlisted</SelectItem>
           <SelectItem value="interviewing">Interviewing</SelectItem>
-          <SelectItem value="accepted">Accepted</SelectItem>
+          <SelectItem value="hired">Hired</SelectItem>
+      
           <SelectItem value="rejected">Rejected</SelectItem>
         </SelectContent>
       </Select>

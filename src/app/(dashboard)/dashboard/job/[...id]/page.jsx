@@ -2,47 +2,92 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { jobService } from "../../../../../services/jobs";
-import { 
-  ArrowLeft, 
-  Briefcase, 
-  MapPin, 
-  Calendar, 
-  DollarSign, 
-  UserCheck, 
-  Building2, 
-  Clock, 
-  CheckCircle2, 
-  AlertCircle 
+import { applicationService } from "../../../../../services/applications";
+
+import {
+  ArrowLeft,
+  Briefcase,
+  MapPin,
+  Calendar,
+  DollarSign,
+  UserCheck,
+  Building2,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  AlertCircle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import ApplyButtonClient from "./ApplyButtonClient";
+import { auth } from "../../../../../lib/auth/auth";
+import { headers } from "next/headers";
 
 export default async function JobDetailsPage({ params }) {
   const { id } = await params;
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  const user = session?.user || null;
+
   const job = await jobService.getJobById(id).then((res) => res.data);
 
-  const formattedDeadline = new Date(job.applicationDeadline).toLocaleDateString("en-US", {
+  let initialHasApplied = false;
+  if (user && job) {
+    try {
+      const myApps = await applicationService.getMyApplications({ limit: 100 });
+      initialHasApplied =
+        myApps?.data?.some(
+          (app) => app.job?._id === job._id || app.job === job._id,
+        ) || false;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const formattedDeadline = new Date(
+    job.applicationDeadline,
+  ).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
 
+  const isClosed = job.status !== "open";
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-      <div>
-        <Link 
-          href="/jobs" 
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
-        >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          Go to Explore Jobs
-        </Link>
+      <div className="flex flex-col gap-4">
+        <div>
+          <Link
+            href="/jobs"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            Go to Explore Jobs
+          </Link>
+        </div>
+
+        {isClosed && (
+          <div className="rounded-2xl border border-destructive/10 bg-destructive/5 p-4 flex items-start gap-3 animate-in fade-in duration-300">
+            <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold text-destructive uppercase tracking-wider">
+                No Longer Accepting Applications
+              </h4>
+              <p className="text-xs text-destructive/80 leading-normal">
+                This job position pipeline has been officialized as closed. You
+                can review the structure parameters, but new asset submittals
+                are locked.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-b from-card to-card/50 p-6 md:p-8 shadow-sm backdrop-blur-sm">
         <div className="absolute top-0 right-0 h-32 w-32 bg-primary/5 rounded-full blur-3xl -z-10" />
-        
+
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="flex items-start gap-4 md:gap-5">
             <div className="relative h-16 w-16 md:h-20 md:w-20 rounded-2xl overflow-hidden border border-border/60 bg-background flex items-center justify-center shadow-sm shrink-0">
@@ -60,10 +105,16 @@ export default async function JobDetailsPage({ params }) {
 
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary" className="capitalize text-[11px] font-medium rounded-md px-2 py-0.5">
+                <Badge
+                  variant="secondary"
+                  className="capitalize text-[11px] font-medium rounded-md px-2 py-0.5"
+                >
                   {job.type}
                 </Badge>
-                <Badge variant="outline" className="capitalize text-[11px] font-medium rounded-md px-2 py-0.5">
+                <Badge
+                  variant="outline"
+                  className="capitalize text-[11px] font-medium rounded-md px-2 py-0.5"
+                >
                   {job.experience} Level
                 </Badge>
                 {job.status === "open" ? (
@@ -71,7 +122,10 @@ export default async function JobDetailsPage({ params }) {
                     {job.status}
                   </Badge>
                 ) : (
-                  <Badge variant="destructive" className="capitalize text-[11px] font-bold rounded-md px-2 py-0.5">
+                  <Badge
+                    variant="destructive"
+                    className="capitalize text-[11px] font-bold rounded-md px-2 py-0.5"
+                  >
                     {job.status}
                   </Badge>
                 )}
@@ -83,20 +137,27 @@ export default async function JobDetailsPage({ params }) {
 
               <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs md:text-sm text-muted-foreground">
                 <span className="font-semibold text-foreground flex items-center gap-1.5">
-                  <Building2 className="h-4 w-4 text-muted-foreground/70" /> {job.company}
+                  <Building2 className="h-4 w-4 text-muted-foreground/70" />{" "}
+                  {job.company}
                 </span>
                 <span className="flex items-center gap-1.5 capitalize">
-                  <MapPin className="h-4 w-4 text-muted-foreground/70" /> {job.location}
+                  <MapPin className="h-4 w-4 text-muted-foreground/70" />{" "}
+                  {job.location}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Clock className="h-4 w-4 text-muted-foreground/70" /> Full-time Network
+                  <Clock className="h-4 w-4 text-muted-foreground/70" />{" "}
+                  Full-time Network
                 </span>
               </div>
             </div>
           </div>
 
           <div className="w-full md:w-auto shrink-0 pt-2 md:pt-0">
-            <ApplyButtonClient jobId={id} jobStatus={job.status} />
+            <ApplyButtonClient
+              job={job}
+              user={user}
+              initialHasApplied={initialHasApplied}
+            />
           </div>
         </div>
       </div>
@@ -109,7 +170,8 @@ export default async function JobDetailsPage({ params }) {
             </h2>
             <Separator className="bg-border/60" />
             <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-              {job.description || "No description provided for this pipeline platform setup."}
+              {job.description ||
+                "No description provided for this pipeline platform setup."}
             </p>
           </div>
 
@@ -121,7 +183,10 @@ export default async function JobDetailsPage({ params }) {
               <Separator className="bg-border/60" />
               <ul className="space-y-2.5">
                 {job.requirements.map((req, index) => (
-                  <li key={index} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                  <li
+                    key={index}
+                    className="flex items-start gap-2.5 text-sm text-muted-foreground"
+                  >
                     <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <span>{req}</span>
                   </li>
@@ -138,9 +203,9 @@ export default async function JobDetailsPage({ params }) {
               <Separator className="bg-border/60" />
               <div className="flex flex-wrap gap-1.5">
                 {job.skills.map((skill, index) => (
-                  <Badge 
-                    key={index} 
-                    variant="secondary" 
+                  <Badge
+                    key={index}
+                    variant="secondary"
                     className="bg-muted/60 hover:bg-muted font-medium text-xs rounded-lg px-3 py-1 text-muted-foreground border border-border/40"
                   >
                     {skill}
@@ -157,16 +222,22 @@ export default async function JobDetailsPage({ params }) {
               Job Summary
             </h2>
             <Separator className="bg-border/60" />
-            
+
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 rounded-lg bg-primary/5 text-primary">
                   <DollarSign className="h-4 w-4" />
                 </div>
                 <div>
-                  <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">Salary Scope</span>
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                    Salary Scope
+                  </span>
                   <span className="text-sm font-semibold text-foreground">
-                    {job.salary?.min}k - {job.salary?.max}k {job.salary?.currency || "EUR"} <span className="text-xs font-normal text-muted-foreground">/ year</span>
+                    {job.salary?.min}k - {job.salary?.max}k{" "}
+                    {job.salary?.currency || "EUR"}{" "}
+                    <span className="text-xs font-normal text-muted-foreground">
+                      / year
+                    </span>
                   </span>
                 </div>
               </div>
@@ -176,7 +247,9 @@ export default async function JobDetailsPage({ params }) {
                   <Calendar className="h-4 w-4" />
                 </div>
                 <div>
-                  <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">Application Deadline</span>
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                    Application Deadline
+                  </span>
                   <span className="text-sm font-semibold text-foreground">
                     {formattedDeadline}
                   </span>
@@ -188,7 +261,9 @@ export default async function JobDetailsPage({ params }) {
                   <UserCheck className="h-4 w-4" />
                 </div>
                 <div>
-                  <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">Experience Standard</span>
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                    Experience Standard
+                  </span>
                   <span className="text-sm font-semibold text-foreground capitalize">
                     {job.experience} Specialist
                   </span>
@@ -200,9 +275,13 @@ export default async function JobDetailsPage({ params }) {
           <div className="rounded-2xl border border-amber-500/10 bg-amber-500/5 p-4 flex items-start gap-3">
             <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <h4 className="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider">Verification Note</h4>
+              <h4 className="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider">
+                Verification Note
+              </h4>
               <p className="text-[11px] text-amber-700/80 dark:text-amber-500/80 leading-normal">
-                This verification space is designated specifically for Diploma Engineering network pipelines. Ensure credentials match requirements.
+                This verification space is designated specifically for Diploma
+                Engineering network pipelines. Ensure credentials match
+                requirements.
               </p>
             </div>
           </div>

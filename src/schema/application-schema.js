@@ -73,7 +73,7 @@ export const getMyApplicationsSchema = z.object({
       .transform((val) => (val ? parseInt(val, 10) : 10))
       .pipe(z.number().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100")),
     status: z
-      .enum(["pending", "reviewed", "shortlisted", "interviewing", "accepted", "rejected", ""])
+      .enum(["pending", "reviewed", "shortlisted", "interviewing", "hired", "rejected", ""])
       .optional(),
   }),
 });

@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../components/ui/dialog";
+import toast from "react-hot-toast";
 
 export default function DeleteApplication({ id }) {
   const router = useRouter();
@@ -19,13 +20,15 @@ export default function DeleteApplication({ id }) {
 
   const handleDelete = async () => {
     try {
-      const { applicationService } = await import("@/services/applicationService");
+      const { applicationService } = await import("../../services/applications");
       await applicationService.deleteApplication(id);
+      toast.success("Application deleted successfully");
       startTransition(() => {
         setIsOpen(false);
         router.refresh();
       });
     } catch (error) {
+      toast.error( error.message || "Something went wrong");  
       console.error(error);
     }
   };

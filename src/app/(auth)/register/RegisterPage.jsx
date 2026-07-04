@@ -47,6 +47,7 @@ export default function RegisterPage() {
           password: data.password,
           name: `${data.fname} ${data.lname}`,
           role: data.role,
+          applications:[],
           callbackURL: "/",
         },
         {

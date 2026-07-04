@@ -8,6 +8,16 @@ export const applicationService = {
     });
   },
 
+  getAllApplicationsForRecruiter: ({ page = "1", limit = "10", status = "", jobId = "" } = {}) => {
+    const queryParams = new URLSearchParams();
+    if (page) queryParams.append("page", page);
+    if (limit) queryParams.append("limit", limit);
+    if (status) queryParams.append("status", status);
+    if (jobId) queryParams.append("jobId", jobId);
+
+    return apiRequest(`/application/all-job-applications?${queryParams.toString()}`);
+  },
+
   getAllApplicationsForJob: (jobId, { page = "1", limit = "10", status = "" } = {}) => {
     const queryParams = new URLSearchParams();
     if (page) queryParams.append("page", page);
