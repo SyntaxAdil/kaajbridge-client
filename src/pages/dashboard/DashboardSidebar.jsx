@@ -22,7 +22,7 @@ import {
   Loader2,
   LogOut,
   PlusCircle,
-  FolderOpen,
+  Users2,
 } from "lucide-react";
 import Image from "next/image";
 import { handleSignout, useSession } from "../../lib/auth/auth-client";
@@ -59,14 +59,11 @@ const roleMenus = {
     { type: "label", title: "Overview" },
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "Profile Settings", icon: User2, href: "/dashboard/profile" },
-    { type: "label", title: "Global Companies" },
-    { title: "Create Company", icon: PlusCircle, href: "/dashboard/my-companies/create" },
-    { title: "Manage Companies", icon: Building2, href: "/dashboard/my-companies" },
-    { type: "label", title: "Global Jobs" },
-    { title: "Create Job Scope", icon: PlusCircle, href: "/dashboard/my-jobs/create" },
-    { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
-    { type: "label", title: "Global Applications" },
-    { title: "All Applications", icon: FolderOpen, href: "/dashboard/applications" },
+    { type: "label", title: "Platform Core Management" },
+    { title: "Manage Users", icon: Users2, href: "/dashboard/admin/users" },
+    { title: "Manage Companies", icon: Building2, href: "/dashboard/admin/companies" },
+    { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/admin/jobs" },
+    { title: "Manage Applications", icon: FileText, href: "/dashboard/admin/applications" },
   ],
 };
 
