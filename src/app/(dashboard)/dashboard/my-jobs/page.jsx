@@ -26,14 +26,13 @@ export default async function MyJobsPage({ searchParams }) {
     console.error("Failed fetching jobs on server context:", error);
   }
 
-  const myCompaniesName = await companyService.getMyCompany().then((res) => res.allCompanyName);
-  
-  
+  const myCompaniesName = await companyService
+    .getMyCompany()
+    .then((res) => res.allCompanyName);
 
-  
   return (
     <MyJobsWrapper
-    myCompaniesName={myCompaniesName}
+      myCompaniesName={myCompaniesName}
       initialJobs={initialData?.data || []}
       initialTotal={initialData?.pagination?.total || 0}
       searchParams={{ search, status, page }}

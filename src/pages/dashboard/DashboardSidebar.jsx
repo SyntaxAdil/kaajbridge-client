@@ -60,10 +60,10 @@ const roleMenus = {
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "Profile Settings", icon: User2, href: "/dashboard/profile" },
     { type: "label", title: "Platform Core Management" },
-    { title: "Manage Users", icon: Users2, href: "/dashboard/admin/users" },
-    { title: "Manage Companies", icon: Building2, href: "/dashboard/admin/companies" },
-    { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/admin/jobs" },
-    { title: "Manage Applications", icon: FileText, href: "/dashboard/admin/applications" },
+    { title: "Manage Users", icon: Users2, href: "/dashboard/users" },
+    { title: "Manage Companies", icon: Building2, href: "/dashboard/my-companies" },
+    { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
+    { title: "Manage Applications", icon: FileText, href: "/dashboard/applications" },
   ],
 };
 

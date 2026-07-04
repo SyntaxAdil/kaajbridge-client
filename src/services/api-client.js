@@ -55,7 +55,7 @@ export async function apiRequest(
 
       throw new Error(
         data?.message ||
-          `Request failed with status ${response.status}`
+        `Request failed with status ${response.status}`
       );
     }
 
