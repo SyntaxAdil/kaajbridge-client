@@ -11,27 +11,55 @@ import {
   Pencil,
   Trash2,
   Briefcase,
+  Eye,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import EditJob from "./EditJob";
 import DeleteJobs from "./DeleteJobs";
 import { jobService } from "../../services/jobs";
+import Link from "next/link";
 
 const STATUS_CONFIG = {
-  open: { label: "Open", className: "text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10" },
-  active: { label: "Active", className: "text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10" },
-  approved: { label: "Approved", className: "text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10" },
-  closed: { label: "Closed", className: "text-zinc-600 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800" },
-  pending: { label: "Pending", className: "text-amber-600 dark:text-amber-400 border-amber-500/20 bg-amber-50 dark:bg-amber-500/10" },
+  open: {
+    label: "Open",
+    className:
+      "text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10",
+  },
+  active: {
+    label: "Active",
+    className:
+      "text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10",
+  },
+  approved: {
+    label: "Approved",
+    className:
+      "text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10",
+  },
+  closed: {
+    label: "Closed",
+    className:
+      "text-zinc-600 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800",
+  },
+  pending: {
+    label: "Pending",
+    className:
+      "text-amber-600 dark:text-amber-400 border-amber-500/20 bg-amber-50 dark:bg-amber-500/10",
+  },
 };
 
 function formatSalary(salary) {
   if (!salary) return "Negotiable";
   if (typeof salary === "object") {
-    const symbol = salary?.currency === "USD" ? "$" : salary?.currency==="EUR" ? "€" : "৳";
+    const symbol =
+      salary?.currency === "USD" ? "$" : salary?.currency === "EUR" ? "€" : "৳";
     const min = Number(salary?.min || 0).toLocaleString();
     const max = Number(salary?.max || 0).toLocaleString();
     return `${symbol}${min} - ${symbol}${max}`;
@@ -50,7 +78,6 @@ export default function JobCard({ job, isRecruiter = false }) {
   const skills = Array.isArray(job?.skills) ? job.skills : [];
 
   const handleUpdate = async (id, updatedData) => {
-    
     await jobService.updateJob(id, updatedData);
     startTransition(() => {
       router.refresh();
@@ -58,7 +85,6 @@ export default function JobCard({ job, isRecruiter = false }) {
   };
 
   const handleDelete = async (id) => {
-    
     await jobService.deleteJob(id);
     startTransition(() => {
       router.refresh();
@@ -71,7 +97,11 @@ export default function JobCard({ job, isRecruiter = false }) {
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Avatar className="h-11 w-11 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-0.5 shrink-0">
-              <AvatarImage src={job?.companyLogo} alt={job?.company} className="object-contain rounded-md" />
+              <AvatarImage
+                src={job?.companyLogo}
+                alt={job?.company}
+                className="object-contain rounded-md"
+              />
               <AvatarFallback className="bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 rounded-md">
                 <Building2 className="h-5 w-5 stroke-[1.6]" />
               </AvatarFallback>
@@ -85,7 +115,9 @@ export default function JobCard({ job, isRecruiter = false }) {
               </p>
             </div>
           </div>
-          <Badge className={`text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full border shrink-0 ${statusConfig.className}`}>
+          <Badge
+            className={`text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full border shrink-0 ${statusConfig.className}`}
+          >
             {statusConfig.label}
           </Badge>
         </div>
@@ -98,24 +130,37 @@ export default function JobCard({ job, isRecruiter = false }) {
 
         <div className="flex flex-wrap gap-1.5">
           {job?.type && (
-            <Badge variant="outline" className="text-[10px] font-medium capitalize px-2 py-0.5 rounded-md border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-transparent">
+            <Badge
+              variant="outline"
+              className="text-[10px] font-medium capitalize px-2 py-0.5 rounded-md border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-transparent"
+            >
               <Briefcase className="h-3 w-3 mr-1" />
               {job.type.replace("-", " ")}
             </Badge>
           )}
           {job?.experience && (
-            <Badge variant="outline" className="text-[10px] font-medium capitalize px-2 py-0.5 rounded-md border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-transparent">
+            <Badge
+              variant="outline"
+              className="text-[10px] font-medium capitalize px-2 py-0.5 rounded-md border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-transparent"
+            >
               <Layers className="h-3 w-3 mr-1" />
               {job.experience}
             </Badge>
           )}
           {skills.slice(0, 2).map((skill, idx) => (
-            <Badge key={idx} variant="outline" className="text-[10px] font-medium px-2 py-0.5 rounded-md border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10">
+            <Badge
+              key={idx}
+              variant="outline"
+              className="text-[10px] font-medium px-2 py-0.5 rounded-md border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10"
+            >
               {skill}
             </Badge>
           ))}
           {skills.length > 2 && (
-            <Badge variant="outline" className="text-[10px] font-medium px-2 py-0.5 rounded-md border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-600 bg-transparent">
+            <Badge
+              variant="outline"
+              className="text-[10px] font-medium px-2 py-0.5 rounded-md border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-600 bg-transparent"
+            >
               +{skills.length - 2}
             </Badge>
           )}
@@ -140,12 +185,25 @@ export default function JobCard({ job, isRecruiter = false }) {
           <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
             <Calendar className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-600" />
             <span>
-              Deadline: {job?.applicationDeadline ? new Date(job.applicationDeadline).toLocaleDateString() : "N/A"}
+              Deadline:{" "}
+              {job?.applicationDeadline
+                ? new Date(job.applicationDeadline).toLocaleDateString()
+                : "N/A"}
             </span>
           </div>
 
           {isRecruiter ? (
             <div className="flex items-center gap-2">
+              <Link href={`/dashboard/job/${job?._id}`}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-md border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-600 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-900 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all duration-150"
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                </Button>
+              </Link>
               <Button
                 type="button"
                 variant="outline"
@@ -168,21 +226,33 @@ export default function JobCard({ job, isRecruiter = false }) {
               </Button>
             </div>
           ) : (
-            <Button
-              type="button"
-              size="sm"
-              className="h-8 rounded-full px-4 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white"
-            >
-              Apply Now
-            </Button>
+            <Link href={`/dashboard/job/${job?._id}`}>
+              <Button
+                type="button"
+                size="sm"
+                className="h-8 rounded-full px-4 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white"
+              >
+                Apply Now
+              </Button>
+            </Link>
           )}
         </div>
       </CardFooter>
 
       {isRecruiter && (
         <>
-          <EditJob isOpen={isEditOpen} setIsOpen={setIsEditOpen} job={job} onUpdate={handleUpdate} />
-          <DeleteJobs isOpen={isDeleteOpen} setIsOpen={setIsDeleteOpen} job={job} onDelete={handleDelete} />
+          <EditJob
+            isOpen={isEditOpen}
+            setIsOpen={setIsEditOpen}
+            job={job}
+            onUpdate={handleUpdate}
+          />
+          <DeleteJobs
+            isOpen={isDeleteOpen}
+            setIsOpen={setIsDeleteOpen}
+            job={job}
+            onDelete={handleDelete}
+          />
         </>
       )}
     </Card>
