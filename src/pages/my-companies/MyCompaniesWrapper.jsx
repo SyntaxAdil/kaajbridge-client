@@ -31,8 +31,9 @@ import { companyService } from "@/services/company";
 
 const STATUS_FILTERS = [
   { value: "all", label: "All Statuses" },
-  { value: "true", label: "Verified" },
-  { value: "pending", label: "Not Verified" },
+  { value: "verified", label: "Verified" },
+  { value: "pending", label: "Pending" },
+  { value: "rejected", label: "Rejected" },
 ];
 
 function buildPageList(currentPage, totalPages) {
@@ -75,7 +76,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
 
   const [companies, setCompanies] = useState(parsedCompanies);
   const [pagination, setPagination] = useState(parsedPagination);
-  
+
   const [prevInitialCompanies, setPrevInitialCompanies] = useState(initialCompanies);
 
   if (initialCompanies !== prevInitialCompanies) {
@@ -85,7 +86,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
   }
 
   const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
-  const statusFilter = searchParams.get("isVerified") || "all";
+  const statusFilter = searchParams.get("status") || "all";
 
   const updateParams = useCallback(
     (updates) => {
@@ -117,7 +118,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
   }, [searchInput, searchParams, updateParams]);
 
   const handleStatusChange = (value) => {
-    updateParams({ isVerified: value, page: 1 });
+    updateParams({ status: value, page: 1 });
   };
 
   const handleUpdate = async (id, updatedData) => {

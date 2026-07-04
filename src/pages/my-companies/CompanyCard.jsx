@@ -10,6 +10,7 @@ import {
   Trash2,
   CheckCircle2,
   Clock,
+  XCircle,
   Eye,
 } from "lucide-react";
 import {
@@ -28,6 +29,27 @@ import {
 import EditCompany from "./EditCompany";
 import DeleteCompany from "./DeleteCompany";
 
+const statusConfigMap = {
+  verified: {
+    label: "Verified",
+    icon: CheckCircle2,
+    className:
+      "text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10",
+  },
+  pending: {
+    label: "Pending",
+    icon: Clock,
+    className:
+      "text-amber-600 dark:text-amber-400 border-amber-500/20 bg-amber-50 dark:bg-amber-500/10",
+  },
+  rejected: {
+    label: "Rejected",
+    icon: XCircle,
+    className:
+      "text-rose-600 dark:text-rose-400 border-rose-500/20 bg-rose-50 dark:bg-rose-500/10",
+  },
+};
+
 export default function CompanyCard({
   company,
   onUpdate,
@@ -37,8 +59,8 @@ export default function CompanyCard({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const isVerified =
-    company?.isVerified === true || company?.isVerified === "verified";
+  const verificationStatus = company?.verificationStatus || "pending";
+  const isVerified = verificationStatus === "verified";
 
   const locationString = company?.address
     ? [company.address.street, company.address.city, company.address.country]
@@ -46,20 +68,7 @@ export default function CompanyCard({
         .join(", ")
     : "Location not specified";
 
-  const statusConfig = isVerified
-    ? {
-        label: "Verified",
-        icon: CheckCircle2,
-        className:
-          "text-emerald-600 dark:text-emerald-400 border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10",
-      }
-    : {
-        label: "Pending",
-        icon: Clock,
-        className:
-          "text-amber-600 dark:text-amber-400 border-amber-500/20 bg-amber-50 dark:bg-amber-500/10",
-      };
-
+  const statusConfig = statusConfigMap[verificationStatus] || statusConfigMap.pending;
   const StatusIcon = statusConfig.icon;
 
   return (
@@ -103,7 +112,7 @@ export default function CompanyCard({
           </div>
         </CardHeader>
 
-        <CardContent className="px-5 py-0">
+        <CardContent className="px-5 pt-4 pb-0">
           <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 line-clamp-3">
             {company?.description || "No description provided."}
           </p>

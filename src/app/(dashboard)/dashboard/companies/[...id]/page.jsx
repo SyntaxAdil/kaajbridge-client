@@ -11,7 +11,6 @@ import {
   Users,
   CalendarDays,
   MapPin,
-  ShieldCheck,
   ExternalLink,
   Command,
   Radio,
@@ -26,6 +25,8 @@ export default async function CompanyDetailsPage({ params }) {
     .getCompanyById(id)
     .then((res) => res.data);
   const recruiter = company?.ownedBy?.[0] || company?.owner;
+
+  const isVerified = company?.verificationStatus === "verified";
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12 space-y-12 antialiased selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-zinc-950">
@@ -53,7 +54,7 @@ export default async function CompanyDetailsPage({ params }) {
               <Building2 className="h-9 w-9 text-zinc-400 dark:text-zinc-600 stroke-[1.5]" />
             )}
           </div>
-          
+
           <div className="space-y-2.5 min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
@@ -64,7 +65,7 @@ export default async function CompanyDetailsPage({ params }) {
                 <MapPin className="h-3.5 w-3.5 text-zinc-400 stroke-[1.8]" />
                 {company?.address?.city || "Dhaka"}
               </span>
-              {company?.isVerified && (
+              {isVerified && (
                 <>
                   <span className="text-zinc-300 dark:text-zinc-800">•</span>
                   <Badge variant="outline" className="bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 border-none text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
@@ -139,7 +140,7 @@ export default async function CompanyDetailsPage({ params }) {
               <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 flex items-center gap-2">
                 <Command className="h-3.5 w-3.5 stroke-[2]" /> Enterprise Intel
               </h2>
-              
+
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="space-y-0.5">
                   <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Scale</span>
