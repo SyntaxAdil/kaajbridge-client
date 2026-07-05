@@ -22,7 +22,6 @@ import { signUp } from "../../../lib/auth/auth-client";
 import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group";
 import Logo from "../../../components/ui/Logo";
 
-
 export default function RegisterPage() {
   const [serverError, setServerError] = useState("");
   const [showEye, setShowEye] = useState(false);
@@ -47,7 +46,7 @@ export default function RegisterPage() {
           password: data.password,
           name: `${data.fname} ${data.lname}`,
           role: data.role,
-          applications:[],
+
           callbackURL: "/",
         },
         {
@@ -71,8 +70,6 @@ export default function RegisterPage() {
       setServerError("");
       reset();
     }
-
-    
   };
 
   const ROLES = [
@@ -81,9 +78,9 @@ export default function RegisterPage() {
   ];
   return (
     <Card className="w-full max-w-md mx-auto my-26">
-        <div className="flex items-center justify-center my-2">
-          <Logo></Logo>
-        </div>
+      <div className="flex items-center justify-center my-2">
+        <Logo></Logo>
+      </div>
       <CardHeader>
         <CardTitle>Create new account at</CardTitle>
         <CardDescription>
@@ -196,8 +193,6 @@ export default function RegisterPage() {
                 </Alert>
               )}
             </div>
-
-          
 
             {/* role */}
 

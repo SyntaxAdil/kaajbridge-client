@@ -49,9 +49,7 @@ export const auth = betterAuth({
       role:{
         default:"seeker"
       },
-      applications:{
-        default:[]
-      } 
+    
 
     }
   }
