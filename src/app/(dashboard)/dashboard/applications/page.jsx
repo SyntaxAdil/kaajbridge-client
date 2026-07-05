@@ -76,11 +76,19 @@ export default async function ApplicationsPage({ searchParams }) {
 
   return (
     <section className="w-full min-h-screen bg-background px-6 lg:px-10 py-8">
-      <div className="mb-2">
+      {/* <div className="mb-2">
         <h1 className="text-xl font-bold text-foreground">{pageTitle}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{pageSubtitle}</p>
-      </div>
-      <FilterApplication currentSearch={search} currentStatus={status} />
+        
+      </div> */}
+      <FilterApplication
+        currentSearch={search}
+        currentStatus={status}
+        pageSubtitle={
+          role !== "seeker"
+            ? pageSubtitle
+            : "Review, track, and manage student job applications."
+        }
+      />
       <ApplicationsTable
         applications={initialData.data || []}
         role={role}

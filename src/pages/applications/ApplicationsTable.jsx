@@ -82,10 +82,10 @@ export default function ApplicationsTable({
                     <td className="p-4">
                       <div className="flex flex-col">
                         <span className="font-bold text-foreground text-sm leading-tight">
-                          {app.applicantInfo?.name || "Unknown"}
+                          {app.applicant?.name || "Unknown"}
                         </span>
                         <span className="text-xs text-muted-foreground mt-0.5">
-                          {app.applicantInfo?.email || "No email"}
+                          {app.applicant?.email || "No email"}
                         </span>
                       </div>
                     </td>

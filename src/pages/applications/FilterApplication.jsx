@@ -2,7 +2,11 @@
 
 import React, { useTransition } from "react";
 import { SidebarTrigger } from "../../components/ui/sidebar";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "../../components/ui/input-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../../components/ui/input-group";
 import { SearchIcon } from "lucide-react";
 import {
   Select,
@@ -13,7 +17,11 @@ import {
 } from "../../components/ui/select";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
-export default function FilterApplication({ currentSearch, currentStatus }) {
+export default function FilterApplication({
+  currentSearch,
+  currentStatus,
+  pageSubtitle,
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -31,21 +39,27 @@ export default function FilterApplication({ currentSearch, currentStatus }) {
   };
 
   return (
-    <header className={`flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-border/60 transition-opacity ${isPending ? "opacity-70" : "opacity-100"}`}>
+    <header
+      className={`flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-border/60 transition-opacity ${isPending ? "opacity-70" : "opacity-100"}`}
+    >
       <div className="flex items-center gap-2">
         <SidebarTrigger className="-ms-4 me-2" />
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Job Applications
           </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Review, track, and manage student job applications.
-          </p>
+          
+          <p className="text-sm text-muted-foreground mt-1">{pageSubtitle}</p>
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
-        <Select defaultValue={currentStatus || "all"} onValueChange={(val) => updateQueryParams({ status: val === "all" ? "" : val, page: "1" })}>
+        <Select
+          defaultValue={currentStatus || "all"}
+          onValueChange={(val) =>
+            updateQueryParams({ status: val === "all" ? "" : val, page: "1" })
+          }
+        >
           <SelectTrigger className="w-full sm:w-44 rounded-xl border-border/60 bg-muted/30 text-sm">
             <SelectValue placeholder="Filter Status" />
           </SelectTrigger>
@@ -68,7 +82,10 @@ export default function FilterApplication({ currentSearch, currentStatus }) {
             <InputGroupInput
               placeholder="Search & hit Enter..."
               defaultValue={currentSearch}
-              onKeyDown={(e) => e.key === "Enter" && updateQueryParams({ search: e.currentTarget.value, page: "1" })}
+              onKeyDown={(e) =>
+                e.key === "Enter" &&
+                updateQueryParams({ search: e.currentTarget.value, page: "1" })
+              }
               className="bg-transparent border-none shadow-none focus-visible:ring-0 text-sm py-2.5 placeholder:text-muted-foreground/40 w-full pr-3"
             />
           </InputGroup>
