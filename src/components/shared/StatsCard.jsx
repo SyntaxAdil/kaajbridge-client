@@ -38,22 +38,22 @@ function StatsCard({ title, value, icon: Icon }) {
 export default function DashboardStatsGrid({ type = "seeker", serverStats }) {
   const statsConfig = {
     recruiter: [
-      { title: "Total Job Posts", value: "48", icon: FileText },
-      { title: "Total Applicants", value: serverStats?.totalCount || "0", icon: Users },
-      { title: "Active Jobs", value: "18", icon: Zap },
-      { title: "Applications Processed", value: "32", icon: CheckCircle2 },
+      { title: "Total Job Posts", value: serverStats?.totalJobPosts ?? 0, icon: FileText },
+      { title: "Total Applicants", value: serverStats?.totalApplicants ?? 0, icon: Users },
+      { title: "Active Jobs", value: serverStats?.activeJobs ?? 0, icon: Zap },
+      { title: "Applications Processed", value: serverStats?.applicationsProcessed ?? 0, icon: CheckCircle2 },
     ],
     seeker: [
-      { title: "Applied Jobs", value: serverStats?.totalCount || "0", icon: Briefcase },
-      { title: "Interview Stage", value: serverStats?.interviewCount || "0", icon: Clock },
-      { title: "Shortlisted Positions", value: serverStats?.shortlistedCount || "0", icon: UserCheck },
-      { title: "Available Openings", value: "142", icon: Building2 },
+      { title: "Applied Jobs", value: serverStats?.totalCount ?? 0, icon: Briefcase },
+      { title: "Interview Stage", value: serverStats?.interviewCount ?? 0, icon: Clock },
+      { title: "Shortlisted Positions", value: serverStats?.shortlistedCount ?? 0, icon: UserCheck },
+      { title: "Available Openings", value: serverStats?.availableOpenings ?? 0, icon: Building2 },
     ],
     admin: [
-      { title: "Total Talent Pool", value: "14,250", icon: Users },
-      { title: "Corporate Partners", value: "340", icon: Building2 },
-      { title: "Pending Verifications", value: "5", icon: ShieldAlert },
-      { title: "Total Job Matches", value: serverStats?.totalCount || "0", icon: Zap },
+      { title: "Total Talent Pool", value: serverStats?.totalTalentPool ?? 0, icon: Users },
+      { title: "Corporate Partners", value: serverStats?.corporatePartners ?? 0, icon: Building2 },
+      { title: "Pending Verifications", value: serverStats?.pendingVerifications ?? 0, icon: ShieldAlert },
+      { title: "Total Job Matches", value: serverStats?.totalCount ?? 0, icon: Zap },
     ],
   };
 

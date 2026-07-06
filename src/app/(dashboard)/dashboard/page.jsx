@@ -18,7 +18,9 @@ import DashboardStatsGrid from "../../../components/shared/StatsCard";
 import RecentApplications from "../../../pages/dashboard/RecentApplications";
 import TopCompanies from "../../../pages/dashboard/TopCompanies";
 import { applicationService } from "../../../services/applications";
+
 import ApplicationChart from "../../../pages/dashboard/ApplicationChart";
+import { companyService } from "../../../services/company";
 
 export const metadata = {
   title: "Dashboard - KaajBridge",
@@ -38,56 +40,91 @@ const DashboardPage = async () => {
     ?.join("");
 
   let initialApplications = [];
+  let topCompaniesData = [];
+  
   let statsData = {
+    totalJobPosts: 0,
+    totalApplicants: 0,
+    activeJobs: 0,
+    applicationsProcessed: 0,
     totalCount: 0,
     interviewCount: 0,
     shortlistedCount: 0,
-    extraCount: 0,
+    availableOpenings: 0,
+    totalTalentPool: 0,
+    corporatePartners: 0,
+    pendingVerifications: 0,
   };
 
-  // // Live Data Pipeline Matrix
   let serverNotifications = [];
   
   try {
     if (role === "admin") {
-      const appRes = await applicationService.getAllApplicationsAdmin({ page: "1", limit: "5" });
-      initialApplications = appRes?.data || [];
-      statsData.totalCount = appRes?.pagination?.total || initialApplications.length;
+      const [appRes, compRes] = await Promise.all([
+        applicationService.getAllApplicationsAdmin({ page: "1", limit: "100" }),
+        companyService.getAllCompaniesAdmin({ page: "1", limit: "4" })
+      ]);
+      
+      const allData = appRes?.data || [];
+      initialApplications = allData.slice(0, 5);
+      topCompaniesData = compRes?.data || [];
 
-      // Real Data Mapping: dynamically map pending system events from database array if applicable
+      statsData.totalCount = appRes?.pagination?.total || allData.length;
+      statsData.totalTalentPool = allData.length; 
+      statsData.corporatePartners = compRes?.pagination?.total || topCompaniesData.length;
+      statsData.pendingVerifications = allData.filter(app => app?.status?.toLowerCase() === "pending").length;
+
       serverNotifications = initialApplications.map((app) => ({
         id: app._id,
-        title: `Verification Request Queue`,
+        title: "Verification Request Queue",
         description: `Ecosystem configuration review needed for application token node ID: ${app._id.slice(-6)}`,
         time: new Date(app.createdAt).toLocaleDateString(),
         type: "pending_company",
       }));
 
     } else if (role === "recruiter") {
-      const appRes = await applicationService.getAllApplicationsForRecruiter({ page: "1", limit: "5" });
-      initialApplications = appRes?.data || [];
-      statsData.totalCount = appRes?.pagination?.total || initialApplications.length;
+      const [appRes, compRes] = await Promise.all([
+        applicationService.getAllApplicationsForRecruiter({ page: "1", limit: "100" }),
+        companyService.getMyCompany({ page: "1", limit: "4" })
+      ]);
+
+      const allData = appRes?.data || [];
+      initialApplications = allData.slice(0, 5);
+      topCompaniesData = compRes?.data || [];
+
+      const uniqueJobIds = new Set(allData.map(app => app.job?._id || app.job).filter(Boolean));
+      
+      statsData.totalJobPosts = uniqueJobIds.size;
+      statsData.totalApplicants = appRes?.pagination?.total || allData.length;
+      statsData.activeJobs = uniqueJobIds.size;
+      statsData.applicationsProcessed = allData.filter(app => app?.status?.toLowerCase() !== "pending").length;
 
       serverNotifications = initialApplications.map((app) => ({
         id: app._id,
-        title: `Inbound Packets Generated`,
+        title: "Inbound Packets Generated",
         description: `${app.applicant?.name} successfully deployed a resume package for ${app.job?.title || "MERN Position"}.`,
         time: new Date(app.createdAt).toLocaleDateString(),
         type: "application_received",
       }));
 
     } else if (role === "seeker") {
-      const appRes = await applicationService.getMyApplications({ page: "1", limit: "100" });
+      const [appRes, compRes] = await Promise.all([
+        applicationService.getMyApplications({ page: "1", limit: "100" }),
+        companyService.getTopCompanies()
+      ]);
+
       const allData = appRes?.data || [];
       initialApplications = allData.slice(0, 5);
+      topCompaniesData = compRes?.data || compRes || [];
 
       statsData.totalCount = appRes?.pagination?.total || allData.length;
       statsData.interviewCount = allData.filter(app => app?.status?.toLowerCase() === "interviewing").length;
       statsData.shortlistedCount = allData.filter(app => app?.status?.toLowerCase() === "shortlisted").length;
+      statsData.availableOpenings = 142;
 
       serverNotifications = allData.slice(0, 3).map((app) => ({
         id: app._id,
-        title: `Status Flow Changed`,
+        title: "Status Flow Changed",
         description: `Your application node for ${app?.job?.title || "Developer Target"} status is pipeline configured to: ${app?.status?.toUpperCase()}`,
         time: new Date(app.updatedAt || app.createdAt).toLocaleDateString(),
         type: "application_status",
@@ -104,7 +141,6 @@ const DashboardPage = async () => {
           <SidebarTrigger />
         </div>
         
-        {/* // Dynamic Application Searching Grid */}
         <div className="flex-1">
           <form action={role === "seeker" ? "/dashboard/applications" : role === "recruiter" ? "/dashboard/all-job-applications" : "/dashboard/admin/all"} method="GET">
             <InputGroup className="relative flex items-center bg-muted/40 rounded py-2 border border-border focus-within:border-primary/50 transition-colors">
@@ -172,7 +208,7 @@ const DashboardPage = async () => {
         </div>
         <div className="flex items-start mt-6 gap-4 flex-col md:flex-row">
           <RecentApplications applications={initialApplications} role={role} />
-          {role !== "seeker" ? <TopCompanies /> : <ApplicationChart />}
+          {role !== "seeker" ? <TopCompanies initialCompanies={topCompaniesData} role={role} /> : <ApplicationChart />}
         </div>
       </main>
     </section>
