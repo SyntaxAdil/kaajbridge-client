@@ -7,18 +7,19 @@ import {
   Zap,
   CheckCircle2,
   Briefcase,
-  GraduationCap,
   Clock,
   ShieldAlert,
+  Building2,
+  UserCheck
 } from "lucide-react";
 
 function StatsCard({ title, value, icon: Icon }) {
   return (
-    <div className="w-full rounded-2xl border  bg-card p-6 shadow-sm transition-all duration-200 hover:shadow-md group">
-      <div className="flex flex-col gap-5 ">
+    <div className="w-full rounded-2xl border bg-card p-6 shadow-sm transition-all duration-200 hover:shadow-md group">
+      <div className="flex flex-col gap-5">
         {Icon && (
-          <div className="w-10 h-10 rounded-xl bg-muted/60 flex items-center justify-center border border-border/40 text-muted-foreground  group-hover:bg-accent group-hover:text-foreground transition-colors duration-200">
-            <Icon className="h-5 w-5 stroke-[1.8] " />
+          <div className="w-10 h-10 rounded-xl bg-muted/60 flex items-center justify-center border border-border/40 text-muted-foreground group-hover:bg-accent group-hover:text-foreground transition-colors duration-200">
+            <Icon className="h-5 w-5 stroke-[1.8]" />
           </div>
         )}
         <div className="flex flex-col gap-1.5">
@@ -34,25 +35,25 @@ function StatsCard({ title, value, icon: Icon }) {
   );
 }
 
-export default function DashboardStatsGrid({ type = "recruiter" }) {
+export default function DashboardStatsGrid({ type = "seeker", serverStats }) {
   const statsConfig = {
     recruiter: [
       { title: "Total Job Posts", value: "48", icon: FileText },
-      { title: "Total Applicants", value: "1,284", icon: Users },
+      { title: "Total Applicants", value: serverStats?.totalCount || "0", icon: Users },
       { title: "Active Jobs", value: "18", icon: Zap },
-      { title: "Jobs Closed", value: "32", icon: CheckCircle2 },
+      { title: "Applications Processed", value: "32", icon: CheckCircle2 },
     ],
     seeker: [
-      { title: "Applied Jobs", value: "24", icon: Briefcase },
-      { title: "Interviews Scheduled", value: "3", icon: Clock },
-      { title: "Courses Completed", value: "7", icon: GraduationCap },
-      { title: "Profile Views", value: "142", icon: Users },
+      { title: "Applied Jobs", value: serverStats?.totalCount || "0", icon: Briefcase },
+      { title: "Interview Stage", value: serverStats?.interviewCount || "0", icon: Clock },
+      { title: "Shortlisted Positions", value: serverStats?.shortlistedCount || "0", icon: UserCheck },
+      { title: "Available Openings", value: "142", icon: Building2 },
     ],
     admin: [
-      { title: "Total Users", value: "14,250", icon: Users },
-      { title: "Active Subscriptions", value: "340", icon: Zap },
-      { title: "Pending Reports", value: "5", icon: ShieldAlert },
-      { title: "System Health", value: "99.2%", icon: CheckCircle2 },
+      { title: "Total Talent Pool", value: "14,250", icon: Users },
+      { title: "Corporate Partners", value: "340", icon: Building2 },
+      { title: "Pending Verifications", value: "5", icon: ShieldAlert },
+      { title: "Total Job Matches", value: serverStats?.totalCount || "0", icon: Zap },
     ],
   };
 
