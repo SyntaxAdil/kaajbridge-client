@@ -39,8 +39,6 @@ const roleMenus = {
     { type: "label", title: "Applications & Saves" },
     { title: "Saved Jobs", icon: Bookmark, href: "/dashboard/saved" },
     { title: "My Applications", icon: FileText, href: "/dashboard/applications" },
-    { type: "label", title: "Billing" },
-    { title: "Billing & Plans", icon: CreditCard, href: "/dashboard/billing" },
   ],
   recruiter: [
     { type: "label", title: "Overview" },
@@ -54,6 +52,8 @@ const roleMenus = {
     { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
     { type: "label", title: "Applicants" },
     { title: "Applications Received", icon: FileText, href: "/dashboard/applications" },
+    { type: "label", title: "Billing" },
+    { title: "Billing & Plans", icon: CreditCard, href: "/dashboard/billing" },
   ],
   admin: [
     { type: "label", title: "Overview" },
@@ -64,6 +64,8 @@ const roleMenus = {
     { title: "Manage Companies", icon: Building2, href: "/dashboard/my-companies" },
     { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
     { title: "Manage Applications", icon: FileText, href: "/dashboard/applications" },
+    { type: "label", title: "Billing Control" },
+    { title: "Billing & Plans", icon: CreditCard, href: "/dashboard/billing" },
   ],
 };
 
