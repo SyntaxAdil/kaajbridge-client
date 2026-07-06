@@ -62,4 +62,8 @@ export const applicationService = {
   viewApplicationDetails: (id) => {
     return apiRequest(`/application/${id}`);
   },
+
+  getInterviewAnalytics: () => {
+    return apiRequest("/application/analytics");
+  },
 };

@@ -13,98 +13,42 @@ import {
 import Link from "next/link";
 import { useSession } from "../../lib/auth/auth-client";
 
-const ROLE_NOTIFICATIONS = {
-  seeker: [
-    {
-      id: "s1",
-      title: "Application Shortlisted",
-      description: "Your profile has been shortlisted for the Frontend Engineer position.",
-      time: "2 hours ago",
-      icon: CheckCircle2,
-      iconColor: "text-emerald-500 bg-emerald-500/10",
-    },
-    {
-      id: "s2",
-      title: "New Job Match",
-      description: "A new structural engineering role matching your profile has been posted.",
-      time: "5 hours ago",
-      icon: Briefcase,
-      iconColor: "text-indigo-500 bg-indigo-500/10",
-    },
-    {
-      id: "s3",
-      title: "Profile View",
-      description: "An HR manager from Spice & Co reviewed your uploaded resume.",
-      time: "1 day ago",
-      icon: UserCheck,
-      iconColor: "text-sky-500 bg-sky-500/10",
-    },
-  ],
-  recruiter: [
-    {
-      id: "r1",
-      title: "New Application Received",
-      description: "A candidate applied for the Lead MERN Stack Developer opening.",
-      time: "10 mins ago",
-      icon: Briefcase,
-      iconColor: "text-indigo-500 bg-indigo-500/10",
-    },
-    {
-      id: "r2",
-      title: "Workspace Verified",
-      description: "Your company profile setup has been reviewed and officially verified.",
-      time: "3 hours ago",
-      icon: CheckCircle2,
-      iconColor: "text-emerald-500 bg-emerald-500/10",
-    },
-    {
-      id: "r3",
-      title: "Action Required",
-      description: "Complete your pending job placement details to publish the live board.",
-      time: "1 day ago",
-      icon: AlertCircle,
-      iconColor: "text-amber-500 bg-amber-500/10",
-    },
-  ],
-  admin: [
-    {
-      id: "a1",
-      title: "New Company Pending",
-      description: "KaajBridge Network requires system approval to initialize workspace.",
-      time: "5 mins ago",
-      icon: Building2,
-      iconColor: "text-amber-500 bg-amber-500/10",
-    },
-    {
-      id: "a2",
-      title: "System Performance",
-      description: "Global job discovery filters and auth token processes are fully nominal.",
-      time: "4 hours ago",
-      icon: Info,
-      iconColor: "text-indigo-500 bg-indigo-500/10",
-    },
-    {
-      id: "a3",
-      title: "Global Audit Log",
-      description: "3 new high-priority updates deployed to the structural database pipelines.",
-      time: "12 hours ago",
-      icon: CheckCircle2,
-      iconColor: "text-emerald-500 bg-emerald-500/10",
-    },
-  ],
-};
-
 const ROLE_VIEW_ALL_LINKS = {
   seeker: "/dashboard/applications",
-  recruiter: "/dashboard/applications",
-  admin: "/dashboard/my-companies",
+  recruiter: "/dashboard/all-job-applications",
+  admin: "/dashboard/admin/all",
 };
 
-export default function NotificationDropdown() {
+export default function NotificationDropdown({ liveData = [] }) {
   const { data: session } = useSession();
   const userRole = session?.user?.role?.toLowerCase() || "seeker";
 
-  const notifications = ROLE_NOTIFICATIONS[userRole] || ROLE_NOTIFICATIONS.seeker;
+  // // Structural Real Data Mapping
+  const notifications = liveData.map((item) => {
+    let icon = Info;
+    let iconColor = "text-indigo-500 bg-indigo-500/10";
+    
+    if (item.type === "application_status") {
+      icon = UserCheck;
+      iconColor = "text-emerald-500 bg-emerald-500/10";
+    } else if (item.type === "application_received") {
+      icon = Briefcase;
+      iconColor = "text-sky-500 bg-sky-500/10";
+    } else if (item.type === "pending_company") {
+      icon = Building2;
+      iconColor = "text-amber-500 bg-amber-500/10";
+    }
+
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      time: item.time,
+      icon,
+      iconColor,
+    };
+  }).slice(0, 4); // Keep top system events bounded inside viewport limits
+
   const viewAllHref = ROLE_VIEW_ALL_LINKS[userRole] || ROLE_VIEW_ALL_LINKS.seeker;
   const unreadCount = notifications.length;
 
@@ -126,37 +70,44 @@ export default function NotificationDropdown() {
           <span>Notifications</span>
           {unreadCount > 0 && (
             <span className="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold px-1.5 py-0.5 rounded-full capitalize">
-              {userRole} Updates
+              {userRole} Stream Active
             </span>
           )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         <div className="max-h-[300px] overflow-y-auto">
-          {notifications.map((item) => {
-            const Icon = item.icon;
-            return (
-              <DropdownMenuItem
-                key={item.id}
-                className="flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors focus:bg-muted/60"
-              >
-                <div className={`p-1.5 rounded-lg shrink-0 ${item.iconColor}`}>
-                  <Icon className="h-3.5 w-3.5" />
-                </div>
-                <div className="flex flex-col gap-0.5 overflow-hidden">
-                  <span className="text-xs font-semibold truncate text-foreground">
-                    {item.title}
-                  </span>
-                  <p className="text-[11px] text-muted-foreground leading-normal break-words">
-                    {item.description}
-                  </p>
-                  <span className="text-[10px] text-muted-foreground/50 mt-1">
-                    {item.time}
-                  </span>
-                </div>
-              </DropdownMenuItem>
-            );
-          })}
+          {notifications.length === 0 ? (
+            <div className="p-6 text-center text-xs text-muted-foreground flex flex-col items-center justify-center gap-2">
+              <CheckCircle2 className="h-8 w-8 text-muted-foreground/30" />
+              <span>No active architecture indicators.</span>
+            </div>
+          ) : (
+            notifications.map((item) => {
+              const Icon = item.icon;
+              return (
+                <DropdownMenuItem
+                  key={item.id}
+                  className="flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors focus:bg-muted/60"
+                >
+                  <div className={`p-1.5 rounded-lg shrink-0 ${item.iconColor}`}>
+                    <Icon className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="flex flex-col gap-0.5 overflow-hidden">
+                    <span className="text-xs font-semibold truncate text-foreground">
+                      {item.title}
+                    </span>
+                    <p className="text-[11px] text-muted-foreground leading-normal break-words">
+                      {item.description}
+                    </p>
+                    <span className="text-[10px] text-muted-foreground/50 mt-1">
+                      {item.time}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+              );
+            })
+          )}
         </div>
 
         <DropdownMenuSeparator />
@@ -165,7 +116,7 @@ export default function NotificationDropdown() {
             href={viewAllHref}
             className="flex w-full h-8 items-center justify-center text-[11px] font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            View All Updates
+            View All Structural Nodes
           </Link>
         </div>
       </DropdownMenuContent>
