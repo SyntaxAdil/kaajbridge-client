@@ -14,10 +14,10 @@ export const companyRegisterSchema = z.object({
     country: z.string().min(2, "Country is required"),
   }),
   website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  companyLogo: z.string().url("Must be a valid image URL").optional().or(z.literal("")),
+  companyLogo: z.string().url("Must be a valid image URL"), 
   description: z.string().optional(),
   founded: z.coerce.number().min(1700).max(new Date().getFullYear()).optional(),
-  social: z.object({
+  socialLinks: z.object({
     linkedin: z.string().url("Invalid URL").optional().or(z.literal("")),
     facebook: z.string().url("Invalid URL").optional().or(z.literal("")),
     twitter: z.string().url("Invalid URL").optional().or(z.literal("")),

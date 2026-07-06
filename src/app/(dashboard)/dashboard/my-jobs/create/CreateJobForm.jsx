@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle, Loader2, Building2, ArrowLeft } from "lucide-react";
 import Image from "next/image";
@@ -34,24 +34,36 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
     register,
     handleSubmit,
     setValue,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(jobCreateSchema),
     defaultValues: {
+      title: "",
+      company: "",
+      location: "",
+      experience: "",
       type: "full-time",
-      salary: { currency: "BDT" },
+      salary: { min: "", max: "", currency: "BDT" },
+      requirements: "",
+      skills: "",
+      applicationDeadline: "",
+      companyLogo: "",
+      description: "",
       status: "open",
       termsAccepted: false,
     },
   });
 
   const handleCompanyChange = (companyName) => {
-    setValue("company", companyName);
+    setValue("company", companyName, { shouldValidate: true });
     const targetCompany = myCompaniesName.find((c) => c.name === companyName);
     if (targetCompany?.companyLogo) {
       setSelectedLogo(targetCompany.companyLogo);
-      setValue("companyLogo", targetCompany.companyLogo);
+      setValue("companyLogo", targetCompany.companyLogo, {
+        shouldValidate: true,
+      });
     } else {
       setSelectedLogo("");
       setValue("companyLogo", "");
@@ -60,12 +72,20 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
 
   const onSubmit = async (data) => {
     try {
-      const requirementsArray = typeof data.requirements === "string"
-        ? data.requirements.split(",").map((r) => r.trim())
-        : data.requirements;
-      const skillsArray = typeof data.skills === "string"
-        ? data.skills.split(",").map((s) => s.trim())
-        : data.skills;
+      const requirementsArray =
+        typeof data.requirements === "string"
+          ? data.requirements
+              .split(",")
+              .map((r) => r.trim())
+              .filter(Boolean)
+          : data.requirements;
+      const skillsArray =
+        typeof data.skills === "string"
+          ? data.skills
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : data.skills;
 
       const payload = {
         title: data.title,
@@ -90,15 +110,15 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
       await jobService.createJob(payload);
       reset();
       setSelectedLogo("");
-      
+
+      toast.success("Job created successfully");
       startTransition(() => {
         router.push("/dashboard/my-jobs");
-        toast.success("Job created successfully");
         router.refresh();
       });
     } catch (error) {
       console.error(error);
-      toast.error( error.message || "Something went wrong");
+      toast.error(error.message || "Something went wrong");
     }
   };
 
@@ -119,7 +139,8 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
             Create New Job Post
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Publish targeted opportunities designated for engineering professionals.
+            Publish targeted opportunities designated for engineering
+            professionals.
           </p>
         </div>
       </header>
@@ -130,7 +151,9 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
           Important Notice / Caution
         </AlertTitle>
         <AlertDescription className="text-[11.5px] text-amber-600/80 mt-0.5 ml-1 leading-relaxed">
-          This platform is strictly dedicated to engineering ecosystems. Any job posted here must be applicable and restricted only for Diploma Engineering students or Diploma holders.
+          This platform is strictly dedicated to engineering ecosystems. Any job
+          posted here must be applicable and restricted only for Diploma
+          Engineering students or Diploma holders.
         </AlertDescription>
       </Alert>
 
@@ -149,18 +172,30 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
             <FormLabel required>Company</FormLabel>
             <div className="flex gap-2 items-center">
               <div className="flex-1">
-                <Select onValueChange={handleCompanyChange}>
-                  <SelectTrigger className="h-10 rounded-xl text-sm w-full">
-                    <SelectValue placeholder="Select Company" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {myCompaniesName.map((company) => (
-                      <SelectItem key={company._id} value={company.name}>
-                        {company.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Controller
+                  name="company"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        handleCompanyChange(value);
+                      }}
+                      value={field.value}
+                    >
+                      <SelectTrigger className="h-10 rounded-xl text-sm w-full">
+                        <SelectValue placeholder="Select Company" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {myCompaniesName.map((company) => (
+                          <SelectItem key={company._id} value={company.name}>
+                            {company.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
               <div className="h-10 w-10 shrink-0 border border-border/80 rounded-xl flex items-center justify-center bg-muted/40 overflow-hidden">
                 {selectedLogo ? (
@@ -193,36 +228,45 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
           </div>
           <div>
             <FormLabel required>Experience Level</FormLabel>
-            <Select onValueChange={(v) => setValue("experience", v)}>
-              <SelectTrigger className="h-10 rounded-xl text-sm w-full">
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="entry">Entry Level</SelectItem>
-                <SelectItem value="mid">Mid Level</SelectItem>
-                <SelectItem value="senior">Senior Level</SelectItem>
-                <SelectItem value="lead">Lead Level</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              name="experience"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="h-10 rounded-xl text-sm w-full">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="entry">Entry Level</SelectItem>
+                    <SelectItem value="mid">Mid Level</SelectItem>
+                    <SelectItem value="senior">Senior Level</SelectItem>
+                    <SelectItem value="lead">Lead Level</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
             <FieldError error={errors.experience} />
           </div>
           <div>
             <FormLabel required>Job Type</FormLabel>
-            <Select
-              defaultValue="full-time"
-              onValueChange={(v) => setValue("type", v)}
-            >
-              <SelectTrigger className="h-10 rounded-xl text-sm w-full">
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="full-time">Full-time</SelectItem>
-                <SelectItem value="part-time">Part-time</SelectItem>
-                <SelectItem value="remote">Remote</SelectItem>
-                <SelectItem value="contract">Contract</SelectItem>
-                <SelectItem value="internship">Internship</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="h-10 rounded-xl text-sm w-full">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="full-time">Full-time</SelectItem>
+                    <SelectItem value="part-time">Part-time</SelectItem>
+                    <SelectItem value="remote">Remote</SelectItem>
+                    <SelectItem value="contract">Contract</SelectItem>
+                    <SelectItem value="internship">Internship</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
             <FieldError error={errors.type} />
           </div>
         </div>
@@ -252,19 +296,22 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
             </div>
             <div>
               <FormLabel required>Currency</FormLabel>
-              <Select
-                defaultValue="BDT"
-                onValueChange={(v) => setValue("salary.currency", v)}
-              >
-                <SelectTrigger className="h-10 rounded-xl text-sm w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="BDT">BDT (৳)</SelectItem>
-                  <SelectItem value="USD">USD ($)</SelectItem>
-                  <SelectItem value="EUR">EUR (€)</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                name="salary.currency"
+                control={control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="h-10 rounded-xl text-sm w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BDT">BDT (৳)</SelectItem>
+                      <SelectItem value="USD">USD ($)</SelectItem>
+                      <SelectItem value="EUR">EUR (€)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
           </div>
         </div>
@@ -327,18 +374,24 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
 
         <div className="pt-2">
           <div className="flex items-start gap-3">
-            <Checkbox
-              id="terms"
-              onCheckedChange={(checked) =>
-                setValue("termsAccepted", checked === true)
-              }
+            <Controller
+              name="termsAccepted"
+              control={control}
+              render={({ field }) => (
+                <Checkbox
+                  id="terms"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
             />
             <div className="grid gap-1.5 leading-none">
               <label
                 htmlFor="terms"
                 className="text-xs font-medium text-foreground cursor-pointer select-none"
               >
-                I hereby confirm that this position is designated exclusively for Diploma Engineering credentials.
+                I hereby confirm that this position is designated exclusively
+                for Diploma Engineering credentials.
               </label>
             </div>
           </div>
