@@ -44,4 +44,8 @@ export const jobService = {
   },
 
   deleteJobAdmin: (id) => apiRequest(`/jobs/admin/${id}`, { method: "DELETE" }),
+  getJobAnalytics: () => apiRequest("/jobs/analytics/overview", {
+    method: "GET",
+    cache: "no-store"
+  }),
 };

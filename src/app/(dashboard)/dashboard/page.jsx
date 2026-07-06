@@ -18,9 +18,11 @@ import DashboardStatsGrid from "../../../components/shared/StatsCard";
 import RecentApplications from "../../../pages/dashboard/RecentApplications";
 import TopCompanies from "../../../pages/dashboard/TopCompanies";
 import { applicationService } from "../../../services/applications";
-
 import ApplicationChart from "../../../pages/dashboard/ApplicationChart";
 import { companyService } from "../../../services/company";
+import CompanyAnalytics from "../../../pages/dashboard/CompanyAnalytics";
+import RecruiterAnalytics from "../../../pages/dashboard/RecruiterAnalytics";
+
 
 export const metadata = {
   title: "Dashboard - KaajBridge",
@@ -206,6 +208,14 @@ const DashboardPage = async () => {
         <div>
           <DashboardStatsGrid type={role} serverStats={statsData} />
         </div>
+
+        {role !== "seeker" && (
+          <div className="w-full space-y-6">
+            <CompanyAnalytics role={role} />
+            <RecruiterAnalytics role={role} />
+          </div>
+        )}
+
         <div className="flex items-start mt-6 gap-4 flex-col md:flex-row">
           <RecentApplications applications={initialApplications} role={role} />
           {role !== "seeker" ? <TopCompanies initialCompanies={topCompaniesData} role={role} /> : <ApplicationChart />}

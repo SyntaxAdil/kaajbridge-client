@@ -64,4 +64,6 @@ export const companyService = {
 
   updateCompanyStatus: (id, status) =>
     apiRequest(`/company/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),
+
+  getCompanyAnalytics: () => apiRequest("/company/analytics/overview"),
 };
