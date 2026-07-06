@@ -34,7 +34,7 @@ export default function ApplicationsTable({
   createPageLink,
 }) {
   const showApplicant = role === "recruiter" || role === "admin";
-  const showCompany = role === "recruiter" || role === "admin";
+  const showCompany = role === "recruiter" || role === "admin" || role === "seeker";
 
   const columnCount = 3 + (showApplicant ? 1 : 0) + (showCompany ? 1 : 0);
 
