@@ -18,7 +18,6 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url }) => {
       await resend.emails.send({
         from: "KaajBridge <onboarding@resend.dev>",
-        // from: process.env.AUTH_EMAIL_FROM,
         to: user.email,
         subject: "Reset your KaajBridge account password ",
         html: resetPasswordTemplate({
@@ -36,24 +35,44 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
   },
- session: {
-  cookieCache: {
-    enabled: true,
-    maxAge: 60 * 5,
-    strategy: "jwt",
+
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 5,
+      strategy: "jwt",
+    },
   },
-},
+
   plugins: [jwt()],
-  user:{
-    additionalFields:{
-      role:{
-        default:"seeker"
+
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        defaultValue: "seeker",
+        input: false,
       },
-    
-
-    }
-  }
+      gender: { type: "string", required: false, defaultValue: "" },
+      phoneNumber: { type: "string", required: false, defaultValue: "" },
+      address: { type: "string", required: false, defaultValue: "" },
+      city: { type: "string", required: false, defaultValue: "" },
+      country: { type: "string", required: false, defaultValue: "" },
+      github: { type: "string", required: false, defaultValue: "" },
+      linkedin: { type: "string", required: false, defaultValue: "" },
+      portfolio: { type: "string", required: false, defaultValue: "" },
+      resumeUrl: { type: "string", required: false, defaultValue: "" },
+      institutionName: { type: "string", required: false, defaultValue: "" },
+      degree: { type: "string", required: false, defaultValue: "Diploma" },
+      department: { type: "string", required: false, defaultValue: "" },
+      cgpa: { type: "string", required: false, defaultValue: "" },
+      passingYear: { type: "string", required: false, defaultValue: "" },
+      academicCertificate: { type: "string", required: false, defaultValue: "" },
+      skills: { type: "string", required: false, defaultValue: "" },
+      experience: { type: "string", required: false, defaultValue: "" },
+      recruiterPosition: { type: "string", required: false, defaultValue: "" },
+      plan: { type: "string", required: false, defaultValue: "free" },
+      isStudentVerified: { type: "boolean", required: false, defaultValue: false },
+    },
+  },
 });
-
-// const { data: session, error } = await authClient.getSession()
-// export const userInfoServer= session?.user;
