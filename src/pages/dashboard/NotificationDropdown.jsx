@@ -21,11 +21,7 @@ import {
 import Link from "next/link";
 import { useSession } from "../../lib/auth/auth-client";
 
-const ROLE_VIEW_ALL_LINKS = {
-  seeker: "/dashboard/applications",
-  recruiter: "/dashboard/all-job-applications",
-  admin: "/dashboard/admin/all",
-};
+
 
 export default function NotificationDropdown({ liveData = [] }) {
   const { data: session } = useSession();
@@ -76,8 +72,7 @@ export default function NotificationDropdown({ liveData = [] }) {
     })
     .slice(0, 4);
 
-  const viewAllHref =
-    ROLE_VIEW_ALL_LINKS[userRole] || ROLE_VIEW_ALL_LINKS.seeker;
+
   const badgeCount = notifications.length;
 
   const handleOpenChange = (open) => {
@@ -161,7 +156,7 @@ export default function NotificationDropdown({ liveData = [] }) {
         <DropdownMenuSeparator />
         <div className="p-1">
           <Link
-            href={viewAllHref}
+            href={"/dashboard/applications"}
             className="flex w-full h-8 items-center justify-center text-[11px] font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             View All Structural Nodes
