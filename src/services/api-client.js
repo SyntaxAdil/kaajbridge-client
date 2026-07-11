@@ -4,13 +4,11 @@ import { auth } from "../lib/auth/auth";
 import { headers } from "next/headers";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000/api";
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-export async function apiRequest(
-  endpoint,
-  options = {}
-) {
+export async function apiRequest(endpoint, options = {}) {
+  let token = null;
+
   try {
     const sessionHeaders = await headers();
 
@@ -18,51 +16,42 @@ export async function apiRequest(
       headers: sessionHeaders,
     });
 
-    const token = tokenData?.token;
+    token = tokenData?.token ?? null;
+  } catch {}
 
-    const requestHeaders = {
-      "Content-Type": "application/json",
-      ...options.headers,
-    };
+  const requestHeaders = new Headers(options.headers || {});
 
-    if (token) {
-      requestHeaders.Authorization = `Bearer ${token}`;
-    }
-
-    const response = await fetch(
-      `${BASE_URL}${endpoint}`,
-      {
-        ...options,
-        headers: requestHeaders,
-        cache: "no-store",
-      }
-    );
-
-    let data = null;
-
-    try {
-      data = await response.json();
-    } catch (err) {
-      data = null;
-    }
-
-    if (!response.ok) {
-      console.error("API ERROR:", {
-        endpoint,
-        status: response.status,
-        data,
-      });
-
-      throw new Error(
-        data?.message ||
-        `Request failed with status ${response.status}`
-      );
-    }
-
-    return data;
-  } catch (error) {
-    console.error("API REQUEST FAILED:", error);
-
-    throw error;
+  if (!requestHeaders.has("Content-Type") && options.body) {
+    requestHeaders.set("Content-Type", "application/json");
   }
+
+  if (token) {
+    requestHeaders.set("Authorization", `Bearer ${token}`);
+  }
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
+    headers: requestHeaders,
+    cache: "no-store",
+  });
+
+  let data = null;
+
+  const contentType = response.headers.get("content-type");
+
+  if (contentType?.includes("application/json")) {
+    data = await response.json();
+  } else {
+    data = await response.text();
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data?.message ||
+        data ||
+        `Request failed with status ${response.status}`
+    );
+  }
+
+  return data;
 }
