@@ -3,10 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { jobService } from "../../../../../services/jobs";
 import { applicationService } from "../../../../../services/applications";
-
+import { favoriteService } from "../../../../../services/favorites"; 
 import {
   ArrowLeft,
-  Briefcase,
   MapPin,
   Calendar,
   DollarSign,
@@ -20,6 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import ApplyButtonClient from "./ApplyButtonClient";
+import FavButtonClient from "./FavButtonClient";
 import { auth } from "../../../../../lib/auth/auth";
 import { headers } from "next/headers";
 
@@ -33,12 +33,23 @@ export default async function JobDetailsPage({ params }) {
   const job = await jobService.getJobById(id).then((res) => res.data);
 
   let initialHasApplied = false;
+  let initialIsFavorited = false;
+
   if (user && job) {
     try {
-      const myApps = await applicationService.getMyApplications({ limit: 100 });
+      const [myApps, myFavs] = await Promise.all([
+        applicationService.getMyApplications({ limit: 100 }),
+        favoriteService.getFavorites({ limit: 100 }),
+      ]);
+
       initialHasApplied =
         myApps?.data?.some(
           (app) => app.job?._id === job._id || app.job === job._id,
+        ) || false;
+
+      initialIsFavorited =
+        myFavs?.data?.some(
+          (fav) => fav.job?._id === job._id || fav.job === job._id,
         ) || false;
     } catch (err) {
       console.error(err);
@@ -58,7 +69,7 @@ export default async function JobDetailsPage({ params }) {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
       <div className="flex flex-col gap-4">
-        <div>
+        <div className="flex items-center justify-between">
           <Link
             href="/jobs"
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
@@ -66,6 +77,10 @@ export default async function JobDetailsPage({ params }) {
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Go to Explore Jobs
           </Link>
+
+          {user && job && (
+            <FavButtonClient jobId={job._id} initialIsFavorited={initialIsFavorited} />
+          )}
         </div>
 
         {isClosed && (
