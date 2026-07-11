@@ -24,7 +24,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { favoriteService } from "../../services/favorites";
-
+import { toast } from "react-hot-toast";
 
 export default function SavedJobsClient({ initialFavorites, isAuthenticated }) {
   const [favorites, setFavorites] = useState(initialFavorites);
@@ -54,8 +54,10 @@ export default function SavedJobsClient({ initialFavorites, isAuthenticated }) {
     try {
       await favoriteService.removeFromFavorites(targetJobId);
       setFavorites((prev) => prev.filter((item) => item.jobId !== targetJobId));
+      toast.success("Job removed from saved list");
     } catch (error) {
       console.error("Failed to delete favorite record via API:", error);
+      toast.error("Failed to remove job");
     } finally {
       setIsDeleting(false);
       setIsModalOpen(false);
