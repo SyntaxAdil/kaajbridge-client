@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertTitle } from "../../../components/ui/alert";
 import Logo from "../../../components/ui/Logo";
-import { signIn } from "../../../lib/auth/auth-client";
+import { googleSignIn, signIn } from "../../../lib/auth/auth-client";
 import { FaGoogle } from "react-icons/fa";
 
 export default function LoginPage() {
@@ -214,7 +214,8 @@ export default function LoginPage() {
                 type="button"
                 variant="outline"
                 disabled={isSubmitting}
-                className="w-full h-11 rounded-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium shadow-sm transition-all"
+                className="w-full h-11 rounded-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium shadow-sm transition-all" 
+                onClick={googleSignIn}
               >
               <FaGoogle></FaGoogle>   Continue with Google
               </Button>

@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertTitle } from "../../../components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group";
 import Logo from "../../../components/ui/Logo";
-import { signUp } from "../../../lib/auth/auth-client";
+import { googleSignIn, signUp } from "../../../lib/auth/auth-client";
 
 export default function RegisterPage() {
   const [serverError, setServerError] = useState("");
@@ -250,6 +250,7 @@ export default function RegisterPage() {
                 variant="outline"
                 disabled={isSubmitting}
                 className="w-full h-11 rounded-xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-medium shadow-sm transition-all flex items-center justify-center gap-2"
+                onClick={googleSignIn}
               >
                 <FaGoogle className="h-4 w-4" /> Continue with Google
               </Button>
