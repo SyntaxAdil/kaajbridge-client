@@ -50,7 +50,7 @@ const Banner = ({ initialStats }) => {
   };
 
   return (
-    <section className="relative pt-10 min-h-screen w-full overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-white">
+    <section className="relative -mt-18 pt-10 min-h-screen w-full overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-white">
       {/* ── PARTICLES BACKGROUND ── */}
       <Particles
         className="absolute inset-0 z-0"
