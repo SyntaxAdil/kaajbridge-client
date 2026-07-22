@@ -124,7 +124,7 @@ export default function LoginPage() {
                 variant="outline"
                 size="sm"
                 className="text-xs h-9 rounded-xl bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 transition-all shadow-sm"
-                onClick={() => fillCredentials("recruiter@kaajbridge.com", "recruiter@001")}
+                onClick={() => fillCredentials("recruiter@kaajbridge.com", "recruiter@123")}
               >
                 Recruiter
               </Button>
