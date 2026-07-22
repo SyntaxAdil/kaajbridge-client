@@ -12,7 +12,8 @@ const manrope = Manrope({
   subsets: ["latin"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kaajbridge.vercel.app";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://kaajbridge.vercel.app";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -96,7 +97,7 @@ export const metadata = {
   manifest: "/site.webmanifest",
 
   verification: {
-    google: "YOUR_GOOGLE_SITE_VERIFICATION_CODE",
+    google: "mao8sX2_o407oWcPS57i_CHmQZzWGIv6yU8g80A9CFY",
   },
 
   formatDetection: {
@@ -117,9 +118,17 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${manrope.className} h-full antialiased`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${manrope.className} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+        >
           {children}
           <Toaster />
         </ThemeProvider>
