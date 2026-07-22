@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -16,70 +16,19 @@ import {
 import { Particles } from "@/components/ui/particles";
 import { NumberTicker } from "@/components/ui/number-ticker";
 
-// Services
-
-import { jobService } from "../services/jobs";
-import { companyService } from "../services/company";
-
-const Banner = () => {
+const Banner = ({ initialStats }) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [stats, setStats] = useState({
-    totalCompanies: 0,
-    totalJobs: 0,
-    verifiedJobs: 0,
-  });
-  const [loading, setLoading] = useState(true);
+
+  const stats = {
+    totalCompanies: initialStats?.totalCompanies ?? 500,
+    totalJobs: initialStats?.totalJobs ?? 2400,
+  };
 
   const popularSkills = [
-    "React", "Python", "Java", "MERN", 
+    "React", "Python", "Java", "MERN",
     "Frontend", "Backend", "Full Stack", "DevOps"
   ];
-
-  // Fetch real stats from database
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        // Fetch companies
-        const companiesResult = await companyService.getAllCompanies({
-          page: 1,
-          limit: 1,
-        });
-
-        // Fetch jobs
-        const jobsResult = await jobService.getAllJobs({
-          page: 1,
-          limit: 1,
-        });
-
-        // Get verified jobs count (you can add a verified filter if you have one)
-        // For now, we'll use total jobs as verified or you can add a filter
-        const verifiedJobsResult = await jobService.getAllJobs({
-          page: 1,
-          limit: 1,
-          verified: true, // if you have this filter
-        });
-
-        setStats({
-          totalCompanies: companiesResult?.totalCompany || 0,
-          totalJobs: jobsResult?.totalJobs || 0,
-          verifiedJobs: jobsResult?.totalJobs || 0, // or verifiedJobsResult?.totalJobs
-        });
-      } catch (error) {
-        console.error("Failed to fetch stats:", error);
-        // Fallback stats
-        setStats({
-          totalCompanies: 500,
-          totalJobs: 2400,
-          verifiedJobs: 100,
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -91,7 +40,7 @@ const Banner = () => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch(e);
     }
   };
@@ -163,7 +112,7 @@ const Banner = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-4 text-sm leading-relaxed text-slate-500 dark:text-zinc-400 sm:text-base max-w-2xl mx-auto"
           >
-            Curated job portfolios and fast-track hiring pipelines connecting you to top 
+            Curated job portfolios and fast-track hiring pipelines connecting you to top
             local and international companies.
           </motion.p>
 
@@ -186,7 +135,7 @@ const Banner = () => {
                   className="w-full bg-transparent text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none"
                 />
               </div>
-              <button 
+              <button
                 type="submit"
                 className="flex items-center justify-center gap-2 rounded-full bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400 px-6 py-2 text-sm font-medium text-white transition-all active:scale-95 shadow-sm shadow-indigo-500/30 dark:shadow-lg dark:shadow-indigo-600/30"
               >
@@ -215,55 +164,38 @@ const Banner = () => {
             ))}
           </motion.div>
 
-          {/* Dynamic Stats with Number Ticker */}
+          {/* Stats */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mt-8 flex items-center justify-center gap-8 sm:gap-12"
           >
-            {/* Total Companies */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-1.5">
                 <Building2 className="size-4 text-indigo-400 dark:text-indigo-500" />
                 <div className="text-2xl font-bold text-slate-800 dark:text-white sm:text-3xl">
-                  {loading ? (
-                    <span className="inline-block w-12 h-8 bg-slate-200 dark:bg-white/10 rounded animate-pulse" />
-                  ) : (
-                    <NumberTicker value={stats.totalCompanies} /> 
-                  )}
-                  +
+                  <NumberTicker value={stats.totalCompanies} />+
                 </div>
               </div>
               <div className="text-xs text-slate-400 dark:text-zinc-500">Total Companies</div>
             </div>
 
-            {/* Total Jobs */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-1.5">
                 <Users className="size-4 text-indigo-400 dark:text-indigo-500" />
                 <div className="text-2xl font-bold text-slate-800 dark:text-white sm:text-3xl">
-                  {loading ? (
-                    <span className="inline-block w-12 h-8 bg-slate-200 dark:bg-white/10 rounded animate-pulse" />
-                  ) : (
-                    <NumberTicker value={stats.totalJobs} />
-                  )}
+                  <NumberTicker value={stats.totalJobs} />
                 </div>
               </div>
               <div className="text-xs text-slate-400 dark:text-zinc-500">Total Jobs</div>
             </div>
 
-            {/* Verified Jobs */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-1.5">
                 <CheckCircle2 className="size-4 text-emerald-500 dark:text-emerald-400" />
                 <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 sm:text-3xl">
-                  {loading ? (
-                    <span className="inline-block w-12 h-8 bg-slate-200 dark:bg-white/10 rounded animate-pulse" />
-                  ) : (
-                    <NumberTicker value={100} />
-                  )}
-                  %
+                  <NumberTicker value={100} />%
                 </div>
               </div>
               <div className="text-xs text-slate-400 dark:text-zinc-500">Verified Jobs</div>

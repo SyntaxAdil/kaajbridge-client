@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { BarChart3, PieChart, Loader2 } from "lucide-react";
-import { jobService } from "../../services/jobs";
 
 export default function RecruiterAnalytics({ role }) {
   const [chartData, setChartData] = useState({ companyChartData: [], typeChartData: [] });
@@ -17,9 +16,10 @@ export default function RecruiterAnalytics({ role }) {
 
     const fetchMetrics = async () => {
       try {
-        const res = await jobService.getJobAnalytics();
-        if (res?.success && res?.data) {
-          setChartData(res.data);
+        const response = await fetch("/api/jobs/analytics/overview");
+        const data = await response.json().catch(() => null);
+        if (response.ok && data?.success && data?.data) {
+          setChartData(data.data);
         }
       } catch (err) {
         console.error("Failed to load analytics engine metrics:", err);

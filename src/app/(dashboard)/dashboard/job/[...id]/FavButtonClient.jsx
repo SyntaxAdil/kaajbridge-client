@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { Bookmark, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { favoriteService } from "../../../../../services/favorites";
 import { toast } from "react-hot-toast";
 
 export default function FavButtonClient({ jobId, initialIsFavorited }) {
@@ -16,11 +15,19 @@ export default function FavButtonClient({ jobId, initialIsFavorited }) {
 
     try {
       if (isFavorited) {
-        await favoriteService.removeFromFavorites(jobId);
+        const response = await fetch(`/api/favorites/${jobId}`, { method: "DELETE" });
+        const result = await response.json().catch(() => null);
+        if (!response.ok) {
+          throw new Error(result?.message || "Failed to remove favorite");
+        }
         setIsFavorited(false);
         toast.success("Removed from saved jobs");
       } else {
-        await favoriteService.addToFavorites(jobId);
+        const response = await fetch(`/api/favorites/${jobId}`, { method: "POST" });
+        const result = await response.json().catch(() => null);
+        if (!response.ok) {
+          throw new Error(result?.message || "Failed to add favorite");
+        }
         setIsFavorited(true);
         toast.success("Added to saved jobs");
       }

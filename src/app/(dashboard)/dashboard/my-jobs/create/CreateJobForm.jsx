@@ -20,7 +20,6 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 
-import { jobService } from "@/services/jobs";
 import { jobCreateSchema } from "@/schema/job-schema";
 import { FormLabel, FieldError, SectionDivider } from "./FormComponents";
 import toast from "react-hot-toast";
@@ -107,7 +106,15 @@ export default function CreateJobForm({ myCompaniesName = [] }) {
         termsAccepted: data.termsAccepted,
       };
 
-      await jobService.createJob(payload);
+      const response = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to create job");
+      }
       reset();
       setSelectedLogo("");
 

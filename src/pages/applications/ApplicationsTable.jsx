@@ -26,12 +26,12 @@ function StatusBadge({ status }) {
 }
 
 export default function ApplicationsTable({
-  applications,
-  role,
-  canEditStatus,
-  canDelete,
-  pagination,
-  createPageLink,
+  applications = [],
+  role = "seeker",
+  canEditStatus = false,
+  canDelete = false,
+  pagination = { page: 1, pages: 1, total: 0 },
+  createPageLink = () => "#",
 }) {
   const showApplicant = role === "recruiter" || role === "admin";
   const showCompany = role === "recruiter" || role === "admin" || role === "seeker";
@@ -69,14 +69,14 @@ export default function ApplicationsTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-border/40">
-            {applications.length === 0 ? (
+            {Array.isArray(applications) && applications.length === 0 ? (
               <tr>
                 <td colSpan={columnCount + 1} className="p-8 text-center text-muted-foreground">
                   No applications found.
                 </td>
               </tr>
             ) : (
-              applications.map((app) => (
+              (Array.isArray(applications) ? applications : []).map((app) => (
                 <tr key={app._id} className="hover:bg-muted/10 transition-colors">
                   {showApplicant && (
                     <td className="p-4">
@@ -134,7 +134,7 @@ export default function ApplicationsTable({
         </table>
       </div>
 
-      {pagination && pagination.pages > 1 && (
+      {pagination && Number(pagination.pages || 1) > 1 && (
         <footer className="flex items-center justify-between border-t border-border/60 px-4 py-3.5 bg-muted/20">
           <span className="text-xs text-muted-foreground">
             Showing page <b>{pagination.page}</b> of <b>{pagination.pages}</b> ({pagination.total} total items)

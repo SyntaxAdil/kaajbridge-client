@@ -1,58 +1,15 @@
-
+// components/home/FeaturedJobs.jsx
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { jobService } from "../../services/jobs";
 import { Button } from "../../components/ui/button";
 import JobCard from "../my-jobs/JobsCard";
 import { SectionHeader } from "../../components/ui/section-header";
 
-
-
-export function FeaturedJobs() {
-  const [jobs, setJobs] = useState([]);
-  const [totalJobs, setTotalJobs] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const result = await jobService.getAllJobs({
-          page: "1",
-          limit: "4",
-          sort: "newest",
-        });
-        setJobs(result?.data || []);
-        setTotalJobs(result?.totalJobs || 0);
-      } catch (error) {
-        console.error("Failed to fetch jobs:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJobs();
-  }, []);
-
-  if (loading) {
-    return (
-      <section className="py-16 bg-zinc-50/50 dark:bg-[#0a0a0f]/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse">
-            <div className="h-8 w-48 bg-zinc-200 dark:bg-zinc-800 rounded mb-4" />
-            <div className="h-4 w-96 bg-zinc-200 dark:bg-zinc-800 rounded mb-8" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-64 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+export function FeaturedJobs({ initialJobs, initialTotalJobs }) {
+  const jobs = initialJobs?.data ?? initialJobs ?? [];
+  const totalJobs = initialTotalJobs ?? initialJobs?.totalJobs ?? jobs.length;
 
   return (
     <section className="py-16 bg-zinc-50/50 dark:bg-[#0a0a0f]/50">
@@ -96,3 +53,5 @@ export function FeaturedJobs() {
     </section>
   );
 }
+
+export default FeaturedJobs;

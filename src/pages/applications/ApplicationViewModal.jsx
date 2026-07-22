@@ -9,7 +9,6 @@ import {
   CalendarClock,
   FileText,
 } from "lucide-react";
-import { applicationService } from "../../services/applications";
 
 const statusStyles = {
   accepted: "text-emerald-600 border-emerald-500/25 bg-emerald-500/8",
@@ -26,8 +25,9 @@ export default async function ApplicationViewModal({ applicationId }) {
   let application = null;
 
   try {
-    const res = await applicationService.viewApplicationDetails(applicationId);
-    application = res?.data || null;
+    const response = await fetch(`/api/applications/${applicationId}`);
+    const data = await response.json().catch(() => null);
+    application = data?.data || null;
   } catch (error) {
     console.error(error);
   }

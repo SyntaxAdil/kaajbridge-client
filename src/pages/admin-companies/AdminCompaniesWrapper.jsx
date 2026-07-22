@@ -33,7 +33,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Search, Trash2, ChevronLeft, ChevronRight, Building2 } from "lucide-react";
-import { companyService } from "@/services/company";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
 
@@ -79,7 +78,11 @@ export default function AdminCompaniesWrapper({ initialCompanies }) {
   const handleDelete = async (id) => {
     setDeletingId(id);
     try {
-      await companyService.deleteCompanyAdmin(id);
+      const response = await fetch(`/api/companies/admin/${id}`, { method: "DELETE" });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to delete company");
+      }
       router.refresh();
     } catch (error) {
       console.error(error);
@@ -91,7 +94,15 @@ export default function AdminCompaniesWrapper({ initialCompanies }) {
   const handleStatusChange = async (id, newStatus) => {
     setUpdatingId(id);
     try {
-      await companyService.updateCompanyStatus(id, newStatus);
+      const response = await fetch(`/api/companies/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to update company status");
+      }
       router.refresh();
     } catch (error) {
       console.error(error);

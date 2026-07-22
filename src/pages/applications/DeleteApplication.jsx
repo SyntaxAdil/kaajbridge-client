@@ -20,8 +20,11 @@ export default function DeleteApplication({ id }) {
 
   const handleDelete = async () => {
     try {
-      const { applicationService } = await import("../../services/applications");
-      await applicationService.deleteApplication(id);
+      const response = await fetch(`/api/applications/${id}`, { method: "DELETE" });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to delete application");
+      }
       toast.success("Application deleted successfully");
       startTransition(() => {
         setIsOpen(false);

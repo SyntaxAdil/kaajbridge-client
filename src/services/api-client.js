@@ -1,4 +1,4 @@
-"use server";
+"use server"
 
 import { auth } from "../lib/auth/auth";
 import { headers } from "next/headers";
@@ -11,11 +11,9 @@ export async function apiRequest(endpoint, options = {}) {
 
   try {
     const sessionHeaders = await headers();
-
     const tokenData = await auth.api.getToken({
       headers: sessionHeaders,
     });
-
     token = tokenData?.token ?? null;
   } catch {}
 
@@ -36,7 +34,6 @@ export async function apiRequest(endpoint, options = {}) {
   });
 
   let data = null;
-
   const contentType = response.headers.get("content-type");
 
   if (contentType?.includes("application/json")) {
@@ -47,9 +44,7 @@ export async function apiRequest(endpoint, options = {}) {
 
   if (!response.ok) {
     throw new Error(
-      data?.message ||
-        data ||
-        `Request failed with status ${response.status}`
+      data?.message || data || `Request failed with status ${response.status}`
     );
   }
 

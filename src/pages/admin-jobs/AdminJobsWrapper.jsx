@@ -32,7 +32,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Search, Trash2, ChevronLeft, ChevronRight, Briefcase } from "lucide-react";
-import { jobService } from "../../services/jobs";
 import { SidebarTrigger } from "../../components/ui/sidebar";
 import Link from "next/link";
 
@@ -79,7 +78,11 @@ export default function AdminJobsWrapper({
   const handleDelete = async (id) => {
     setDeletingId(id);
     try {
-      await jobService.deleteJobAdmin(id);
+      const response = await fetch(`/api/jobs/admin/${id}`, { method: "DELETE" });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to delete job");
+      }
       router.refresh();
     } catch (error) {
       console.error(error);

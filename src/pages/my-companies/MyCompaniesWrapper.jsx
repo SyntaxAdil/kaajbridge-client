@@ -27,7 +27,6 @@ import {
   PaginationEllipsis,
 } from "../../components/ui/pagination";
 import CompanyCard from "./CompanyCard";
-import { companyService } from "@/services/company";
 
 const STATUS_FILTERS = [
   { value: "all", label: "All Statuses" },
@@ -123,8 +122,16 @@ export default function MyCompanyWrapper({ initialCompanies }) {
 
   const handleUpdate = async (id, updatedData) => {
     try {
-      const response = await companyService.updateCompany(id, updatedData);
-      const updatedCompany = response?.data ?? response;
+      const response = await fetch(`/api/companies/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to update company");
+      }
+      const updatedCompany = result?.data ?? result;
       setCompanies((prev) =>
         prev.map((c) => ((c._id || c.id) === id ? { ...c, ...updatedCompany } : c)),
       );
@@ -137,7 +144,11 @@ export default function MyCompanyWrapper({ initialCompanies }) {
 
   const handleDelete = async (id) => {
     try {
-      await companyService.deleteCompany(id);
+      const response = await fetch(`/api/companies/${id}`, { method: "DELETE" });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to delete company");
+      }
       setCompanies((prev) => prev.filter((c) => (c._id || c.id) !== id));
       setPagination((prev) => ({
         ...prev,

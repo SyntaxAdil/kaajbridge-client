@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { favoriteService } from "../../services/favorites";
 import { toast } from "react-hot-toast";
 
 export default function SavedJobsClient({ initialFavorites, isAuthenticated }) {
@@ -52,7 +51,11 @@ export default function SavedJobsClient({ initialFavorites, isAuthenticated }) {
     setIsDeleting(true);
 
     try {
-      await favoriteService.removeFromFavorites(targetJobId);
+      const response = await fetch(`/api/favorites/${targetJobId}`, { method: "DELETE" });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to remove favorite");
+      }
       setFavorites((prev) => prev.filter((item) => item.jobId !== targetJobId));
       toast.success("Job removed from saved list");
     } catch (error) {

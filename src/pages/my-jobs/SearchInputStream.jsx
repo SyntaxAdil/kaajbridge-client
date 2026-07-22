@@ -9,13 +9,13 @@ export default function SearchInputStream({ initialValue = "" }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [search, setSearch] = useState(initialValue);
+  const [search, setSearch] = useState(initialValue || "");
   const [, startTransition] = useTransition();
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       startTransition(() => {
-        const current = new URLSearchParams(Array.from(searchParams.entries()));
+        const current = new URLSearchParams(Array.from(searchParams?.entries?.() || []));
         if (!search) {
           current.delete("search");
         } else {

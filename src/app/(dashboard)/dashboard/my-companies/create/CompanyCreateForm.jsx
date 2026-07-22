@@ -25,7 +25,6 @@ import {
   SelectValue,
   SelectTrigger,
 } from "../../../../../components/ui/select";
-import { companyService } from "@/services/company";
 import toast from "react-hot-toast";
 
 const INDUSTRY_OPTIONS = [
@@ -114,7 +113,15 @@ export default function CompanyCreateForm() {
 
   const onCompanySubmit = async (data) => {
     try {
-      await companyService.createCompany(data);
+      const response = await fetch("/api/companies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to create company");
+      }
       router.push("/dashboard/my-companies");
       toast.success("Company created successfully");
       router.refresh();

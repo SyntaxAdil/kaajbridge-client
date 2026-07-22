@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/card";
 import EditJob from "./EditJob";
 import DeleteJobs from "./DeleteJobs";
-import { jobService } from "../../services/jobs";
 import Link from "next/link";
 
 const STATUS_CONFIG = {
@@ -78,14 +77,26 @@ export default function JobCard({ job, isRecruiter = false }) {
   const skills = Array.isArray(job?.skills) ? job.skills : [];
 
   const handleUpdate = async (id, updatedData) => {
-    await jobService.updateJob(id, updatedData);
+    const response = await fetch(`/api/jobs/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedData),
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(result?.message || "Failed to update job");
+    }
     startTransition(() => {
       router.refresh();
     });
   };
 
   const handleDelete = async (id) => {
-    await jobService.deleteJob(id);
+    const response = await fetch(`/api/jobs/${id}`, { method: "DELETE" });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(result?.message || "Failed to delete job");
+    }
     startTransition(() => {
       router.refresh();
     });

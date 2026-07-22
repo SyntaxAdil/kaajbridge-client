@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import SearchInputStream from "./SearchInputStream";
 import JobCard from "./JobsCard";
 
-export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams }) {
+export default function MyJobsWrapper({ initialJobs = [], initialTotal = 0, searchParams = {} }) {
+  const searchValue = searchParams?.search || "";
+
   return (
     <section className="w-full min-h-screen bg-background py-8">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-border/60">
@@ -23,7 +25,7 @@ export default function MyJobsWrapper({ initialJobs, initialTotal, searchParams 
         </div>
 
         <div className="w-full sm:w-72 lg:w-80 shrink-0 px-2">
-          <SearchInputStream initialValue={searchParams.search} />
+          <SearchInputStream initialValue={searchValue} />
         </div>
       </header>
 

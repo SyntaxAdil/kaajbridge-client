@@ -17,8 +17,15 @@ export default function EditApplication({ id, currentStatus }) {
 
   const handleStatusUpdate = async (newStatus) => {
     try {
-      const { applicationService } = await import("../../services/applications");
-      await applicationService.updateApplicationStatus(id, newStatus);
+      const response = await fetch(`/api/applications/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to update application status");
+      }
       toast.success("Application status updated successfully");
       startTransition(() => {
         router.refresh();

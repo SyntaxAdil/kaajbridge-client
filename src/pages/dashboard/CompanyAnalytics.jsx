@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Building2, ShieldCheck, Loader2 } from "lucide-react";
-import { companyService } from "@/services/company";
 
 const COLORS = ["#10b981", "#f59e0b", "#ef4444", "#6366f1"];
 
@@ -19,9 +18,10 @@ export default function CompanyAnalytics({ role }) {
 
     const fetchCompanyMetrics = async () => {
       try {
-        const res = await companyService.getCompanyAnalytics();
-        if (res?.success && res?.data) {
-          setChartData(res.data);
+        const response = await fetch("/api/companies/analytics/overview");
+        const data = await response.json().catch(() => null);
+        if (response.ok && data?.success && data?.data) {
+          setChartData(data.data);
         }
       } catch (err) {
         console.error("Failed to load company analytics stream:", err);
