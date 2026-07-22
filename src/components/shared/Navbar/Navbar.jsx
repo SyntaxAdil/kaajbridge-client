@@ -41,7 +41,7 @@ import { GrDashboard } from "react-icons/gr";
 const NAV_LINKS = [
   { label: "Browse Jobs", href: "/jobs" },
   { label: "Companies", href: "/companies" },
-  { label: "Pricing", href: "/pricing" },
+  // { label: "Pricing", href: "/pricing" },
 ];
 
 const listVariants = {
@@ -131,9 +131,9 @@ const Navbar = () => {
               className="flex items-center gap-2 text-[1.35rem] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100"
             >
               <Logo />
-              <span className="hidden sm:inline-block text-xs font-medium text-indigo-500 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-200/30 dark:border-indigo-500/20">
+              {/* <span className="hidden sm:inline-block text-xs font-medium text-indigo-500 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-200/30 dark:border-indigo-500/20">
                 Beta
-              </span>
+              </span> */}
             </Link>
           </motion.div>
 
