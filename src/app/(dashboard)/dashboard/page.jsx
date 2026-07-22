@@ -137,7 +137,7 @@ const DashboardPage = async () => {
   }
 
   return (
-    <section className="w-full">
+    <section className="w-full pr-2">
       <header className="flex items-center justify-between w-full gap-8 border-b border-border bg-background py-4 sticky top-0 z-50">
         <div className="flex-0 w-1 px-4">
           <SidebarTrigger />

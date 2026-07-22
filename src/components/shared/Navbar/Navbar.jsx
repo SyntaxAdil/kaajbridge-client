@@ -19,7 +19,6 @@ import { Button } from "../../ui/button";
 import NavLink from "./NavLink";
 import {
   authClient,
-  handleSignout,
   useSession,
 } from "../../../lib/auth/auth-client";
 
@@ -95,6 +94,12 @@ const Navbar = () => {
     ?.map((w) => w[0]?.toUpperCase())
     ?.join("");
 
+    const handleSignout = async () => {
+      await authClient.signOut();
+      refetch();
+      toast.success("Logout successfull");
+      router.push("/");
+    };
   return (
     <>
       <motion.header
@@ -227,7 +232,7 @@ const Navbar = () => {
                   <DropdownMenuItem
                     variant="destructive"
                     className="gap-3 py-2.5 px-4 cursor-pointer rounded-xl"
-                    onClick={() => handleSignout(refetch)}
+                    onClick={handleSignout}
                   >
                     <LogOutIcon className="size-4" />
                     <span>Log out</span>

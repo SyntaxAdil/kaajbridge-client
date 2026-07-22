@@ -25,7 +25,7 @@ import {
   Users2,
 } from "lucide-react";
 import Image from "next/image";
-import { handleSignout, useSession } from "../../lib/auth/auth-client";
+import { authClient, useSession } from "../../lib/auth/auth-client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -104,7 +104,12 @@ export default function DashboardSidebar() {
       </Sidebar>
     );
   }
-
+const handleSignout = async () => {
+      await authClient.signOut();
+      refetch();
+      toast.success("Logout successfull");
+      router.push("/");
+    };
   return (
     <Sidebar
       collapsible="icon"
