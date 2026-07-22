@@ -207,7 +207,7 @@ export default function CompaniesWrapper({ initialCompanies }) {
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2  gap-6">
         {companies.map((company) => (
           <CompanyCard isPrivete={false} key={company._id} company={company} />
         ))}
