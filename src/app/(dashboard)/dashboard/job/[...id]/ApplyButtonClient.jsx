@@ -37,7 +37,6 @@ export default function ApplyButtonClient({ job, user, initialHasApplied }) {
 
   const jobId = job?._id || job?.id;
   const isAlreadyAppliedInUserArray = user?.applications?.some(appId => appId === jobId);
-  console.log(user);
   const [hasApplied, setHasApplied] = useState(initialHasApplied || isAlreadyAppliedInUserArray);
 
   const {
