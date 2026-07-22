@@ -1,197 +1,287 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "motion/react";
-import { InteractiveGridPattern } from "../components/ui/interactive-grid-pattern";
-import { cn } from "../lib/utils";
+import { motion } from "motion/react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
-  ArrowRight,
-  Sparkles,
-  TrendingUp,
+  Search,
+  Briefcase,
+  GraduationCap,
+  Rocket,
+  ArrowUpRight,
   Building2,
   Users,
+  CheckCircle2,
 } from "lucide-react";
-import Link from "next/link";
+import { Particles } from "@/components/ui/particles";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
-/* ── Stat Pill ── */
-const StatPill = ({ icon: Icon, label, value, delay, className }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20, scale: 0.92 }}
-    animate={{ opacity: 1, y: 0, scale: 1 }}
-    transition={{ delay, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-    className={cn(
-      "absolute hidden lg:flex items-center gap-2.5 rounded-2xl border backdrop-blur-xl px-4 py-2.5 shadow-sm",
-      "border-gray-200 bg-white/70 text-gray-900",
-      "dark:border-white/10 dark:bg-white/5 dark:text-white dark:shadow-black/20",
-      className
-    )}
-  >
-    <span className="flex size-8 items-center justify-center rounded-xl bg-indigo-500/10">
-      <Icon className="size-4 text-indigo-500" />
-    </span>
-    <div>
-      <p className="text-[11px] font-medium text-gray-500 dark:text-zinc-400 leading-none mb-0.5">
-        {label}
-      </p>
-      <p className="text-sm font-bold text-gray-900 dark:text-zinc-100 leading-none">
-        {value}
-      </p>
-    </div>
-  </motion.div>
-);
+// Services
 
-/* ── Tag ── */
-const Tag = ({ children, delay }) => (
-  <motion.span
-    initial={{ opacity: 0, scale: 0.85 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ delay, duration: 0.4, ease: "backOut" }}
-    className="
-      inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-widest
-      border-indigo-200 bg-indigo-50 text-indigo-600
-      dark:border-indigo-500/25 dark:bg-indigo-500/10 dark:text-indigo-400
-    "
-  >
-    <Sparkles className="size-3" />
-    {children}
-  </motion.span>
-);
+import { jobService } from "../services/jobs";
+import { companyService } from "../services/company";
 
 const Banner = () => {
-  const ref = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [stats, setStats] = useState({
+    totalCompanies: 0,
+    totalJobs: 0,
+    verifiedJobs: 0,
   });
+  const [loading, setLoading] = useState(true);
 
-  const yContent = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const ySmooth = useSpring(yContent, { stiffness: 60, damping: 20 });
+  const popularSkills = [
+    "React", "Python", "Java", "MERN", 
+    "Frontend", "Backend", "Full Stack", "DevOps"
+  ];
+
+  // Fetch real stats from database
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Fetch companies
+        const companiesResult = await companyService.getAllCompanies({
+          page: 1,
+          limit: 1,
+        });
+
+        // Fetch jobs
+        const jobsResult = await jobService.getAllJobs({
+          page: 1,
+          limit: 1,
+        });
+
+        // Get verified jobs count (you can add a verified filter if you have one)
+        // For now, we'll use total jobs as verified or you can add a filter
+        const verifiedJobsResult = await jobService.getAllJobs({
+          page: 1,
+          limit: 1,
+          verified: true, // if you have this filter
+        });
+
+        setStats({
+          totalCompanies: companiesResult?.totalCompany || 0,
+          totalJobs: jobsResult?.totalJobs || 0,
+          verifiedJobs: jobsResult?.totalJobs || 0, // or verifiedJobsResult?.totalJobs
+        });
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+        // Fallback stats
+        setStats({
+          totalCompanies: 500,
+          totalJobs: 2400,
+          verifiedJobs: 100,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/jobs?search=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push(`/jobs`);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
+
+  const handleSkillClick = (skill) => {
+    router.push(`/jobs?search=${encodeURIComponent(skill)}`);
+  };
 
   return (
-    <section
-      ref={ref}
-      className="
-        relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden 
-        bg-white text-gray-900
-        dark:bg-zinc-950 dark:text-white
-      "
-    >
-      {/* grid */}
-      <InteractiveGridPattern
-        className={cn(
-          "[mask-image:radial-gradient(900px_circle_at_center,white,transparent)]",
-          "absolute inset-0 h-full w-full opacity-20 dark:opacity-40"
-        )}
-        width={40}
-        height={40}
-        x={-1}
-        y={-1}
+    <section className="relative pt-10 min-h-screen w-full overflow-hidden bg-slate-50 dark:bg-[#0a0a0f] text-slate-900 dark:text-white">
+      {/* ── PARTICLES BACKGROUND ── */}
+      <Particles
+        className="absolute inset-0 z-0"
+        quantity={50}
+        staticity={50}
+        ease={40}
+        size={0.5}
+        color="#818cf8"
+        vx={0.2}
+        vy={0.1}
+        refresh={false}
       />
 
-      {/* glow blobs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[700px] rounded-full bg-indigo-200/40 dark:bg-indigo-600/15 blur-[120px]" />
-        <div className="absolute top-1/3 -left-32 h-[400px] w-[400px] rounded-full bg-indigo-100/60 dark:bg-indigo-500/10 blur-[100px]" />
-        <div className="absolute bottom-0 right-0 h-[350px] w-[400px] rounded-full bg-blue-100/50 dark:bg-indigo-700/10 blur-[100px]" />
+      {/* ── CENTERED CONTENT ── */}
+      <div className="relative z-10 container mx-auto flex min-h-screen flex-col items-center justify-center px-6 py-12 text-center">
+        <div className="max-w-3xl">
+          {/* Tags */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-wrap items-center justify-center gap-2 mb-6"
+          >
+            {[
+              { icon: Briefcase, label: "BD Tech Jobs" },
+              { icon: GraduationCap, label: "Diploma Engineers" },
+              { icon: Rocket, label: "Fast Hiring" },
+            ].map((item, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-2 rounded-full border border-indigo-200/40 dark:border-indigo-500/20 bg-white/70 dark:bg-white/5 px-3.5 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-300 backdrop-blur-sm shadow-sm dark:shadow-none"
+              >
+                <item.icon className="size-3.5 text-indigo-500 dark:text-indigo-400" />
+                {item.label}
+              </span>
+            ))}
+          </motion.div>
+
+          {/* Headline */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl md:text-6xl lg:text-7xl">
+              <span className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent">
+                Diploma Engineers
+              </span>
+            </h1>
+            <p className="mt-3 text-lg font-light text-slate-600 dark:text-zinc-400 sm:text-xl">
+              Your gateway to <span className="text-indigo-600 dark:text-indigo-400 font-medium">tech careers in Bangladesh</span>
+            </p>
+          </motion.div>
+
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-4 text-sm leading-relaxed text-slate-500 dark:text-zinc-400 sm:text-base max-w-2xl mx-auto"
+          >
+            Curated job portfolios and fast-track hiring pipelines connecting you to top 
+            local and international companies.
+          </motion.p>
+
+          {/* Search */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-8 w-full max-w-2xl mx-auto"
+          >
+            <form onSubmit={handleSearch} className="flex items-center gap-2 rounded-full border border-indigo-200/30 dark:border-indigo-500/20 bg-white/90 dark:bg-white/5 p-1.5 shadow-sm shadow-indigo-100/50 dark:shadow-none backdrop-blur-xl">
+              <div className="flex flex-1 items-center gap-3 rounded-full px-4 py-2">
+                <Search className="size-4 text-indigo-500 dark:text-indigo-400 shrink-0" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Search jobs, skills, or companies..."
+                  className="w-full bg-transparent text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none"
+                />
+              </div>
+              <button 
+                type="submit"
+                className="flex items-center justify-center gap-2 rounded-full bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400 px-6 py-2 text-sm font-medium text-white transition-all active:scale-95 shadow-sm shadow-indigo-500/30 dark:shadow-lg dark:shadow-indigo-600/30"
+              >
+                Find Jobs
+                <ArrowUpRight className="size-4" />
+              </button>
+            </form>
+          </motion.div>
+
+          {/* Quick search tags */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="mt-4 flex flex-wrap items-center justify-center gap-1.5"
+          >
+            <span className="text-xs text-slate-400 dark:text-zinc-500 mr-1">Popular:</span>
+            {popularSkills.slice(0, 6).map((skill) => (
+              <button
+                key={skill}
+                onClick={() => handleSkillClick(skill)}
+                className="rounded-full px-2.5 py-0.5 text-xs text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-indigo-200/30 dark:hover:border-indigo-500/20"
+              >
+                {skill}
+              </button>
+            ))}
+          </motion.div>
+
+          {/* Dynamic Stats with Number Ticker */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-8 flex items-center justify-center gap-8 sm:gap-12"
+          >
+            {/* Total Companies */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1.5">
+                <Building2 className="size-4 text-indigo-400 dark:text-indigo-500" />
+                <div className="text-2xl font-bold text-slate-800 dark:text-white sm:text-3xl">
+                  {loading ? (
+                    <span className="inline-block w-12 h-8 bg-slate-200 dark:bg-white/10 rounded animate-pulse" />
+                  ) : (
+                    <NumberTicker value={stats.totalCompanies} /> 
+                  )}
+                  +
+                </div>
+              </div>
+              <div className="text-xs text-slate-400 dark:text-zinc-500">Total Companies</div>
+            </div>
+
+            {/* Total Jobs */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1.5">
+                <Users className="size-4 text-indigo-400 dark:text-indigo-500" />
+                <div className="text-2xl font-bold text-slate-800 dark:text-white sm:text-3xl">
+                  {loading ? (
+                    <span className="inline-block w-12 h-8 bg-slate-200 dark:bg-white/10 rounded animate-pulse" />
+                  ) : (
+                    <NumberTicker value={stats.totalJobs} />
+                  )}
+                </div>
+              </div>
+              <div className="text-xs text-slate-400 dark:text-zinc-500">Total Jobs</div>
+            </div>
+
+            {/* Verified Jobs */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1.5">
+                <CheckCircle2 className="size-4 text-emerald-500 dark:text-emerald-400" />
+                <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 sm:text-3xl">
+                  {loading ? (
+                    <span className="inline-block w-12 h-8 bg-slate-200 dark:bg-white/10 rounded animate-pulse" />
+                  ) : (
+                    <NumberTicker value={100} />
+                  )}
+                  %
+                </div>
+              </div>
+              <div className="text-xs text-slate-400 dark:text-zinc-500">Verified Jobs</div>
+            </div>
+          </motion.div>
+
+          {/* Trust badge */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-6 flex items-center justify-center gap-1.5 text-xs text-slate-400 dark:text-zinc-500"
+          >
+            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 dark:bg-emerald-500" />
+            <span>Trusted by 1000+ engineers across Bangladesh</span>
+          </motion.div>
+        </div>
       </div>
-
-      {/* noise */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.025]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "200px",
-        }}
-      />
-
-      {/* stats */}
-      <StatPill
-        icon={TrendingUp}
-        label="New jobs this month"
-        value="50,000+"
-        delay={0.9}
-        className="top-[22%] left-[7%]"
-      />
-      <StatPill
-        icon={Building2}
-        label="Partner companies"
-        value="12,000+"
-        delay={1.05}
-        className="top-[34%] right-[6%]"
-      />
-      <StatPill
-        icon={Users}
-        label="Hired this year"
-        value="180,000+"
-        delay={1.2}
-        className="bottom-[28%] left-[9%]"
-      />
-
-      {/* content */}
-      <motion.div
-        style={{ y: ySmooth, opacity }}
-        className="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center"
-      >
-        <Tag delay={0.2}>50,000+ new jobs this month</Tag>
-
-        {/* headline */}
-        <motion.h1
-          initial={{ y: "110%", opacity: 0 }}
-          animate={{ y: "0%", opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.7 }}
-          className="text-5xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl md:text-7xl"
-        >
-          Find Your{" "}
-          <span className="relative inline-block">
-            <span className="bg-gradient-to-r from-indigo-500 via-indigo-400 to-blue-500 bg-clip-text text-transparent">
-              Dream Job
-            </span>
-          </span>{" "}
-          Today
-        </motion.h1>
-
-        {/* text */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="max-w-xl text-base leading-relaxed text-gray-600 dark:text-zinc-400 sm:text-lg"
-        >
-          KaajBridge connects top talent with world-class companies. Browse
-          thousands of curated opportunities and land your next role.
-        </motion.p>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65 }}
-          className="flex flex-wrap items-center justify-center gap-3 pt-2"
-        >
-          <Link href="/jobs">
-            <motion.button className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-indigo-500 px-7 py-3.5 text-sm font-bold text-white shadow-md shadow-indigo-200 dark:shadow-indigo-600/30">
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-              Browse Jobs
-              <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-          </Link>
-
-          <Link href="/company">
-            <motion.button className="rounded-xl border px-7 py-3.5 text-sm font-semibold transition-colors
-              border-gray-200 bg-white text-gray-700 hover:bg-gray-50
-              dark:border-white/10 dark:bg-white/5 dark:text-zinc-300 dark:hover:bg-white/10
-            ">
-              Explore Companies
-            </motion.button>
-          </Link>
-        </motion.div>
-      </motion.div>
-
-      {/* bottom fade */}
-      <div className="pointer-events-none absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-white to-transparent dark:from-zinc-950 dark:to-transparent" />
     </section>
   );
 };
