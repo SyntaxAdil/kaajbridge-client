@@ -25,7 +25,6 @@ export function FeaturedCompanies({ initialCompanies }) {
       ? initialCompanies
       : FALLBACK_COMPANIES;
 
-  // Duplicate companies for seamless scrolling effect
   const duplicatedCompanies = [...companies, ...companies, ...companies];
 
   if (companies.length === 0) {
@@ -48,13 +47,22 @@ export function FeaturedCompanies({ initialCompanies }) {
           <div className="absolute left-0 top-0 h-full w-20 bg-gradient-to-r from-zinc-50/80 dark:from-[#0a0a0f]/80 to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-zinc-50/80 dark:from-[#0a0a0f]/80 to-transparent z-10 pointer-events-none" />
 
-          <Marquee pauseOnHover className="gap-6 py-4" speed={40}>
+          <Marquee 
+            pauseOnHover 
+            className="gap-6 py-4" 
+            speed={40}
+            data-lenis-prevent
+          >
             {duplicatedCompanies.slice(0, 12).map((company, index) => (
-              <CompanyCard
-                isPrivete={false}
-                key={`${company._id}-${index}`}
-                company={company}
-              />
+              <div 
+                key={`${company._id}-${index}`} 
+                className="w-[300px] sm:w-[350px] shrink-0"
+              >
+                <CompanyCard
+                  isPrivete={false}
+                  company={company}
+                />
+              </div>
             ))}
           </Marquee>
         </div>
