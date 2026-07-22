@@ -6,6 +6,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "next-themes";
+import { SmoothScroll } from "../providers/smooth-scroll";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -124,14 +125,16 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <SmoothScroll>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </SmoothScroll>
       </body>
     </html>
   );

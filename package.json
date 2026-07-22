@@ -16,6 +16,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cobe": "^0.6.4",
+    "lenis": "^1.3.25",
     "lucide-react": "^1.16.0",
     "mongodb": "^7.2.0",
     "motion": "^12.40.0",
