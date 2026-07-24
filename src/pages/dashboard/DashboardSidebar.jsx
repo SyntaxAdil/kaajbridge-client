@@ -1,9 +1,5 @@
 "use client";
 
-// import {
-
-//   useSidebar,
-// } from "@/components/ui/sidebar";
 import Logo from "../../components/ui/Logo";
 import {
   LayoutDashboard,
@@ -12,11 +8,9 @@ import {
   FileText,
   User2,
   Bookmark,
-  CreditCard,
   Loader2,
   LogOut,
   PlusCircle,
-  Users2,
 } from "lucide-react";
 import Image from "next/image";
 import { authClient, useSession } from "../../lib/auth/auth-client";
@@ -26,7 +20,7 @@ import { useEffect } from "react";
 import { AnimatedThemeToggler } from "../../components/ui/animated-theme-toggler";
 import toast from "react-hot-toast";
 import {
-  useSidebar,
+  // useSidebar,
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -34,7 +28,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "../../components/ui/sidebar";
+} from "@/components/ui/sidebar";
 
 const roleMenus = {
   seeker: [
@@ -96,8 +90,8 @@ const roleMenus = {
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  // const { state } = useSidebar();
+  const isCollapsed = "collapsed";
   const { data: session, isPending } = useSession();
   const userClient = session?.user;
   const userRole = userClient?.role?.toLowerCase() || "seeker";
@@ -268,3 +262,4 @@ export default function DashboardSidebar() {
     </Sidebar>
   );
 }
+
