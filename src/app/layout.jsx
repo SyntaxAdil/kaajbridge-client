@@ -128,7 +128,7 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <SmoothScroll>
+        
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -137,7 +137,7 @@ export default function RootLayout({ children }) {
             {children}
             <Toaster />
           </ThemeProvider>
-        </SmoothScroll>
+        
       </body>
     </html>
   );
