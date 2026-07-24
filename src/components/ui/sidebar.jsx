@@ -228,36 +228,12 @@ function Sidebar({
   );
 }
 
-// function SidebarTrigger({
-//   className,
-//   onClick,
-//   ...props
-// }) {
-//   const { toggleSidebar } = useSidebar()
-
-//   return (
-//     <Button
-//       data-sidebar="trigger"
-//       data-slot="sidebar-trigger"
-//       variant="ghost"
-//       size="icon-sm"
-//       className={cn(className)}
-//       onClick={(event) => {
-//         onClick?.(event)
-//         toggleSidebar()
-//       }}
-//       {...props}>
-//       <PanelLeftIcon />
-//       <span className="sr-only">Toggle Sidebar</span>
-//     </Button>
-//   );
-// }
-// function SidebarTrigger() {
-//   return null;
-// }
-
-function SidebarToggleButton({ className, onClick, ...props }) {
-  const { toggleSidebar } = useSidebar();
+function SidebarTrigger({
+  className,
+  onClick,
+  ...props
+}) {
+  const { toggleSidebar } = useSidebar()
 
   return (
     <Button
@@ -267,19 +243,17 @@ function SidebarToggleButton({ className, onClick, ...props }) {
       size="icon-sm"
       className={cn(className)}
       onClick={(event) => {
-        onClick?.(event);
-        toggleSidebar();
+        onClick?.(event)
+        toggleSidebar()
       }}
-      {...props}
-    >
+      {...props}>
       <PanelLeftIcon />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
 }
-function SidebarTrigger() {
-  return null;
-}
+
+
 function SidebarRail({ className, ...props }) {
   const { toggleSidebar } = useSidebar();
 
@@ -657,7 +631,7 @@ function SidebarMenuSubButton({
 }
 
 export {
-  SidebarToggleButton,
+  
   Sidebar,
   SidebarContent,
   SidebarFooter,
