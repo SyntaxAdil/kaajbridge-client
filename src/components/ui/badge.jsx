@@ -33,8 +33,7 @@ function Badge({
   asChild = false,
   ...props
 }) {
-  const Comp = asChild ? Slot : "span"
-
+const Comp = asChild ? Slot : "span"
   return (
     <Comp
       data-slot="badge"

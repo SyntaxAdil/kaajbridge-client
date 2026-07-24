@@ -109,7 +109,7 @@ const Navbar = () => {
           duration: 0.55,
           ease: [0.22, 1, 0.36, 1],
         }}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl"
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] container "
       >
         <nav
           className={cn(

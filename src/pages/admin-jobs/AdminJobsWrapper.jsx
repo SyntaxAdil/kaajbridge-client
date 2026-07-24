@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
@@ -40,7 +40,16 @@ const statusStyles = {
   closed: "text-zinc-500 border-zinc-500/25 bg-zinc-500/8",
 };
 
-export default function AdminJobsWrapper({
+// ✅ Main component wrapped with Suspense for useSearchParams
+export default function AdminJobsWrapper(props) {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+      <AdminJobsWrapperContent {...props} />
+    </Suspense>
+  );
+}
+
+function AdminJobsWrapperContent({
   initialJobs = [],
   initialTotal = 0,
   searchParams,

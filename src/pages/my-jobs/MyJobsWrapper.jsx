@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -6,7 +8,16 @@ import { Button } from "@/components/ui/button";
 import SearchInputStream from "./SearchInputStream";
 import JobCard from "./JobsCard";
 
-export default function MyJobsWrapper({ initialJobs = [], initialTotal = 0, searchParams = {} }) {
+// ✅ Main component wrapped with Suspense
+export default function MyJobsWrapper(props) {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+      <MyJobsWrapperContent {...props} />
+    </Suspense>
+  );
+}
+
+function MyJobsWrapperContent({ initialJobs = [], initialTotal = 0, searchParams = {} }) {
   const searchValue = searchParams?.search || "";
 
   return (

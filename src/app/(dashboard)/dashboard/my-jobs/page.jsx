@@ -2,10 +2,11 @@ import React from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/auth";
-import MyJobsWrapper from "@/pages/my-jobs/MyJobsWrapper";
-import AdminJobsWrapper from "@/pages/admin-jobs/AdminJobsWrapper";
 import { jobService } from "../../../../services/jobs";
 import { companyService } from "../../../../services/company";
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export const metadata = {
   title: "My Jobs - KaajBridge",
@@ -46,6 +47,9 @@ export default async function MyJobsPage({ searchParams }) {
       console.error("Failed fetching companies on server context:", error);
     }
 
+    // ✅ Dynamic import - client component only loads on client side
+    const AdminJobsWrapper = (await import("@/pages/admin-jobs/AdminJobsWrapper")).default;
+    
     return (
       <AdminJobsWrapper
         allCompaniesName={allCompaniesName}
@@ -68,6 +72,9 @@ export default async function MyJobsPage({ searchParams }) {
       .getMyCompany()
       .then((res) => res.allCompanyName)
       .catch(() => []);
+
+    // ✅ Dynamic import - client component only loads on client side
+    const MyJobsWrapper = (await import("@/pages/my-jobs/MyJobsWrapper")).default;
 
     return (
       <MyJobsWrapper

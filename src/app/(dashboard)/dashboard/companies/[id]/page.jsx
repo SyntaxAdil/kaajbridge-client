@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { companyService } from "../../../../../services/company";
+
 import {
   ArrowLeft,
   Building2,
@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { companyService } from "../../../../../services/company";
+
 
 export default async function CompanyDetailsPage({ params }) {
   const resolvedParams = await params;
@@ -70,7 +72,10 @@ export default async function CompanyDetailsPage({ params }) {
               {isVerified && (
                 <>
                   <span className="text-zinc-300 dark:text-zinc-800">•</span>
-                  <Badge variant="outline" className="bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 border-none text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
+                  <Badge
+                    variant="outline"
+                    className="bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 border-none text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded"
+                  >
                     Verified
                   </Badge>
                 </>
@@ -103,13 +108,15 @@ export default async function CompanyDetailsPage({ params }) {
               <FileText className="h-3.5 w-3.5 stroke-[2]" /> About Company
             </h2>
             <p className="text-base text-zinc-600 dark:text-zinc-300 leading-relaxed font-normal whitespace-pre-line">
-              {company?.description || "No overview details documented for this workplace profile."}
+              {company?.description ||
+                "No overview details documented for this workplace profile."}
             </p>
           </div>
 
           <div className="space-y-4">
             <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 flex items-center gap-2">
-              <Radio className="h-3.5 w-3.5 stroke-[2] text-zinc-400" /> Channels
+              <Radio className="h-3.5 w-3.5 stroke-[2] text-zinc-400" />{" "}
+              Channels
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <a
@@ -145,15 +152,21 @@ export default async function CompanyDetailsPage({ params }) {
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="space-y-0.5">
-                  <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Scale</span>
+                  <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                    Scale
+                  </span>
                   <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5 mt-0.5">
-                    <Users className="h-3.5 w-3.5 text-zinc-400 stroke-[1.8]" /> {company?.size || "N/A"} Team
+                    <Users className="h-3.5 w-3.5 text-zinc-400 stroke-[1.8]" />{" "}
+                    {company?.size || "N/A"} Team
                   </span>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Timeline</span>
+                  <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                    Timeline
+                  </span>
                   <span className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5 mt-0.5">
-                    <CalendarDays className="h-3.5 w-3.5 text-zinc-400 stroke-[1.8]" /> Est. {company?.founded || "N/A"}
+                    <CalendarDays className="h-3.5 w-3.5 text-zinc-400 stroke-[1.8]" />{" "}
+                    Est. {company?.founded || "N/A"}
                   </span>
                 </div>
               </div>
@@ -170,7 +183,9 @@ export default async function CompanyDetailsPage({ params }) {
                     className="rounded-lg object-cover"
                   />
                   <AvatarFallback className="bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 rounded-lg text-xs font-black tracking-wider">
-                    {recruiter?.name ? recruiter.name.substring(0, 2).toUpperCase() : "RC"}
+                    {recruiter?.name
+                      ? recruiter.name.substring(0, 2).toUpperCase()
+                      : "RC"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
