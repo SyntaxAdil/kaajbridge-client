@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { companyService } from "../../../../../services/company";
@@ -20,12 +19,15 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function CompanyDetailsPage({ params }) {
-  const { id } = await params;
+  const resolvedParams = await params;
+  const id = resolvedParams?.id;
+
   const company = await companyService
     .getCompanyById(id)
-    .then((res) => res.data);
-  const recruiter = company?.ownedBy?.[0] || company?.owner;
+    .then((res) => res.data)
+    .catch(() => null);
 
+  const recruiter = company?.ownedBy?.[0] || company?.owner;
   const isVerified = company?.verificationStatus === "verified";
 
   return (
@@ -46,7 +48,7 @@ export default async function CompanyDetailsPage({ params }) {
             {company?.companyLogo ? (
               <Image
                 src={company.companyLogo}
-                alt={company.name}
+                alt={company?.name || "Company Logo"}
                 fill
                 className="object-contain p-2"
               />
@@ -76,7 +78,7 @@ export default async function CompanyDetailsPage({ params }) {
             </div>
 
             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 font-sans leading-none">
-              {company?.name}
+              {company?.name || "Company Profile"}
             </h1>
           </div>
         </div>
@@ -111,14 +113,14 @@ export default async function CompanyDetailsPage({ params }) {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <a
-                href={`mailto:${company?.email}`}
+                href={`mailto:${company?.email || ""}`}
                 className="flex flex-col p-4 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-zinc-50/30 dark:bg-zinc-900/10 hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors min-w-0"
               >
                 <span className="text-[10px] font-bold uppercase text-zinc-400 dark:text-zinc-500 tracking-wider flex items-center gap-1.5 mb-1">
                   <Mail className="h-3 w-3" /> Email Gateway
                 </span>
                 <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate">
-                  {company?.email}
+                  {company?.email || "Not specified"}
                 </span>
               </a>
 
