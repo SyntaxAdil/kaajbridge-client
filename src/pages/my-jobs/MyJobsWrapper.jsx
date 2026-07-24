@@ -25,7 +25,7 @@ function MyJobsWrapperContent({ initialJobs = [], initialTotal = 0, searchParams
     <section className="w-full min-h-screen bg-background py-8">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-border/60">
         <div className="flex items-center gap-2">
-          <SidebarTrigger className="mx-2" />
+          {/* <SidebarTrigger className="mx-2" /> */}
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Manage Jobs

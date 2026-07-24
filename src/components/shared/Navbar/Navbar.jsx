@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import {
   LogOutIcon,
   UserIcon,
-  BriefcaseIcon,
   MenuIcon,
   XIcon,
   LayoutDashboard,
@@ -21,6 +21,7 @@ import {
   authClient,
   useSession,
 } from "../../../lib/auth/auth-client";
+import toast from "react-hot-toast";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 
@@ -35,12 +36,10 @@ import {
 
 import { AnimatedThemeToggler } from "../../ui/animated-theme-toggler";
 import Logo from "../../ui/Logo";
-import { GrDashboard } from "react-icons/gr";
 
 const NAV_LINKS = [
   { label: "Browse Jobs", href: "/jobs" },
   { label: "Companies", href: "/companies" },
-  // { label: "Pricing", href: "/pricing" },
 ];
 
 const listVariants = {
@@ -69,6 +68,7 @@ const itemVariants = {
 };
 
 const Navbar = () => {
+  const router = useRouter();
   const { data: session, refetch } = useSession();
   const userClient = session?.user;
   const [scrolled, setScrolled] = useState(false);
@@ -94,12 +94,18 @@ const Navbar = () => {
     ?.map((w) => w[0]?.toUpperCase())
     ?.join("");
 
-    const handleSignout = async () => {
+  const handleSignout = async () => {
+    try {
       await authClient.signOut();
       refetch();
-      toast.success("Logout successfull");
+      toast.success("Logout successful");
       router.push("/");
-    };
+    } catch (error) {
+      console.error("Signout error:", error);
+      toast.error("Failed to logout");
+    }
+  };
+
   return (
     <>
       <motion.header
@@ -109,7 +115,7 @@ const Navbar = () => {
           duration: 0.55,
           ease: [0.22, 1, 0.36, 1],
         }}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] container "
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] container"
       >
         <nav
           className={cn(
@@ -121,10 +127,6 @@ const Navbar = () => {
             scrolled && "bg-white/80 dark:bg-zinc-950/80 shadow-lg"
           )}
         >
-          {/* Glassmorphism glow effect */}
-          <div className="absolute inset-0 rounded-2xl  pointer-events-none" />
-          <div className="absolute -inset-px rounded-2xl blur-sm pointer-events-none" />
-
           {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.03 }}
@@ -136,9 +138,6 @@ const Navbar = () => {
               className="flex items-center gap-2 text-[1.35rem] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100"
             >
               <Logo />
-              {/* <span className="hidden sm:inline-block text-xs font-medium text-indigo-500 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-200/30 dark:border-indigo-500/20">
-                Beta
-              </span> */}
             </Link>
           </motion.div>
 
@@ -180,7 +179,7 @@ const Navbar = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="group flex items-center gap-2 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm px-2 py-1.5 pr-3 hover:bg-white/80 dark:hover:bg-zinc-800/80 transition-all duration-200"
+                    className="group flex items-center gap-2 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm px-2 py-1.5 pr-3 hover:bg-white/80 dark:hover:bg-zinc-800/80 transition-all duration-200 cursor-pointer outline-none"
                   >
                     <Avatar className="size-8">
                       <AvatarImage src={userClient?.image} alt={userClient?.name} />
@@ -214,14 +213,14 @@ const Navbar = () => {
                   <DropdownMenuSeparator className="bg-zinc-200/50 dark:bg-zinc-800/50" />
 
                   <Link href="/dashboard/profile">
-                    <DropdownMenuItem className="gap-3 py-2.5 px-4 cursor-pointer rounded-xl dark:focus:bg-zinc-800/50">
+                    <DropdownMenuItem className="gap-3 py-2.5 px-4 cursor-pointer rounded-xl">
                       <UserIcon className="size-4 text-zinc-500 dark:text-zinc-400" />
                       <span>Profile</span>
                     </DropdownMenuItem>
                   </Link>
 
                   <Link href="/dashboard">
-                    <DropdownMenuItem className="gap-3 py-2.5 px-4 cursor-pointer rounded-xl dark:focus:bg-zinc-800/50">
+                    <DropdownMenuItem className="gap-3 py-2.5 px-4 cursor-pointer rounded-xl">
                       <LayoutDashboard className="size-4 text-zinc-500 dark:text-zinc-400" />
                       <span>Dashboard</span>
                     </DropdownMenuItem>
@@ -231,7 +230,7 @@ const Navbar = () => {
 
                   <DropdownMenuItem
                     variant="destructive"
-                    className="gap-3 py-2.5 px-4 cursor-pointer rounded-xl"
+                    className="gap-3 py-2.5 px-4 cursor-pointer rounded-xl text-red-600 focus:text-red-600"
                     onClick={handleSignout}
                   >
                     <LogOutIcon className="size-4" />
@@ -266,7 +265,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <motion.button
-            className="md:hidden p-2 rounded-xl text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 transition-colors relative z-10"
+            className="md:hidden p-2 rounded-xl text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 transition-colors relative z-10 cursor-pointer"
             onClick={() => setMenuOpen((v) => !v)}
             whileTap={{ scale: 0.9 }}
             aria-label="Toggle menu"
@@ -366,7 +365,7 @@ const Navbar = () => {
                       <Link href="/dashboard/profile" onClick={() => setMenuOpen(false)}>
                         <Button
                           variant="outline"
-                          className="w-full justify-start gap-3 rounded-xl dark:border-zinc-800/50 dark:bg-zinc-900/50 dark:hover:bg-zinc-800/50"
+                          className="w-full justify-start gap-3 rounded-xl dark:border-zinc-800/50 dark:bg-zinc-900/50 dark:hover:bg-zinc-800/50 cursor-pointer"
                         >
                           <UserIcon className="size-4" />
                           Profile
@@ -375,7 +374,7 @@ const Navbar = () => {
                       <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
                         <Button
                           variant="outline"
-                          className="w-full justify-start gap-3 rounded-xl dark:border-zinc-800/50 dark:bg-zinc-900/50 dark:hover:bg-zinc-800/50"
+                          className="w-full justify-start gap-3 rounded-xl dark:border-zinc-800/50 dark:bg-zinc-900/50 dark:hover:bg-zinc-800/50 cursor-pointer"
                         >
                           <LayoutDashboard className="size-4" />
                           Dashboard
@@ -384,10 +383,10 @@ const Navbar = () => {
 
                       <Button
                         variant="destructive"
-                        className="w-full justify-start gap-3 rounded-xl"
+                        className="w-full justify-start gap-3 rounded-xl cursor-pointer"
                         onClick={() => {
                           setMenuOpen(false);
-                          handleSignout(refetch);
+                          handleSignout();
                         }}
                       >
                         <LogOutIcon className="size-4" />
@@ -399,14 +398,14 @@ const Navbar = () => {
                       <Link href="/login" onClick={() => setMenuOpen(false)}>
                         <Button
                           variant="outline"
-                          className="w-full rounded-xl font-medium dark:border-zinc-800/50 dark:bg-zinc-900/50 dark:hover:bg-zinc-800/50"
+                          className="w-full rounded-xl font-medium dark:border-zinc-800/50 dark:bg-zinc-900/50 dark:hover:bg-zinc-800/50 cursor-pointer"
                         >
                           Sign In
                         </Button>
                       </Link>
 
                       <Link href="/register" onClick={() => setMenuOpen(false)}>
-                        <Button className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-semibold shadow-lg shadow-indigo-500/25">
+                        <Button className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-semibold shadow-lg shadow-indigo-500/25 cursor-pointer">
                           <Sparkles className="size-3.5 mr-1.5" />
                           Get Started
                         </Button>
@@ -419,7 +418,7 @@ const Navbar = () => {
           </>
         )}
       </AnimatePresence>
-    <div className="h-18 w-full"></div>
+      <div className="h-18 w-full"></div>
     </>
   );
 };

@@ -43,7 +43,7 @@ export default function FilterApplication({
       className={`flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-border/60 transition-opacity ${isPending ? "opacity-70" : "opacity-100"}`}
     >
       <div className="flex items-center gap-2">
-        <SidebarTrigger className="-ms-4 me-2" />
+        {/* <SidebarTrigger className="-ms-4 me-2" /> */}
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Job Applications

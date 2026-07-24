@@ -99,8 +99,8 @@ export function FAQ() {
         <div className="max-w-3xl mx-auto">
           {filteredFaqs.length > 0 ? (
             <Accordion
-              type="single"
-              collapsible
+              
+              
               className="space-y-3"
               defaultValue="item-1"
             >

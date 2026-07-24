@@ -167,7 +167,7 @@ export default function MyCompanyWrapper({ initialCompanies }) {
     <section className="w-full min-h-screen bg-background px-6 lg:px-0 py-8">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-border/60">
         <div className="flex items-center gap-2">
-          <SidebarTrigger className={"px-6"}></SidebarTrigger>
+          {/* <SidebarTrigger className={"px-6"}></SidebarTrigger> */}
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">My Companies</h1>
             <p className="text-sm text-muted-foreground mt-0.5">

@@ -27,7 +27,7 @@ const ProfilePage = async () => {
     <div className="w-full min-h-screen bg-zinc-50 dark:bg-zinc-950 p-4 ">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-zinc-200/60 dark:border-zinc-800/60">
         <div className="flex items-center gap-2">
-          <SidebarTrigger className="mx-2" />
+          {/* <SidebarTrigger className="mx-2" /> */}
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               My Profile

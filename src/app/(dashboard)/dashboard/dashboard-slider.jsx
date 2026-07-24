@@ -11,6 +11,8 @@ import {
   Loader2,
   LogOut,
   PlusCircle,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import Image from "next/image";
 import { authClient, useSession } from "@/lib/auth/auth-client";
@@ -29,6 +31,11 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const roleMenus = {
   seeker: [
@@ -90,7 +97,7 @@ const roleMenus = {
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { state } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
   const { data: session, isPending } = useSession();
   const userClient = session?.user;
@@ -110,6 +117,17 @@ export default function DashboardSidebar() {
     ?.map((w) => w[0]?.toUpperCase())
     ?.join("");
 
+  const handleSignout = async () => {
+    try {
+      await authClient.signOut();
+      toast.success("Logout successful");
+      router.push("/");
+    } catch (error) {
+      console.error("Signout error:", error);
+      toast.error("Failed to logout");
+    }
+  };
+
   if (isPending) {
     return (
       <Sidebar
@@ -123,35 +141,47 @@ export default function DashboardSidebar() {
     );
   }
 
-  const handleSignout = async () => {
-    try {
-      await authClient.signOut();
-      toast.success("Logout successful");
-      router.push("/");
-    } catch (error) {
-      console.error("Signout error:", error);
-      toast.error("Failed to logout");
-    }
-  };
-
   return (
     <Sidebar
       collapsible="icon"
-      className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100"
+      className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-all duration-300"
     >
-      <Link href="/">
-        <SidebarHeader
-          className={`h-17.5 flex items-center border-b border-zinc-200 dark:border-zinc-800 ${isCollapsed ? "justify-center px-0" : "px-6"}`}
-        >
-          {isCollapsed ? (
-            <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center font-semibold text-white text-sm">
-              {userInitial || "K"}
-            </div>
-          ) : (
-            <Logo className="mt-2" />
-          )}
-        </SidebarHeader>
-      </Link>
+      <SidebarHeader
+        className={`h-17.5 flex items-center border-b border-zinc-200 dark:border-zinc-800 transition-all ${
+          isCollapsed ? "justify-center px-0" : "px-6 justify-between flex-row"
+        }`}
+      >
+        {isCollapsed ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggleSidebar}
+                type="button"
+                className="h-9 w-9 rounded-lg flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
+              >
+                <PanelLeftOpen className="h-5 w-5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>Open sidebar</p>
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <>
+            <Link href="/">
+              <Logo className="mt-2" />
+            </Link>
+            <button
+              onClick={toggleSidebar}
+              type="button"
+              className="h-8 w-8 rounded-lg flex items-center justify-center text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
+            >
+              <PanelLeftClose className="h-5 w-5" />
+            </button>
+          </>
+        )}
+      </SidebarHeader>
+
       {!isCollapsed && (
         <div className="px-4 pt-5 pb-4">
           <div className="flex items-center gap-3 px-2">
@@ -201,40 +231,58 @@ export default function DashboardSidebar() {
             }
 
             const isActive = pathname === item.href;
-            return (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  tooltip={item.title}
-                  className={`w-full flex items-center rounded-lg transition-colors duration-150 relative
-                    ${
-                      isActive
-                        ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-medium"
-                        : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100"
-                    }
-                    ${isCollapsed ? "justify-center px-0 h-10 w-10 mx-auto" : "px-3 h-10 gap-3"}`}
+
+            const menuContent = (
+              <SidebarMenuButton
+                className={`w-full flex items-center rounded-lg transition-colors duration-150 relative p-0
+                  ${
+                    isActive
+                      ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-medium"
+                      : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100"
+                  }
+                  ${isCollapsed ? "justify-center h-10 w-10 mx-auto" : "h-10"}`}
+              >
+                <Link
+                  href={item.href}
+                  className={`w-full h-full flex items-center relative ${
+                    isCollapsed ? "justify-center px-0" : "px-3 gap-3"
+                  }`}
                 >
-                  <Link
-                    href={item.href}
-                    className="w-full h-full flex items-center"
-                  >
-                    <item.icon className="h-[17px] w-[17px] shrink-0" />
-                    {!isCollapsed && (
-                      <span className="text-[13px]">{item.title}</span>
-                    )}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+                  <item.icon className="h-[17px] w-[17px] shrink-0" />
+                  {!isCollapsed && (
+                    <span className="text-[13px]">{item.title}</span>
+                  )}
+                </Link>
+              </SidebarMenuButton>
             );
+
+            if (isCollapsed) {
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>{menuContent}</TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{item.title}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </SidebarMenuItem>
+              );
+            }
+
+            return <SidebarMenuItem key={item.title}>{menuContent}</SidebarMenuItem>;
           })}
         </SidebarMenu>
       </SidebarContent>
 
       <SidebarFooter
-        className={`border-t border-zinc-200 dark:border-zinc-800 py-3 ${isCollapsed ? "px-2" : "px-4"}`}
+        className={`border-t border-zinc-200 dark:border-zinc-800 py-3 ${
+          isCollapsed ? "px-2" : "px-4"
+        }`}
       >
         <div
-          className={`flex items-center mb-2 ${isCollapsed ? "flex-col gap-2" : "justify-between px-2"}`}
+          className={`flex items-center mb-2 ${
+            isCollapsed ? "flex-col gap-2" : "justify-between px-2"
+          }`}
         >
           {!isCollapsed && (
             <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
@@ -245,17 +293,33 @@ export default function DashboardSidebar() {
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={handleSignout}
-              tooltip="Logout"
-              className={`w-full flex items-center rounded-lg text-red-600 bg-red-50 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors duration-150
-                ${isCollapsed ? "justify-center px-0 h-10 w-10 mx-auto" : "px-3 h-10 gap-3"}`}
-            >
-              <LogOut className="h-[17px] w-[17px] shrink-0" />
-              {!isCollapsed && (
-                <span className="text-[13px] font-medium">Logout</span>
-              )}
-            </SidebarMenuButton>
+            {isCollapsed ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <SidebarMenuButton
+                    onClick={handleSignout}
+                    className="w-full flex items-center rounded-lg text-red-600 bg-red-50 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors duration-150 p-0 justify-center h-10 w-10 mx-auto"
+                  >
+                    <div className="w-full h-full flex items-center justify-center px-0">
+                      <LogOut className="h-[17px] w-[17px] shrink-0" />
+                    </div>
+                  </SidebarMenuButton>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Logout</p>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <SidebarMenuButton
+                onClick={handleSignout}
+                className="w-full flex items-center rounded-lg text-red-600 bg-red-50 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors duration-150 p-0 h-10"
+              >
+                <div className="w-full h-full flex items-center px-3 gap-3">
+                  <LogOut className="h-[17px] w-[17px] shrink-0" />
+                  <span className="text-[13px] font-medium">Logout</span>
+                </div>
+              </SidebarMenuButton>
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

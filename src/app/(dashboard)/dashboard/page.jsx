@@ -22,8 +22,7 @@ import ApplicationChart from "../../../pages/dashboard/ApplicationChart";
 import { companyService } from "../../../services/company";
 import CompanyAnalytics from "../../../pages/dashboard/CompanyAnalytics";
 import RecruiterAnalytics from "../../../pages/dashboard/RecruiterAnalytics";
-import { SidebarTrigger } from "../../../components/ui/sidebar";
-
+import { jobService } from "../../../services/jobs";
 
 export const metadata = {
   title: "Dashboard - KaajBridge",
@@ -44,6 +43,7 @@ const DashboardPage = async () => {
 
   let initialApplications = [];
   let topCompaniesData = [];
+  let chartData = [];
   
   let statsData = {
     totalJobPosts: 0,
@@ -63,19 +63,37 @@ const DashboardPage = async () => {
   
   try {
     if (role === "admin") {
-      const [appRes, compRes] = await Promise.all([
+      const [appRes, compRes, jobRes] = await Promise.all([
         applicationService.getAllApplicationsAdmin({ page: "1", limit: "100" }),
-        companyService.getAllCompaniesAdmin({ page: "1", limit: "4" })
+        companyService.getAllCompaniesAdmin({ page: "1", limit: "4" }),
+        jobService.getAllJobsAdmin({ page: "1", limit: "100" })
       ]);
       
       const allData = appRes?.data || [];
+      const jobsData = jobRes?.data || [];
       initialApplications = allData.slice(0, 5);
       topCompaniesData = compRes?.data || [];
+
+      const statusCounts = {};
+      allData.forEach(app => {
+        const status = app?.status?.toLowerCase() || "pending";
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
+      });
+
+      chartData = [
+        { name: "Pending", value: statusCounts.pending || 0 },
+        { name: "Shortlisted", value: statusCounts.shortlisted || 0 },
+        { name: "Interviewing", value: statusCounts.interviewing || 0 },
+        { name: "Hired", value: statusCounts.hired || 0 },
+        { name: "Rejected", value: statusCounts.rejected || 0 },
+      ];
 
       statsData.totalCount = appRes?.pagination?.total || allData.length;
       statsData.totalTalentPool = allData.length; 
       statsData.corporatePartners = compRes?.pagination?.total || topCompaniesData.length;
       statsData.pendingVerifications = allData.filter(app => app?.status?.toLowerCase() === "pending").length;
+      statsData.totalJobPosts = jobsData.length;
+      statsData.activeJobs = jobsData.filter(job => job?.status?.toLowerCase() === "open").length;
 
       serverNotifications = initialApplications.map((app) => ({
         id: app._id,
@@ -86,20 +104,34 @@ const DashboardPage = async () => {
       }));
 
     } else if (role === "recruiter") {
-      const [appRes, compRes] = await Promise.all([
+      const [appRes, compRes, jobRes] = await Promise.all([
         applicationService.getAllApplicationsForRecruiter({ page: "1", limit: "100" }),
-        companyService.getMyCompany({ page: "1", limit: "4" })
+        companyService.getMyCompany({ page: "1", limit: "4" }),
+        jobService.getMyJobsServerSide({ page: "1", limit: "100" })
       ]);
 
       const allData = appRes?.data || [];
+      const jobsData = jobRes?.data || [];
       initialApplications = allData.slice(0, 5);
       topCompaniesData = compRes?.data || [];
 
-      const uniqueJobIds = new Set(allData.map(app => app.job?._id || app.job).filter(Boolean));
-      
-      statsData.totalJobPosts = uniqueJobIds.size;
+      const statusCounts = {};
+      allData.forEach(app => {
+        const status = app?.status?.toLowerCase() || "pending";
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
+      });
+
+      chartData = [
+        { name: "Pending", value: statusCounts.pending || 0 },
+        { name: "Shortlisted", value: statusCounts.shortlisted || 0 },
+        { name: "Interviewing", value: statusCounts.interviewing || 0 },
+        { name: "Hired", value: statusCounts.hired || 0 },
+        { name: "Rejected", value: statusCounts.rejected || 0 },
+      ];
+
+      statsData.totalJobPosts = jobsData.length;
       statsData.totalApplicants = appRes?.pagination?.total || allData.length;
-      statsData.activeJobs = uniqueJobIds.size;
+      statsData.activeJobs = jobsData.filter(job => job?.status?.toLowerCase() === "open").length;
       statsData.applicationsProcessed = allData.filter(app => app?.status?.toLowerCase() !== "pending").length;
 
       serverNotifications = initialApplications.map((app) => ({
@@ -119,6 +151,20 @@ const DashboardPage = async () => {
       const allData = appRes?.data || [];
       initialApplications = allData.slice(0, 5);
       topCompaniesData = compRes?.data || compRes || [];
+
+      const statusCounts = {};
+      allData.forEach(app => {
+        const status = app?.status?.toLowerCase() || "pending";
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
+      });
+
+      chartData = [
+        { name: "Pending", value: statusCounts.pending || 0 },
+        { name: "Shortlisted", value: statusCounts.shortlisted || 0 },
+        { name: "Interviewing", value: statusCounts.interviewing || 0 },
+        { name: "Hired", value: statusCounts.hired || 0 },
+        { name: "Rejected", value: statusCounts.rejected || 0 },
+      ];
 
       statsData.totalCount = appRes?.pagination?.total || allData.length;
       statsData.interviewCount = allData.filter(app => app?.status?.toLowerCase() === "interviewing").length;
@@ -140,10 +186,6 @@ const DashboardPage = async () => {
   return (
     <section className="w-full pr-2">
       <header className="flex items-center justify-between w-full gap-8 border-b border-border bg-background py-4 sticky top-0 z-50">
-        <div className="flex-0 w-1 px-4">
-          <SidebarTrigger />
-        </div>
-        
         <div className="flex-1">
           <form action={role === "seeker" ? "/dashboard/applications" : role === "recruiter" ? "/dashboard/all-job-applications" : "/dashboard/admin/all"} method="GET">
             <InputGroup className="relative flex items-center bg-muted/40 rounded py-2 border border-border focus-within:border-primary/50 transition-colors">
@@ -219,7 +261,11 @@ const DashboardPage = async () => {
 
         <div className="flex items-start mt-6 gap-4 flex-col md:flex-row">
           <RecentApplications applications={initialApplications} role={role} />
-          {role !== "seeker" ? <TopCompanies initialCompanies={topCompaniesData} role={role} /> : <ApplicationChart />}
+          {role !== "seeker" ? (
+            <TopCompanies initialCompanies={topCompaniesData} role={role} />
+          ) : (
+            <ApplicationChart chartData={initialApplications} />
+          )}
         </div>
       </main>
     </section>

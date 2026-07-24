@@ -50,7 +50,7 @@ export default async function SavedJobPage() {
     <div className="p-4   space-y-6">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-200/60 dark:border-zinc-800/60">
         <div className="flex items-center gap-2">
-          <SidebarTrigger className="mx-2" />
+          {/* <SidebarTrigger className="mx-2" /> */}
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Saved Jobs

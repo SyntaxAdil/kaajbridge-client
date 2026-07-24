@@ -115,7 +115,7 @@ export default function AdminCompaniesWrapper({ initialCompanies }) {
     <section className={`w-full min-h-screen bg-background px-6 lg:px-8 py-8 transition-opacity duration-200 ${isPending ? "opacity-70" : "opacity-100"}`}>
       <div className="flex flex-col gap-6 pb-6">
         <div className="flex items-start gap-1">
-          <SidebarTrigger className="h-9 w-9 mt-0.5 text-muted-foreground hover:bg-muted" />
+          {/* <SidebarTrigger className="h-9 w-9 mt-0.5 text-muted-foreground hover:bg-muted" /> */}
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
               All companies
