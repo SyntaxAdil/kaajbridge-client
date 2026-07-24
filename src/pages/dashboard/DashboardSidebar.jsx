@@ -1,15 +1,9 @@
 "use client";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  useSidebar,
-} from "@/components/ui/sidebar";
+// import {
+
+//   useSidebar,
+// } from "@/components/ui/sidebar";
 import Logo from "../../components/ui/Logo";
 import {
   LayoutDashboard,
@@ -30,6 +24,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { AnimatedThemeToggler } from "../../components/ui/animated-theme-toggler";
+import toast from "react-hot-toast";
+import {
+  useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "../../components/ui/sidebar";
 
 const roleMenus = {
   seeker: [
@@ -38,34 +43,53 @@ const roleMenus = {
     { title: "My Profile", icon: User2, href: "/dashboard/profile" },
     { type: "label", title: "Applications & Saves" },
     { title: "Saved Jobs", icon: Bookmark, href: "/dashboard/saved" },
-    { title: "My Applications", icon: FileText, href: "/dashboard/applications" },
+    {
+      title: "My Applications",
+      icon: FileText,
+      href: "/dashboard/applications",
+    },
   ],
   recruiter: [
     { type: "label", title: "Overview" },
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "My Profile", icon: User2, href: "/dashboard/profile" },
     { type: "label", title: "Company Management" },
-    { title: "Register Company", icon: PlusCircle, href: "/dashboard/my-companies/create" },
+    {
+      title: "Register Company",
+      icon: PlusCircle,
+      href: "/dashboard/my-companies/create",
+    },
     { title: "My Companies", icon: Building2, href: "/dashboard/my-companies" },
     { type: "label", title: "Job Placements" },
-    { title: "Post New Job", icon: PlusCircle, href: "/dashboard/my-jobs/create" },
+    {
+      title: "Post New Job",
+      icon: PlusCircle,
+      href: "/dashboard/my-jobs/create",
+    },
     { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
     { type: "label", title: "Applicants" },
-    { title: "Applications Received", icon: FileText, href: "/dashboard/applications" },
-    // { type: "label", title: "Billing" },
-    // { title: "Billing & Plans", icon: CreditCard, href: "/dashboard/billing" },
+    {
+      title: "Applications Received",
+      icon: FileText,
+      href: "/dashboard/applications",
+    },
   ],
   admin: [
     { type: "label", title: "Overview" },
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "Profile Settings", icon: User2, href: "/dashboard/profile" },
     { type: "label", title: "Platform Core Management" },
-    // { title: "Manage Users", icon: Users2, href: "/dashboard/users" },
-    { title: "Manage Companies", icon: Building2, href: "/dashboard/my-companies" },
+    {
+      title: "Manage Companies",
+      icon: Building2,
+      href: "/dashboard/my-companies",
+    },
     { title: "Manage Jobs", icon: Briefcase, href: "/dashboard/my-jobs" },
-    { title: "Manage Applications", icon: FileText, href: "/dashboard/applications" },
-    // { type: "label", title: "Billing Control" },
-    // { title: "Billing & Plans", icon: CreditCard, href: "/dashboard/billing" },
+    {
+      title: "Manage Applications",
+      icon: FileText,
+      href: "/dashboard/applications",
+    },
   ],
 };
 
@@ -104,12 +128,18 @@ export default function DashboardSidebar() {
       </Sidebar>
     );
   }
-const handleSignout = async () => {
+
+  const handleSignout = async () => {
+    try {
       await authClient.signOut();
-      refetch();
-      toast.success("Logout successfull");
+      toast.success("Logout successful");
       router.push("/");
-    };
+    } catch (error) {
+      console.error("Signout error:", error);
+      toast.error("Failed to logout");
+    }
+  };
+
   return (
     <Sidebar
       collapsible="icon"
@@ -159,7 +189,9 @@ const handleSignout = async () => {
         </div>
       )}
 
-      <SidebarContent className={`py-2 overflow-y-auto ${isCollapsed ? "px-2" : "px-4"}`}>
+      <SidebarContent
+        className={`py-2 overflow-y-auto ${isCollapsed ? "px-2" : "px-4"}`}
+      >
         <SidebarMenu className="gap-1.5">
           {menuItems.map((item, index) => {
             if (item.type === "label") {
