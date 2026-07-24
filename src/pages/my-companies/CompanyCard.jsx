@@ -72,10 +72,10 @@ export default function CompanyCard({
   const StatusIcon = statusConfig.icon;
 
   return (
-    <Card className="group relative flex flex-col justify-between w-full rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl shadow-sm hover:shadow-xl hover:border-indigo-500/30 dark:hover:border-indigo-500/30 transition-all duration-300 overflow-hidden py-0">
+    <Card className="group relative flex flex-col justify-between w-full h-full min-h-[340px] rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl shadow-sm hover:shadow-xl hover:border-indigo-500/30 dark:hover:border-indigo-500/30 transition-all duration-300 overflow-hidden py-0">
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <div>
+      <div className="flex flex-col flex-grow">
         <CardHeader className="p-4 sm:p-5 pb-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
@@ -114,14 +114,14 @@ export default function CompanyCard({
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 sm:px-5 py-2">
+        <CardContent className="px-4 sm:px-5 py-2 flex-grow">
           <p className="text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 line-clamp-2">
             {company?.description || "No description provided."}
           </p>
         </CardContent>
       </div>
 
-      <CardFooter className="p-4 sm:p-5 pt-3 flex-col items-stretch gap-3.5 border-t border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/30">
+      <CardFooter className="p-4 sm:p-5 pt-3 flex-col items-stretch gap-3.5 border-t border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/30 mt-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <MapPin className="h-4 w-4 shrink-0 text-indigo-500" />

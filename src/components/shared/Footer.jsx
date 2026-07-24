@@ -4,31 +4,25 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { FaGithubSquare, FaLinkedin, FaFacebook } from "react-icons/fa";
 
-import { cn } from "@/lib/utils";
 import Logo from "../ui/Logo";
 
-
 const LINKS = {
-  product: [
-    { label: "Job discovery", href: "/jobs" },
-    { label: "Worker AI", href: "/ai" },
-    { label: "Companies", href: "/company" },
-    { label: "Salary data", href: "/salary" },
+  platform: [
+    { label: "Browse Jobs", href: "/jobs" },
+    { label: "Companies", href: "/companies" },
   ],
-  navigation: [
-    { label: "Help center", href: "/help" },
-    { label: "Career library", href: "/career" },
-    { label: "Contact", href: "/contact" },
+  support: [
+    { label: "Contact", href: "/contact",id:1 },
+    { label: "Help", href: "/contact" ,id:2 },
   ],
-  resources: [
-    { label: "Brand Guideline", href: "/brand" },
-    { label: "Newsroom", href: "/news" },
+  legal: [
+    { label: "Privacy Policy", href: "/privacy" },
   ],
 };
 
 const Footer = () => {
   return (
-    <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 ">
+    <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400">
       <div className="container mx-auto px-5 lg:px-8 py-14">
         {/* TOP GRID */}
         <div className="grid md:grid-cols-4 gap-10">
@@ -36,16 +30,16 @@ const Footer = () => {
           <div>
             <Logo />
             <p className="mt-3 text-sm leading-6">
-              Modern job hunting platform developed by a diploma student for
-              diploma students. Find jobs, internships, and career opportunities
-              easily and efficiently.
+              A platform proudly built by a diploma engineer, specifically tailored for diploma engineers to discover career growth.
             </p>
 
             {/* SOCIAL ICONS */}
             <div className="flex gap-3 mt-5">
               <motion.a
                 whileHover={{ scale: 1.1 }}
-                href="#"
+                href="https://www.facebook.com/profile.php?id=61591819415724&sk=followers"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900"
               >
                 <FaFacebook size={18} />
@@ -53,7 +47,9 @@ const Footer = () => {
 
               <motion.a
                 whileHover={{ scale: 1.1 }}
-                href="https://FaGithubSquare.com"
+                href="https://github.com/kaajbridgesupport-hue"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900"
               >
                 <FaGithubSquare size={18} />
@@ -61,7 +57,9 @@ const Footer = () => {
 
               <motion.a
                 whileHover={{ scale: 1.1 }}
-                href="https://FaLinkedin.com"
+                href="https://www.linkedin.com/in/kaajbridge-support-924677422/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900"
               >
                 <FaLinkedin size={18} />
@@ -69,14 +67,14 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* PRODUCT */}
+          {/* PLATFORM */}
           <div className="md:ms-20">
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
-              Product
+              Platform
             </h3>
 
             <ul className="space-y-2 text-sm">
-              {LINKS.product.map((item) => (
+              {LINKS.platform.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -89,15 +87,15 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* NAVIGATION */}
+          {/* SUPPORT */}
           <div className="md:ms-20">
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
-              Navigation
+              Support
             </h3>
 
             <ul className="space-y-2 text-sm">
-              {LINKS.navigation.map((item) => (
-                <li key={item.href}>
+              {LINKS.support.map((item) => (
+                <li key={item.id}>
                   <Link
                     href={item.href}
                     className="hover:text-indigo-500 transition"
@@ -109,14 +107,14 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* RESOURCES */}
+          {/* LEGAL */}
           <div className="md:ms-20">
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
-              Resources
+              Legal
             </h3>
 
             <ul className="space-y-2 text-sm">
-              {LINKS.resources.map((item) => (
+              {LINKS.legal.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -131,17 +129,22 @@ const Footer = () => {
         </div>
 
         {/* BOTTOM BAR */}
-        <div className="mt-12 border-t border-zinc-200 dark:border-zinc-800 pt-6 flex flex-col md:flex-row justify-between gap-3 text-sm">
-          <p>Copyright © {new Date().getFullYear()} — KaajBridge</p>
+        <div className="mt-12 border-t border-zinc-200 dark:border-zinc-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-sm">
+          <p className="text-center md:text-left">
+            Copyright © {new Date().getFullYear()} KaajBridge — Developed by{" "}
+            <a
+              href="https://github.com/SyntaxAdil"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-zinc-900 dark:text-zinc-100 hover:text-indigo-500 transition"
+            >
+              @SyntaxAdil (Abdur Rahman Adil)
+            </a>
+          </p>
 
-          <div className="flex gap-5">
-            <Link href="/terms" className="hover:text-indigo-500">
-              Terms & Policy
-            </Link>
-            <Link href="/privacy" className="hover:text-indigo-500">
-              Privacy Guideline
-            </Link>
-          </div>
+          <p className="font-medium text-zinc-500 dark:text-zinc-400 text-center">
+            A platform made by a diploma engineer for other diploma engineers
+          </p>
         </div>
       </div>
     </footer>
