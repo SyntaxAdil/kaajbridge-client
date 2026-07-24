@@ -3,10 +3,11 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+
 import { Button } from "@/components/ui/button";
 import SearchInputStream from "./SearchInputStream";
 import JobCard from "./JobsCard";
+import { SidebarTrigger } from "../../components/ui/sidebar";
 
 // ✅ Main component wrapped with Suspense
 export default function MyJobsWrapper(props) {

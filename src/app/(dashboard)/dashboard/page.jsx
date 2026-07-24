@@ -1,7 +1,7 @@
 import React from "react";
 import { headers } from "next/headers";
 import { auth } from "../../../lib/auth/auth";
-import { SidebarTrigger } from "../../../components/ui/sidebar";
+
 import {
   InputGroup,
   InputGroupAddon,
@@ -22,6 +22,7 @@ import ApplicationChart from "../../../pages/dashboard/ApplicationChart";
 import { companyService } from "../../../services/company";
 import CompanyAnalytics from "../../../pages/dashboard/CompanyAnalytics";
 import RecruiterAnalytics from "../../../pages/dashboard/RecruiterAnalytics";
+import { SidebarTrigger } from "../../../components/ui/sidebar";
 
 
 export const metadata = {

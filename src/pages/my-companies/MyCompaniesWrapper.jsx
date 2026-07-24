@@ -16,7 +16,6 @@ import {
   SelectValue,
   SelectTrigger,
 } from "../../components/ui/select";
-import { SidebarTrigger } from "../../components/ui/sidebar";
 import {
   Pagination,
   PaginationContent,
@@ -27,6 +26,7 @@ import {
   PaginationEllipsis,
 } from "../../components/ui/pagination";
 import CompanyCard from "./CompanyCard";
+import { SidebarTrigger } from "../../components/ui/sidebar";
 
 const STATUS_FILTERS = [
   { value: "all", label: "All Statuses" },

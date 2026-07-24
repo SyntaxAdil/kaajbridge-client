@@ -33,8 +33,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Search, Trash2, ChevronLeft, ChevronRight, Building2 } from "lucide-react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { SidebarTrigger } from "../../components/ui/sidebar";
 
 const statusStyles = {
   verified: "text-emerald-600 border-emerald-500/25 bg-emerald-500/8",

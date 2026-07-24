@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useTransition } from "react";
-import { SidebarTrigger } from "../../components/ui/sidebar";
 import {
   InputGroup,
   InputGroupAddon,
@@ -16,6 +15,7 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { SidebarTrigger } from "../../components/ui/sidebar";
 
 export default function FilterApplication({
   currentSearch,

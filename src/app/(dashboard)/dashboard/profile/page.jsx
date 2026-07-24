@@ -2,7 +2,8 @@ import { headers } from 'next/headers';
 import React from 'react';
 import { auth } from '../../../../lib/auth/auth';
 import ProfileForm from '../../../../pages/profile/ProfileForm';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarTrigger } from '../../../../components/ui/sidebar';
+
 
 export const metadata = {
   title: "Profile - KaajBridge"
